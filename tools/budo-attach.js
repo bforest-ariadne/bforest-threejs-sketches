@@ -30,14 +30,12 @@ module.exports = function budoAttach (budoApp) {
     .on('update', function (src, deps) {
       if (wss && reloader.isShaderReload(deps)) {
         // Shader reload event, send the message data
-        console.log('shader update');
         const event = JSON.stringify(reloader.getEvent(deps));
         wss.clients.forEach(client => {
           client.send(event);
         });
       } else {
         // Regular JS file reload
-        console.log('regular update', deps)
         budoApp.reload();
       }
     });
