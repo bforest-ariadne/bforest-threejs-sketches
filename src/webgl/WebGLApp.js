@@ -33,15 +33,17 @@ module.exports = class WebGLApp extends EventEmitter {
 
     // really basic touch handler that propagates through the scene
     this.touchHandler = createTouches(this.canvas, {
-      filtered: false
+      // filtered: false
+      target: this.canvas,
+      filtered: true
     });
     this.touchHandler.on('start', (ev, pos) => this._traverse('onTouchStart', ev, pos));
     this.touchHandler.on('end', (ev, pos) => this._traverse('onTouchEnd', ev, pos));
     this.touchHandler.on('move', (ev, pos) => this._traverse('onTouchMove', ev, pos));
 
-    this.canvas.addEventListener('mouseenter', (ev, pos) => this._traverse('onMouseEnter', ev, pos) );
-    this.canvas.addEventListener('mouseleave', (ev, pos) => this._traverse('onMouseLeave', ev, pos) );
-    this.canvas.addEventListener('mouseover', (ev, pos) => this._traverse('onMouseOver', ev, pos) );
+    // this.canvas.addEventListener('mouseenter', (ev, pos) => this._traverse('onMouseEnter', ev, pos) );
+    // this.canvas.addEventListener('mouseleave', (ev, pos) => this._traverse('onMouseLeave', ev, pos) );
+    // this.canvas.addEventListener('mouseover', (ev, pos) => this._traverse('onMouseOver', ev, pos) );
 
     // default background color
     const background = defined(opt.background, '#fff');

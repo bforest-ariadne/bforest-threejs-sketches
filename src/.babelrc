@@ -1,0 +1,14 @@
+{
+  "presets": [
+    [
+      "babel-preset-env", {
+        "useBuiltIns": "usage"
+      }
+    ]
+  ],
+  "ignore": "src/vendor/ar.js",
+  "plugins": [
+    "babel-plugin-transform-class-properties",
+    "import-to-require"
+  ]
+}

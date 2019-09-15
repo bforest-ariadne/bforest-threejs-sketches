@@ -17,7 +17,7 @@ const gltfKey = assets.queue({
 module.exports = class Honeycomb extends THREE.Object3D {
   constructor () {
     super();
-    this.name = 'hdScene';
+    this.name = 'hcScene';
 
     this.debugGlobals = [];
     this.debugGlobalsLive = [];
@@ -82,7 +82,7 @@ module.exports = class Honeycomb extends THREE.Object3D {
     webgl.camera.up.fromArray(this.controls.up);
     webgl.camera.position.fromArray(this.controls.position);
     
-    webgl.camera.position.set(0,0,4);
+    // webgl.camera.position.set(0,0,4);
 
 
     tmpTarget.fromArray(this.controls.target);
@@ -95,7 +95,7 @@ module.exports = class Honeycomb extends THREE.Object3D {
 
   onTouchStart (ev, pos) {
     const [ x, y ] = pos;
-    console.log('Touchstart / mousedown: (%d, %d)', x, y);
+    // console.log('Touchstart / mousedown: (%d, %d)', x, y);
 
     // For example, raycasting is easy:
     const coords = new THREE.Vector2().set(
