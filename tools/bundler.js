@@ -3,7 +3,7 @@ const browserify = require('browserify');
 const path = require('path');
 
 // a utility that attaches shader reloading capabilities to budo
-const attachShaderReload = require('shader-reload/bin/budo-attach');
+const attachShaderReload = require('./budo-attach');
 
 // root source
 const entry = require.resolve('../');
@@ -14,6 +14,21 @@ const transforms = [
   'glslify'
 ];
 
+var liveOpts = {
+  // For faster development, re-bundle the LiveReload client
+  // on each request
+  cache: false,
+  // Include source mapping in the LiveReload client
+  debug: true,
+  // Expose LiveReload client to window.require('budo-livereload')
+  expose: true,
+  // Additional script(s) to include after the LiveReload client
+  // include: require.resolve('./live-client.js')
+}
+
+var privateKey = path.resolve(__dirname, './sslcert2/server.key');
+var certificate = path.resolve(__dirname, `./sslcert2/server.cer`);
+
 // during development
 module.exports.dev = function () {
   const args = [ entry ].concat(process.argv.slice(2));
@@ -21,6 +36,8 @@ module.exports.dev = function () {
     dir: path.resolve(__dirname, '../app'),
     serve: 'bundle.js',
     live: false,
+    cert: certificate,
+    key: privateKey,
     browserify: {
       transform: transforms.concat([ 'shader-reload/transform' ])
     }

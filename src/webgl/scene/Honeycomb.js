@@ -1,7 +1,11 @@
 const { gui, webgl, assets } = require('../../context');
-
-const LiveShaderMaterial = require('../materials/LiveShaderMaterial');
+const createOrbitControls = require('orbit-controls');
+const LiveShaderMaterial = require('shader-reload/three/LiveShaderMaterial');
 const honeyShader = require('../shaders/honey.shader');
+const assign = require('object-assign');
+
+const tmpTarget = new THREE.Vector3();
+
 
 // tell the preloader to include this asset
 // we need to define this outside of our class, otherwise
@@ -13,6 +17,19 @@ const gltfKey = assets.queue({
 module.exports = class Honeycomb extends THREE.Object3D {
   constructor () {
     super();
+    this.name = 'hdScene';
+
+    this.debugGlobals = [];
+    this.debugGlobalsLive = [];
+
+    // set up a simple orbit controller
+    this.controls = createOrbitControls({
+      element: webgl.canvas,
+      parent: window,
+      distance: 4,
+      zoom: false,
+    });
+
 
     // now fetch the loaded resource
     const gltf = assets.get(gltfKey);
@@ -25,6 +42,8 @@ module.exports = class Honeycomb extends THREE.Object3D {
       }
     });
 
+    const gltfChildren = [];
+
     // Replaces all meshes material with something basic
     gltf.scene.traverse(child => {
       if (child.isMesh) {
@@ -32,10 +51,11 @@ module.exports = class Honeycomb extends THREE.Object3D {
 
         // ThreeJS attaches something odd here on GLTF ipmport
         child.onBeforeRender = () => {};
+        gltfChildren.push( child );
       }
     });
 
-    this.add(gltf.scene);
+    for ( let child in gltfChildren ) this.add ( gltfChildren[child] ); 
 
     if (gui) { // assume it can be falsey, e.g. if we strip dat-gui out of bundle
       // attach dat.gui stuff here as usual
@@ -55,6 +75,19 @@ module.exports = class Honeycomb extends THREE.Object3D {
   }
 
   update (dt = 0, time = 0) {
+
+    this.controls.update();
+
+    // reposition to orbit controls
+    webgl.camera.up.fromArray(this.controls.up);
+    webgl.camera.position.fromArray(this.controls.position);
+    
+    webgl.camera.position.set(0,0,4);
+
+
+    tmpTarget.fromArray(this.controls.target);
+    
+    webgl.camera.lookAt(tmpTarget);
     // This function gets propagated down from the WebGL app to all children
     this.rotation.y += dt * 0.1;
     this.material.uniforms.time.value = time;
@@ -80,4 +113,15 @@ module.exports = class Honeycomb extends THREE.Object3D {
 
   onTouchEnd (ev, pos) {
   }
+
+  debug() {
+    // add debug globals as needed
+    this.debugGlobals.forEach( debugGlobal => {
+      global[debugGlobal] = this[debugGlobal];
+    } );
+    // add this scene to global as its name
+    global[this.name] = this;
+  }
+
+
 };

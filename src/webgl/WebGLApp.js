@@ -13,10 +13,9 @@ module.exports = class WebGLApp extends EventEmitter {
 
   constructor (opt = {}) {
     super();
+    this.opt = opt;
 
     this.query = query;
-
-    this.overlay = document.getElementById('overlay');
 
     this.renderer = new THREE.WebGLRenderer(assign({
       antialias: true,

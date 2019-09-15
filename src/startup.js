@@ -25,8 +25,8 @@ module.exports = function () {
 
     // Add any "WebGL components" here...
     // webgl.scene.add(new SpinningBox());
-    webgl.scene.add(new Bpose() );
-    // webgl.scene.add(new Honeycomb());
+    // webgl.scene.add(new Bpose() );
+    webgl.scene.add(new Honeycomb());
 
     // start animation loop
     webgl.start();
