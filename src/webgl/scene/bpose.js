@@ -3,32 +3,37 @@ var GyroNorm = require('gyronorm/dist/gyronorm.complete.js');
 const isMobile = require('../../util/isMobile.js');
 const { convertRange, clamp } = require('../../util/utils');
 const Controls = require('../controls');
+const query = require('../../util/query');
+const name = 'bpose';
+
 
 // tell the preloader to include this asset
 // we need to define this outside of our class, otherwise
 // it won't get included in the preloader until *after* its done loading
-const bposeKey = assets.queue({
-  url: 'assets/models/bpose1_v1.glb'
-});
 
-const normalKey = assets.queue({
+
+const bposeKey = query.scene === name ? assets.queue({
+  url: 'assets/models/bpose1_v1.glb'
+}) : {};
+
+const normalKey = query.scene === name ? assets.queue({
   url: 'assets/models/bpose1_NORM.jpg',
   key: 'normalmap',
   texture: true
-});
+}) : {};
 
-const colorKey = assets.queue({
+const colorKey = query.scene === name ? assets.queue({
   url: 'assets/models/bpose1_AO.png',
   key: 'colormap',
   texture: true
-});
+}) : {};
 
 module.exports = class Bpose extends THREE.Object3D {
   constructor () {
     super();
 
     self = this;
-    this.name = "scene1";
+    this.name = name;
 
     // now fetch the loaded resource
     const gltf = assets.get(bposeKey);

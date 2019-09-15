@@ -4,7 +4,7 @@ module.exports = class SpinningBox extends THREE.Object3D {
     this.add(new THREE.Mesh(
       new THREE.BoxGeometry(1, 1, 1),
       new THREE.MeshBasicMaterial({
-        wireframe: true, color: 'black'
+        wireframe: true, color: 'white'
       })
     ));
   }

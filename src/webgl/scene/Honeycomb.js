@@ -3,35 +3,33 @@ const createOrbitControls = require('orbit-controls');
 const LiveShaderMaterial = require('shader-reload/three/LiveShaderMaterial');
 const honeyShader = require('../shaders/honey.shader');
 const assign = require('object-assign');
+const query = require('../../util/query');
 
+const name = 'honeycomb';
 const tmpTarget = new THREE.Vector3();
 
 
 // tell the preloader to include this asset
 // we need to define this outside of our class, otherwise
 // it won't get included in the preloader until *after* its done loading
-const gltfKey = assets.queue({
+const gltfKey = query.scene === name ? assets.queue({
   url: 'assets/models/honeycomb.gltf'
-});
+}) : {};
+
 
 module.exports = class Honeycomb extends THREE.Object3D {
   constructor () {
     super();
-    this.name = 'hcScene';
+    this.name = name;
 
     this.debugGlobals = [];
     this.debugGlobalsLive = [];
 
-    // set up a simple orbit controller
-    this.controls = createOrbitControls({
-      element: webgl.canvas,
-      parent: window,
-      distance: 4,
-      zoom: false,
-    });
+    this.controlsInit();
 
-
+    
     // now fetch the loaded resource
+  
     const gltf = assets.get(gltfKey);
 
     this.material = new LiveShaderMaterial(honeyShader, {
@@ -76,21 +74,30 @@ module.exports = class Honeycomb extends THREE.Object3D {
 
   update (dt = 0, time = 0) {
 
+    this.controlsUpdate();
+    // This function gets propagated down from the WebGL app to all children
+    this.rotation.y += dt * 0.1;
+    this.material.uniforms.time.value = time;
+  }
+
+  controlsInit() {
+    // set up a simple orbit controller
+    this.controls = createOrbitControls({
+      element: webgl.canvas,
+      parent: window,
+      distance: 4,
+      zoom: false,
+    });
+  }
+
+  controlsUpdate() {
     this.controls.update();
 
     // reposition to orbit controls
     webgl.camera.up.fromArray(this.controls.up);
     webgl.camera.position.fromArray(this.controls.position);
-    
-    // webgl.camera.position.set(0,0,4);
-
-
     tmpTarget.fromArray(this.controls.target);
-    
     webgl.camera.lookAt(tmpTarget);
-    // This function gets propagated down from the WebGL app to all children
-    this.rotation.y += dt * 0.1;
-    this.material.uniforms.time.value = time;
   }
 
   onTouchStart (ev, pos) {

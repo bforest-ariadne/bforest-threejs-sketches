@@ -1,0 +1,53 @@
+  
+{
+  "meta": {
+    "domain": "http://ykob.github.io/sketch-threejs",
+    "websiteName": "sketch of three.js",
+    "keywords": "Yoichi Kobayashi, WebGL, three.js"
+  },
+  "scenes": {
+    "index": {
+      "title": "",
+      "id": "index",
+      "description": "interactive sketches made with three.js. created by yoichi kobayashi.",
+      "path": "/",
+      "color": "white"
+    },
+    "honeycomb": {
+      "title": "honeycomb",
+      "id": "honeycomb",
+      "description": "live shader reload test scene",
+      "path": "",
+      "posted": "2019.9.15",
+      "update": "",
+      "color": "black"
+    },
+    "bpose": {
+      "title": "bpose",
+      "id": "bpose",
+      "description": "scene testing gltf loading",
+      "path": "",
+      "posted": "2019.9.15",
+      "update": "",
+      "color": "black"
+    },
+    "sceneSketch": {
+      "title": "sceneSketch",
+      "id": "sceneSketch",
+      "description": "template scene",
+      "path": "",
+      "posted": "2019.9.15",
+      "update": "",
+      "color": "black"
+    },
+    "spinningBox": {
+      "title": "spinningBox",
+      "id": "spinningBox",
+      "description": "very simple test scene",
+      "path": "",
+      "posted": "2019.9.15",
+      "update": "",
+      "color": "black"
+    }
+  }
+}

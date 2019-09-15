@@ -184,6 +184,7 @@ module.exports = class WebGLApp extends EventEmitter {
   }
 
   start () {
+    this.log('app start');
     if (this.dev) {
       global.renderer = this.renderer;
       global.camera = this.camera;
@@ -246,6 +247,18 @@ module.exports = class WebGLApp extends EventEmitter {
         }
     }
     
+  }
+
+  log() {
+    // logging for debug only
+    if ( this.dev ) {
+      const css = 'background: #ff00ff; color: #ff00ff';
+      const text = ' ';
+      let cssArray = ['%c '.concat(text), css];
+      var args = Array.prototype.slice.call(arguments);
+      let final = cssArray.concat(args);
+      console.log.apply(this, final);
+    }
   }
 
 }
