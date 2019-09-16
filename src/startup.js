@@ -4,6 +4,7 @@ const Bpose = require('./webgl/scene/bpose');
 const SketchScene = require('./webgl/scene/SketchScene');
 const query = require('./util/query');
 const defined = require('defined');
+const { TweenMax } = require( 'gsap/umd/TweenMax' );
 
 const { assets, webgl, gui } = require('./context');
 const scenes = [ Bpose, Honeycomb, SpinningBox, SketchScene ];
@@ -25,6 +26,10 @@ module.exports = function () {
     webgl.on( 'show', () => {
       // Show canvas
       webgl.canvas.style.visibility = '';
+      TweenMax.fromTo(webgl.loadingPage, 0.5, {opacity: 1}, {opacity: 0})
+        .eventCallback( 'onComplete', () => {
+          webgl.loadingPage.style.display = 'none';
+        });
     });
 
     // To avoid page pulling and such
@@ -45,6 +50,5 @@ module.exports = function () {
 
     // start animation loop
     webgl.start();
-    // webgl.draw();
   });
 };

@@ -19,6 +19,7 @@ module.exports = class WebGLApp extends EventEmitter {
     this.clock = new THREE.Clock();
     this.frameCount = 0;
     this.lastTimeMsec = null;
+    this.loadingPage = document.getElementById('loadingPage');
 
     this.renderer = new THREE.WebGLRenderer(assign({
       antialias: false,
