@@ -31,17 +31,13 @@ module.exports = function () {
     let found = false;
 
     for ( let i in scenes ) {
-      console.log('scenes', scenes[i].name, query.scene );
       let sceneName = scenes[i].name.toLowerCase();
       let queryName = defined( query.scene, false ).toLowerCase();
       if ( sceneName === queryName ) {
         webgl.scene.add( new scenes[i]() );
         found = true;
-        console.log('scene found', scenes[i].name );
       }
     }
-
-    console.log(assets);
     if ( !found ) webgl.scene.add( new DefaultScene() );
 
     webgl.sceneObj.init();

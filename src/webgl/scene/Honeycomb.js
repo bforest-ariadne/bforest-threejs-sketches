@@ -18,7 +18,6 @@ const gltfKey = query.scene === name ? assets.queue({
 
 module.exports = class Honeycomb extends SketchScene {
   constructor () {
-    console.log('before super');
     super();
     this.name = name;
 
@@ -72,8 +71,7 @@ module.exports = class Honeycomb extends SketchScene {
   }
 
   update (dt = 0, time = 0) {
-
-    this.controlsUpdate();
+    super.update( dt, time );
     // This function gets propagated down from the WebGL app to all children
     this.rotation.y += dt * 0.1;
     this.material.uniforms.time.value = time;

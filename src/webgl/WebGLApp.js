@@ -14,8 +14,10 @@ module.exports = class WebGLApp extends EventEmitter {
   constructor (opt = {}) {
     super();
     this.opt = opt;
-
     this.query = query;
+    this.clock = new THREE.Clock();
+    this.frameCount = 0;
+    this.lastTimeMsec = null;
 
     this.renderer = new THREE.WebGLRenderer(assign({
       antialias: false,
@@ -42,10 +44,6 @@ module.exports = class WebGLApp extends EventEmitter {
     this.touchHandler.on('end', (ev, pos) => this._traverse('onTouchEnd', ev, pos));
     this.touchHandler.on('move', (ev, pos) => this._traverse('onTouchMove', ev, pos));
 
-    // this.canvas.addEventListener('mouseenter', (ev, pos) => this._traverse('onMouseEnter', ev, pos) );
-    // this.canvas.addEventListener('mouseleave', (ev, pos) => this._traverse('onMouseLeave', ev, pos) );
-    // this.canvas.addEventListener('mouseover', (ev, pos) => this._traverse('onMouseOver', ev, pos) );
-
     // default background color
     const background = defined(opt.background, '#fff');
     const backgroundAlpha = defined(opt.backgroundAlpha, 1);
@@ -63,14 +61,6 @@ module.exports = class WebGLApp extends EventEmitter {
     const far = defined(opt.far, 100);
     this.camera = new THREE.PerspectiveCamera(fov, 1, near, far);
 
-    // set up a simple orbit controller
-    // this.controls = createOrbitControls(assign({
-    //   element: this.canvas,
-    //   parent: window,
-    //   distance: 4,
-    //   zoom: false,
-    // }, opt));
-
     // setup init properties
     this.time = 0;
     this._running = false;
@@ -86,9 +76,6 @@ module.exports = class WebGLApp extends EventEmitter {
 
     // force an initial resize event
     this.resize();
-
-
-
   }
 
   get running () {
@@ -142,19 +129,6 @@ module.exports = class WebGLApp extends EventEmitter {
   }
 
   update (dt = 0, time = 0) {
-    // this.controls.update();
-
-    // reposition to orbit controls
-    // this.camera.up.fromArray(this.controls.up);
-    // this.camera.position.fromArray(this.controls.position);
-    
-    // this.camera.position.set(0,0,4);
-
-
-    // tmpTarget.fromArray(this.controls.target);
-    
-    // this.camera.lookAt(tmpTarget);
-
     // recursively tell all child objects to update
     this.scene.traverse(obj => {
       if (typeof obj.update === 'function') {
@@ -165,7 +139,31 @@ module.exports = class WebGLApp extends EventEmitter {
     return this;
   }
 
+  draw () {
+    this.renderer.render(this.scene, this.camera);
+    return this;
+  }
+
+  animate = nowMsec => {
+    if (!this.running) return;
+    window.requestAnimationFrame(this.animate);
+
+    // measure time
+    this.lastTimeMsec = this.lastTimeMsec || nowMsec - 1000 / 60;
+    this.lastTimeMsec = nowMsec;
+    this.delta = this.clock.getDelta();
+
+    this.update( this.delta, nowMsec / 1000, this.frameCount );
+    this.draw();
+    this.frameCount++
+  }
+
   debug() {
+    global.renderer = this.renderer;
+    global.camera = this.camera;
+    global.scene = this.scene;
+    global.app = this;
+
     this.scene.traverse(obj => {
       if (typeof obj.debug === 'function') {
         obj.debug();
@@ -179,18 +177,9 @@ module.exports = class WebGLApp extends EventEmitter {
     webgl.scene.traverse( function(c) { if(c.name === '' )c.name = c.type;  } )
   }
 
-  draw () {
-    this.renderer.render(this.scene, this.camera);
-    return this;
-  }
-
   start () {
     this.log('app start');
-    if (this.dev) {
-      global.renderer = this.renderer;
-      global.camera = this.camera;
-      global.scene = this.scene;
-      global.app = this;
+    if ( this.dev && this.frameCount === 0 ) {
       this.debug();
     }
 
@@ -208,18 +197,6 @@ module.exports = class WebGLApp extends EventEmitter {
     return this;
   }
 
-  animate = () => { // <-- Note: using class functions thanks to a Babel plugin
-    if (!this.running) return;
-    window.requestAnimationFrame(this.animate);
-
-    const now = rightNow();
-    const dt = Math.min(this.maxDeltaTime, (now - this._lastTime) / 1000);
-    this.time += dt;
-    this._lastTime = now;
-    this.update(dt, this.time);
-    this.draw();
-  }
-
   _traverse = (fn, ...args) => {
     this.scene.traverse(child => {
       if (typeof child[fn] === 'function') {
@@ -235,19 +212,16 @@ module.exports = class WebGLApp extends EventEmitter {
 
   nameMeshes( obj3d ) {
     for ( var key in obj3d ) {
-      // console.log(typeof obj3d[key], key)
       if (
-        typeof obj3d[key] === 'object' && 
-        typeof obj3d[key] !== 'null' && 
+        typeof obj3d[key] === 'object' &&
+        obj3d[key] !== null &&
         !key.includes('_') &&
-        typeof obj3d[key].isObject3D !== 'null' &&
+        obj3d[key].isObject3D !== null &&
         typeof obj3d[key].isObject3D !== 'undefined' &&
-        key !== 'parent' ) 
-        {
-          if ( obj3d[key].name === '' ) obj3d[key].name = key;
-        }
+        key !== 'parent' ) {
+        if ( obj3d[key].name === '' ) obj3d[key].name = key;
+      }
     }
-    
   }
 
   log() {

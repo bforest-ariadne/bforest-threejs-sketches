@@ -35,7 +35,7 @@ module.exports = class SketchScene extends THREE.Object3D {
     this.add(this.mesh);
   }
 
-  update (dt = 0, time = 0) {
+  update (dt = 0, time = 0, frame = 0) {
     if ( defined( this.controls ) ) this.controlsUpdate();
     if ( defined( this.mesh ) ) this.mesh.rotation.x += dt * 0.1;
     this.debugLive();
