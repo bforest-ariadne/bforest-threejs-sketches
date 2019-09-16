@@ -2,13 +2,16 @@ const { gui, webgl, assets } = require('../../context');
 const createOrbitControls = require('orbit-controls');
 const defined = require('defined');
 
+const name = 'sketchScene';
+
 
 const tmpTarget = new THREE.Vector3();
 
 module.exports = class SketchScene extends THREE.Object3D {
   constructor () {
     super();
-    this.name = 'sketchScene';
+    this.name = name;
+    webgl.sceneObj = this;
 
     this.debugGlobals = [];
     this.debugGlobalsLive = [];
@@ -17,28 +20,27 @@ module.exports = class SketchScene extends THREE.Object3D {
     if (gui) { 
       // assume it can be falsey, e.g. if we strip dat-gui out of bundle
       // attach dat.gui stuff here as usual
-
     }
 
-    this.init();
+    // this.init();
   }
 
   init() {
     this.controlsInit();
-    this.add(new THREE.Mesh(
+    this.mesh = new THREE.Mesh(
       new THREE.BoxGeometry(1, 1, 1),
       new THREE.MeshBasicMaterial({
         wireframe: true, color: 'white'
       })
-    ));
+    )
+    this.add(this.mesh);
+
   }
 
   update (dt = 0, time = 0) {
-
     if ( defined( this.controls ) ) this.controlsUpdate();
-    this.rotation.x += dt * 0.1;
+    if ( defined( this.mesh ) ) this.mesh.rotation.x += dt * 0.1;
     // This function gets propagated down from the WebGL app to all children
-
   }
 
   controlsInit() {

@@ -1,3 +1,4 @@
+const SketchScene = require('./SketchScene');
 const { gui, webgl, assets } = require('../../context');
 const createOrbitControls = require('orbit-controls');
 const LiveShaderMaterial = require('shader-reload/three/LiveShaderMaterial');
@@ -8,7 +9,6 @@ const query = require('../../util/query');
 const name = 'honeycomb';
 const tmpTarget = new THREE.Vector3();
 
-
 // tell the preloader to include this asset
 // we need to define this outside of our class, otherwise
 // it won't get included in the preloader until *after* its done loading
@@ -16,20 +16,19 @@ const gltfKey = query.scene === name ? assets.queue({
   url: 'assets/models/honeycomb.gltf'
 }) : {};
 
-
-module.exports = class Honeycomb extends THREE.Object3D {
+module.exports = class Honeycomb extends SketchScene {
   constructor () {
+    console.log('before super');
     super();
     this.name = name;
 
-    this.debugGlobals = [];
-    this.debugGlobalsLive = [];
+  }
 
+  init() {
+    console.log( 'init', this.name );
     this.controlsInit();
 
-    
     // now fetch the loaded resource
-  
     const gltf = assets.get(gltfKey);
 
     this.material = new LiveShaderMaterial(honeyShader, {
@@ -80,26 +79,6 @@ module.exports = class Honeycomb extends THREE.Object3D {
     this.material.uniforms.time.value = time;
   }
 
-  controlsInit() {
-    // set up a simple orbit controller
-    this.controls = createOrbitControls({
-      element: webgl.canvas,
-      parent: window,
-      distance: 4,
-      zoom: false,
-    });
-  }
-
-  controlsUpdate() {
-    this.controls.update();
-
-    // reposition to orbit controls
-    webgl.camera.up.fromArray(this.controls.up);
-    webgl.camera.position.fromArray(this.controls.position);
-    tmpTarget.fromArray(this.controls.target);
-    webgl.camera.lookAt(tmpTarget);
-  }
-
   onTouchStart (ev, pos) {
     const [ x, y ] = pos;
     // console.log('Touchstart / mousedown: (%d, %d)', x, y);
@@ -115,20 +94,7 @@ module.exports = class Honeycomb extends THREE.Object3D {
     console.log(hits.length > 0 ? `Hit ${hits[0].object.name}!` : 'No hit');
   }
 
-  onTouchMove (ev, pos) {
-  }
-
-  onTouchEnd (ev, pos) {
-  }
-
   debug() {
-    // add debug globals as needed
-    this.debugGlobals.forEach( debugGlobal => {
-      global[debugGlobal] = this[debugGlobal];
-    } );
-    // add this scene to global as its name
-    global[this.name] = this;
+    super.debug();
   }
-
-
 };
