@@ -2,6 +2,7 @@ const { EventEmitter } = require('events');
 const assign = require('object-assign');
 const defined = require('defined');
 const rightNow = require('right-now');
+const noop = () => {};
 // const createOrbitControls = require('orbit-controls');
 const createTouches = require('touches');
 const query = require('../util/query');
@@ -156,6 +157,8 @@ module.exports = class WebGLApp extends EventEmitter {
     this.update( this.delta, nowMsec / 1000, this.frameCount );
     this.draw();
     this.frameCount++
+
+    if ( this.frameCount === 10 ) this.emit('show');
   }
 
   debug() {

@@ -22,14 +22,15 @@ module.exports = function () {
   assets.loadQueued(() => {
     console.log('Done loading');
 
-    // Show canvas
-    webgl.canvas.style.visibility = '';
+    webgl.on( 'show', () => {
+      // Show canvas
+      webgl.canvas.style.visibility = '';
+    });
 
     // To avoid page pulling and such
     webgl.canvas.addEventListener('touchstart', ev => ev.preventDefault());
 
     let found = false;
-
     for ( let i in scenes ) {
       let sceneName = scenes[i].name.toLowerCase();
       let queryName = defined( query.scene, false ).toLowerCase();
@@ -44,6 +45,6 @@ module.exports = function () {
 
     // start animation loop
     webgl.start();
-    webgl.draw();
+    // webgl.draw();
   });
 };
