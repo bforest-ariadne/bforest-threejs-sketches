@@ -16,8 +16,7 @@ module.exports = class SketchScene extends THREE.Object3D {
     this.debugGlobals = [];
     this.debugGlobalsLive = [];
 
-
-    if (gui) { 
+    if (gui) {
       // assume it can be falsey, e.g. if we strip dat-gui out of bundle
       // attach dat.gui stuff here as usual
     }
@@ -32,14 +31,14 @@ module.exports = class SketchScene extends THREE.Object3D {
       new THREE.MeshBasicMaterial({
         wireframe: true, color: 'white'
       })
-    )
+    );
     this.add(this.mesh);
-
   }
 
   update (dt = 0, time = 0) {
     if ( defined( this.controls ) ) this.controlsUpdate();
     if ( defined( this.mesh ) ) this.mesh.rotation.x += dt * 0.1;
+    this.debugLive();
     // This function gets propagated down from the WebGL app to all children
   }
 
@@ -70,8 +69,16 @@ module.exports = class SketchScene extends THREE.Object3D {
 
   onTouchMove (ev, pos) {
   }
-
   onTouchEnd (ev, pos) {
+  }
+  onMouseEnter(ev) {
+  }
+  onMouseLeave(ev) {
+  }
+  onMouseOver() {
+  }
+
+  onResize() {
   }
 
   debug() {
@@ -82,6 +89,15 @@ module.exports = class SketchScene extends THREE.Object3D {
     // add this scene to global as its name
     global[this.name] = this;
   }
+  debugAdd( o ) {
+    if ( typeof this[o] === 'object' ) this.debugGlobals.push(o);
+    else if ( typeof this[o] === 'number' ) this.debugGlobalsLive.push(o);
+  }
 
-
+  debugLive() {
+    // update changing debug globals that wont change on their own
+    this.debugGlobalsLive.forEach( debugGlobal => {
+      global[debugGlobal] = this[debugGlobal];
+    } );
+  }
 };

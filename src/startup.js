@@ -2,7 +2,6 @@ const Honeycomb = require('./webgl/scene/Honeycomb');
 const SpinningBox = require('./webgl/scene/SpinningBox');
 const Bpose = require('./webgl/scene/bpose');
 const SketchScene = require('./webgl/scene/SketchScene');
-const data = require('./data.json');
 const query = require('./util/query');
 const defined = require('defined');
 
@@ -38,9 +37,9 @@ module.exports = function () {
       if ( sceneName === queryName ) {
         webgl.scene.add( new scenes[i]() );
         found = true;
-        console.log('scene found', scenes[i].name )
+        console.log('scene found', scenes[i].name );
       }
-    };
+    }
 
     console.log(assets);
     if ( !found ) webgl.scene.add( new DefaultScene() );

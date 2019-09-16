@@ -18,7 +18,7 @@ module.exports = class WebGLApp extends EventEmitter {
     this.query = query;
 
     this.renderer = new THREE.WebGLRenderer(assign({
-      antialias: true,
+      antialias: false,
       alpha: false,
       // enabled for saving screen shots of the canvas,
       // may wish to disable this for perf reasons
@@ -27,6 +27,7 @@ module.exports = class WebGLApp extends EventEmitter {
     }, opt));
 
     this.renderer.domElement.style.position = 'fixed';
+    this.renderer.setPixelRatio( window.devicePixelRatio );
 
     this.renderer.sortObjects = false;
     this.canvas = this.renderer.domElement;

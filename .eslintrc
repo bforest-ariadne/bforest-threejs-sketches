@@ -1,12 +1,12 @@
 {
-    "extends": "semistandard",
-    "globals" : {
-      "THREE": true
-    },
-    "parser": "babel-eslint",
-    "rules": {
-      "space-in-parens": 0,
-      "space-before-function-paren": 0,
-      "spaced-comment": ["error", "always", { "block": { "exceptions": ["="] } }]
-    }
+  "extends": "semistandard",
+  "globals" : {
+    "THREE": true
+  },
+  "parser": "babel-eslint",
+  "rules": {
+    "space-in-parens": 0,
+    "space-before-function-paren": 0,
+    "spaced-comment": ["error", "always", { "block": { "exceptions": ["="] } }]
+  }
 }
