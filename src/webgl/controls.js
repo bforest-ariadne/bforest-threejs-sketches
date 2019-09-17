@@ -1,16 +1,14 @@
-const { convertRange, clamp } = require('../util/utils');
-const isMobile = require('../util/isMobile.js');
+// const { convertRange, clamp } = require('../util/utils');
+// const isMobile = require('../util/isMobile.js');
 const { webgl } = require('../context');
-
 
 module.exports = class Controls {
   constructor( dolly ) {
-
     this.controlDolly = new THREE.Group();
     this.controlDolly.name = 'controlDolly';
     webgl.scene.add( this.controlDolly );
     this.domElement = webgl.canvas;
-    
+
     this.dolly = dolly;
 
     this.controls = new THREE.OrbitControls( this.controlDolly, this.domElement );
@@ -41,7 +39,7 @@ module.exports = class Controls {
       this.controlDolly.add(axis1);
     }
 
-     this.controls.activateDeviceOrientation(true);
+    this.controls.activateDeviceOrientation(true);
   }
   update () {
     this.controls.update();
@@ -56,4 +54,4 @@ module.exports = class Controls {
     q.setFromEuler(this.dollyRot);
     this.dolly.rotation.setFromQuaternion(q);
   }
-}
+};

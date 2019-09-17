@@ -2,16 +2,11 @@ const { EventEmitter } = require('events');
 const assign = require('object-assign');
 const defined = require('defined');
 const rightNow = require('right-now');
-const noop = () => {};
-// const createOrbitControls = require('orbit-controls');
+// const noop = () => {};
 const createTouches = require('touches');
 const query = require('../util/query');
-const { isDefined, isNotUndefined } = require('w-js/build/W.js');
-
-const tmpTarget = new THREE.Vector3();
 
 module.exports = class WebGLApp extends EventEmitter {
-
   constructor (opt = {}) {
     super();
     this.opt = opt;
@@ -68,7 +63,7 @@ module.exports = class WebGLApp extends EventEmitter {
     this._running = false;
     this._lastTime = rightNow();
     this._rafID = null;
-    this.dev = isDefined( query.dev ) ? query.dev : false;
+    this.dev = defined( query.dev ) ? query.dev : false;
 
     this.scene = new THREE.Scene();
 
@@ -157,7 +152,7 @@ module.exports = class WebGLApp extends EventEmitter {
 
     this.update( this.delta, nowMsec / 1000, this.frameCount );
     this.draw();
-    this.frameCount++
+    this.frameCount++;
 
     if ( this.frameCount === 10 ) this.emit('show');
   }
@@ -178,7 +173,7 @@ module.exports = class WebGLApp extends EventEmitter {
     // name objects in scenes
     for ( let child in this.scene.children ) this.nameMeshes( this.scene.children[child] );
     // name remaining unnamed obj3ds with their type
-    webgl.scene.traverse( function(c) { if(c.name === '' )c.name = c.type;  } )
+    this.scene.traverse( function(c) { if ( c.name === '' )c.name = c.type; } );
   }
 
   start () {
@@ -239,8 +234,7 @@ module.exports = class WebGLApp extends EventEmitter {
       console.log.apply(this, final);
     }
   }
-
-}
+};
 
 function dataURIToBlob (dataURI) {
   const binStr = window.atob(dataURI.split(',')[1]);

@@ -19,7 +19,6 @@ require('./vendor/DeviceOrientation+OrbitControls.js');
 
 require('three/examples/js/loaders/GLTFLoader.js');
 
-
 // ensure context is loaded before entry
 require('./context');
 

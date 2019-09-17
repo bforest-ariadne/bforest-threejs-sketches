@@ -1,13 +1,10 @@
 const SketchScene = require('./SketchScene');
 const { gui, webgl, assets } = require('../../context');
-const createOrbitControls = require('orbit-controls');
 const LiveShaderMaterial = require('shader-reload/three/LiveShaderMaterial');
 const honeyShader = require('../shaders/honey.shader');
-const assign = require('object-assign');
 const query = require('../../util/query');
 
 const name = 'honeycomb';
-const tmpTarget = new THREE.Vector3();
 
 // tell the preloader to include this asset
 // we need to define this outside of our class, otherwise
@@ -20,7 +17,6 @@ module.exports = class Honeycomb extends SketchScene {
   constructor () {
     super();
     this.name = name;
-
   }
 
   init() {
@@ -51,7 +47,7 @@ module.exports = class Honeycomb extends SketchScene {
       }
     });
 
-    for ( let child in gltfChildren ) this.add ( gltfChildren[child] ); 
+    for ( let child in gltfChildren ) this.add( gltfChildren[child] );
 
     if (gui) { // assume it can be falsey, e.g. if we strip dat-gui out of bundle
       // attach dat.gui stuff here as usual
@@ -78,7 +74,7 @@ module.exports = class Honeycomb extends SketchScene {
   }
 
   onTouchStart (ev, pos) {
-    const [ x, y ] = pos;
+    // const [ x, y ] = pos;
     // console.log('Touchstart / mousedown: (%d, %d)', x, y);
 
     // For example, raycasting is easy:

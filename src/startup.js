@@ -6,7 +6,7 @@ const query = require('./util/query');
 const defined = require('defined');
 const { TweenMax } = require( 'gsap/umd/TweenMax' );
 
-const { assets, webgl, gui } = require('./context');
+const { assets, webgl } = require('./context');
 const scenes = [ Bpose, Honeycomb, SpinningBox, SketchScene ];
 const DefaultScene = SketchScene;
 

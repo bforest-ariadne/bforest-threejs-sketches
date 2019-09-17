@@ -1,9 +1,8 @@
-const { gui, webgl, assets } = require('../../context');
+const { gui, webgl } = require('../../context');
 const createOrbitControls = require('orbit-controls');
 const defined = require('defined');
 
 const name = 'sketchScene';
-
 
 const tmpTarget = new THREE.Vector3();
 
@@ -48,7 +47,7 @@ module.exports = class SketchScene extends THREE.Object3D {
       element: webgl.canvas,
       parent: window,
       distance: 4,
-      zoom: false,
+      zoom: false
     });
   }
 
