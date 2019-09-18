@@ -62,8 +62,8 @@ module.exports = class SketchScene extends THREE.Object3D {
   }
 
   onTouchStart (ev, pos) {
-    const [ x, y ] = pos;
-    console.log('Touchstart / mousedown: (%d, %d)', x, y);
+    // const [ x, y ] = pos;
+    // console.log('Touchstart / mousedown: (%d, %d)', x, y);
   }
 
   onTouchMove (ev, pos) {

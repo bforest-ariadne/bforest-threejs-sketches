@@ -1,67 +1,24 @@
 const SketchScene = require('./SketchScene');
 const { gui, webgl, assets } = require('../../context');
-// var GyroNorm = require('gyronorm/dist/gyronorm.complete.js');
-const isMobile = require('../../util/isMobile.js');
+const { BPoseObj, bPoseObjAssets } = require('../objects/bposeObj');
 // const { convertRange, clamp } = require('../../util/utils');
-const Controls = require('../controls');
 const query = require('../../util/query');
 const name = 'bpose';
 
 if ( query.scene.toLowerCase() === name ) {
-  assets.queue({
-    url: 'assets/models/bpose1_v1.glb',
-    key: 'bpose'
-  });
-  assets.queue({
-    url: 'assets/models/bpose1_NORM.jpg',
-    key: 'normalmap',
-    texture: true
-  });
-  assets.queue({
-    url: 'assets/models/bpose1_AO.png',
-    key: 'colormap',
-    texture: true
-  });
+  for ( let i in bPoseObjAssets ) {
+    assets.queue( bPoseObjAssets[i] );
+  }
 }
-
 module.exports = class Bpose extends SketchScene {
   constructor () {
     super();
-
     this.name = name;
   }
 
   init() {
-    const self = this;
-    // now fetch the loaded resource
-    const gltf = assets.get('bpose');
-    const normalMap = assets.get('normalmap');
-    const colorMap = assets.get('colormap');
-
-    this.material = new THREE.MeshStandardMaterial({
-      map: colorMap,
-      normalMap: normalMap
-    });
-
-    this.group = new THREE.Group();
-    // this.group.position.set(0.38, -0.88, -1.18);
-    this.group.rotation.set(0, -3.5, 0);
-
-    this.add(this.group);
-    if (webgl.dev) global.group = this.group;
-
-    // Replaces all meshes material with something basic
-    gltf.scene.traverse(child => {
-      if (child.isMesh) {
-        child.material = this.material;
-        // ThreeJS attaches something odd here on GLTF ipmport
-        child.onBeforeRender = () => {};
-        child.scale.setScalar(0.2);
-
-        self.bpose = child;
-        self.group.add(child);
-      }
-    });
+    this.bpose = new BPoseObj();
+    this.add( this.bpose );
 
     const lamp = new THREE.DirectionalLight();
     lamp.position.set(-1, 0, 0);

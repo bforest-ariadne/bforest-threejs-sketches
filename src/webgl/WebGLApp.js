@@ -207,11 +207,11 @@ module.exports = class WebGLApp extends EventEmitter {
   }
 
   onTouchMove( ev, pos ) {
-    this._traverse(ev, pos);
+    this._traverse('onTouchMove', ev, pos);
   }
 
   onKeydown( ev ) {
-    this.log(ev);
+    this._traverse('onKeydown', ev);
   }
 
   _traverse = (fn, ...args) => {
