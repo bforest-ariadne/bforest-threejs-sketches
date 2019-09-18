@@ -5,7 +5,7 @@ const rightNow = require('right-now');
 // const noop = () => {};
 const createTouches = require('touches');
 const query = require('../util/query');
-const { BloomEffect, EffectComposer, EffectPass, RenderPass } = require('postprocessing');
+const { BloomEffect, EffectComposer, EffectPass, RenderPass, KernelSize, BlendFunction, SMAAEffect, BrightnessContrastEffect } = require('postprocessing');
 
 module.exports = class WebGLApp extends EventEmitter {
   constructor (opt = {}) {
@@ -19,6 +19,7 @@ module.exports = class WebGLApp extends EventEmitter {
     this.frameCount = 0;
     this.lastTimeMsec = null;
     this.loadingPage = document.getElementById('loadingPage');
+    this.assetManager = {};
 
     // really basic touch handler that propagates through the scene
     this.touchHandler = createTouches(this.viewport, {
@@ -72,21 +73,38 @@ module.exports = class WebGLApp extends EventEmitter {
 
     this.scene = new THREE.Scene();
 
-    // setup effect composer
-    this.composer = new EffectComposer( this.renderer );
-
-    const effectPass = new EffectPass(this.camera, new BloomEffect());
-    effectPass.renderToScreen = true;
-
-    this.composer.addPass(new RenderPass(this.scene, this.camera));
-    this.composer.addPass(effectPass);
-
     // handle resize events
     window.addEventListener('resize', () => this.resize());
     window.addEventListener('orientationchange', () => this.resize());
 
     // force an initial resize event
     this.resize();
+  }
+
+  initPost() {
+    // setup effect composer
+    this.composer = new EffectComposer( this.renderer );
+
+    const smaaEffect = new SMAAEffect(this.assetManager.get('smaa-search'), this.assetManager.get('smaa-area'));
+    smaaEffect.colorEdgesMaterial.setEdgeDetectionThreshold(0.05);
+
+    const bloomEffect = new BloomEffect({
+      blendFunction: BlendFunction.SCREEN,
+      kernelSize: KernelSize.MEDIUM,
+      luminanceThreshold: 0.5,
+      luminanceSmoothing: 0.00,
+      height: 480});
+
+    bloomEffect.inverted = true;
+    bloomEffect.blendMode.opacity.value = 2.3;
+
+    const brightContrastEffect = new BrightnessContrastEffect();
+
+    const effectPass = new EffectPass(this.camera, brightContrastEffect );
+    effectPass.renderToScreen = true;
+
+    this.composer.addPass(new RenderPass(this.scene, this.camera));
+    this.composer.addPass(effectPass);
   }
 
   get running () {
@@ -109,7 +127,7 @@ module.exports = class WebGLApp extends EventEmitter {
     }
 
     // setup new size & update camera aspect if necessary
-    this.renderer.setSize(width, height);
+    defined( this.composer, this.renderer ).setSize(width, height);
     if (this.camera.isPerspectiveCamera) {
       this.camera.aspect = width / height;
     }
@@ -151,8 +169,11 @@ module.exports = class WebGLApp extends EventEmitter {
   }
 
   draw () {
-    // this.renderer.render(this.scene, this.camera);
-    this.composer.render( this.delta );
+    if ( defined( this.composer ) ) {
+      this.composer.render( this.delta );
+    } else {
+      this.renderer.render(this.scene, this.camera);
+    }
     return this;
   }
 
@@ -256,6 +277,29 @@ module.exports = class WebGLApp extends EventEmitter {
         if ( obj3d[key].name === '' ) obj3d[key].name = key;
       }
     }
+  }
+  queueAssets() {
+    this.log('queueAssets');
+    this.assetManager.queue({
+      url: SMAAEffect.searchImageDataURL,
+      key: 'smaa-search',
+      img: true
+    });
+    this.assetManager.queue({
+      url: SMAAEffect.areaImageDataURL,
+      key: 'smaa-area',
+      img: true
+    });
+
+    this.assetManager.addProgressListener( progress => {
+      this.log( 'assetManager progress:', progress );
+      // this.onLoadProgress( {'manager': progress} );
+    } );
+    // this is how you would queue assets to be loaded
+    // this.assetManager.queue({
+    //   url: 'assets/audio/44/BlackShell_v2_BStem_left.mp3',
+    //   key: 'BStem_left'
+    // });
   }
 
   log() {

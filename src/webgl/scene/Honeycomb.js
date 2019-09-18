@@ -3,6 +3,8 @@ const { gui, webgl, assets } = require('../../context');
 const LiveShaderMaterial = require('shader-reload/three/LiveShaderMaterial');
 const honeyShader = require('../shaders/honey.shader');
 const query = require('../../util/query');
+// const { BloomEffect, EffectComposer, EffectPass, RenderPass, KernelSize, BlendFunction, SMAAEffect, BrightnessContrastEffect } = require('postprocessing');
+const basicBloom = require('../postProcessing/basicBloom');
 
 const name = 'honeycomb';
 
@@ -20,8 +22,10 @@ module.exports = class Honeycomb extends SketchScene {
   }
 
   init() {
+    // webgl.initPost();
     console.log( 'init', this.name );
     this.controlsInit();
+    basicBloom();
 
     // now fetch the loaded resource
     const gltf = assets.get(gltfKey);

@@ -34,6 +34,9 @@ const assets = new AssetManager({
   renderer: webgl.renderer
 });
 
+webgl.assetManager = assets;
+webgl.queueAssets();
+
 if (webgl.dev) {
   global.assets = assets;
   global.webgl = webgl;

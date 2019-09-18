@@ -11,6 +11,7 @@ const isGLTF = (ext) => /\.(gltf|glb)$/i.test(ext);
 const xhr = require('xhr');
 const path = require('path');
 const mapLimit = require('map-limit');
+const defined = require('defined');
 
 const loadTexture = require('./loadTexture');
 const loadEnvMap = require('./loadEnvMap');
@@ -142,17 +143,6 @@ class AssetManager {
       } else if (item.envMap) {
         const opts = Object.assign({renderer}, item);
         return loadEnvMap(opts, done);
-      } else if (isSVG(ext) || isImage(ext)) {
-        let ret;
-        if (item.texture) {
-          // console.log('loading texture');
-          const opts = Object.assign({renderer}, item);
-          ret = loadTexture(url, opts, done);
-        } else {
-          ret = loadImage(url, item, done);
-        }
-        cache[key] = ret;
-        return ret;
       } else if (isAudio(ext)) {
         // instead of retaining audio objects in memory
         // (which isn't super helpful) and waiting for
@@ -175,6 +165,17 @@ class AssetManager {
           if (cb) cb(null);
         });
         return;
+      } else if (isSVG(ext) || isImage(ext) || defined(item.img) ) {
+        let ret;
+        if (item.texture) {
+          // console.log('loading texture');
+          const opts = Object.assign({renderer}, item);
+          ret = loadTexture(url, opts, done);
+        } else {
+          ret = loadImage(url, item, done);
+        }
+        cache[key] = ret;
+        return ret;
       } else {
         throw new Error(`Could not load ${url}, unknown file extension!`);
       }
