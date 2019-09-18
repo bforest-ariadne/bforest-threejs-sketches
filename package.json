@@ -31,6 +31,7 @@
     "three": "^0.108.0",
     "touches": "^1.2.2",
     "w-js": "^4.50.0",
+    "webworkify": "^1.5.0",
     "xhr": "^2.4.1"
   },
   "devDependencies": {
