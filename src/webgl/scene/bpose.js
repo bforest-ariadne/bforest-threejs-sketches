@@ -3,7 +3,10 @@ const { gui, webgl, assets } = require('../../context');
 const { BPoseObj, bPoseObjAssets } = require('../objects/bposeObj');
 // const { convertRange, clamp } = require('../../util/utils');
 const query = require('../../util/query');
+const basicBloom = require('../postProcessing/basicBloom');
+
 const name = 'bpose';
+
 
 if ( query.scene.toLowerCase() === name ) {
   for ( let i in bPoseObjAssets ) {
@@ -17,6 +20,7 @@ module.exports = class Bpose extends SketchScene {
   }
 
   init() {
+    basicBloom();
     this.bpose = new BPoseObj();
     this.add( this.bpose );
 
