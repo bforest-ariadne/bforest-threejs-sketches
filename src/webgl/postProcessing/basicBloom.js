@@ -1,5 +1,5 @@
 const { BloomEffect, EffectComposer, EffectPass, RenderPass, KernelSize, BlendFunction, SMAAEffect, BrightnessContrastEffect } = require('postprocessing');
-const { gui, webgl, assets } = require('../../context');
+const { webgl, assets } = require('../../context');
 
 module.exports = function basicBloom() {
   webgl.composer = new EffectComposer( webgl.renderer );
@@ -19,7 +19,7 @@ module.exports = function basicBloom() {
 
   const brightContrastEffect = new BrightnessContrastEffect();
 
-  const effectPass = new EffectPass(webgl.camera, smaaEffect, bloomEffect );
+  const effectPass = new EffectPass(webgl.camera, smaaEffect, brightContrastEffect, bloomEffect );
   effectPass.renderToScreen = true;
 
   webgl.composer.addPass(new RenderPass(webgl.scene, webgl.camera));

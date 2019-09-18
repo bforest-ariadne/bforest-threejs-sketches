@@ -50,6 +50,6 @@ class BPoseObj extends THREE.Object3D {
       }
     });
   }
-};
+}
 
-module.exports = { BPoseObj, bPoseObjAssets }
+module.exports = { BPoseObj, bPoseObjAssets };

@@ -1,12 +1,11 @@
 const SketchScene = require('./SketchScene');
-const { gui, webgl, assets } = require('../../context');
+const { gui, /* webgl, */ assets } = require('../../context');
 const { BPoseObj, bPoseObjAssets } = require('../objects/bposeObj');
 // const { convertRange, clamp } = require('../../util/utils');
 const query = require('../../util/query');
 const basicBloom = require('../postProcessing/basicBloom');
 
-const name = 'bpose';
-
+const name = 'bpose';/*  */
 
 if ( query.scene.toLowerCase() === name ) {
   for ( let i in bPoseObjAssets ) {

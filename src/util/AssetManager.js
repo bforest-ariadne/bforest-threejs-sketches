@@ -1,7 +1,6 @@
-const noop = () => {
-};
+const noop = () => {};
 
-const webgl = require('../context'); 
+const webgl = require('../context');
 const isImage = (ext) => /\.(jpe?g|png|gif|bmp|tga|tif)$/i.test(ext);
 const isSVG = (ext) => /\.svg$/i.test(ext);
 const isAudio = (ext) => /\.(wav|mp3|ogg|mp4)$/i.test(ext);
@@ -139,7 +138,6 @@ class AssetManager {
         });
       } else if (isJSON(ext)) {
         loadJSON(url, done);
-        return;
       } else if (item.envMap) {
         const opts = Object.assign({renderer}, item);
         return loadEnvMap(opts, done);
@@ -164,7 +162,6 @@ class AssetManager {
         process.nextTick(() => {
           if (cb) cb(null);
         });
-        return;
       } else if (isSVG(ext) || isImage(ext) || defined(item.img) ) {
         let ret;
         if (item.texture) {
