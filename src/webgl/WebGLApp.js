@@ -5,6 +5,7 @@ const rightNow = require('right-now');
 // const noop = () => {};
 const createTouches = require('touches');
 const query = require('../util/query');
+const { BloomEffect, EffectComposer, EffectPass, RenderPass } = require('postprocessing');
 
 module.exports = class WebGLApp extends EventEmitter {
   constructor (opt = {}) {
@@ -15,21 +16,6 @@ module.exports = class WebGLApp extends EventEmitter {
     this.frameCount = 0;
     this.lastTimeMsec = null;
     this.loadingPage = document.getElementById('loadingPage');
-
-    this.renderer = new THREE.WebGLRenderer(assign({
-      antialias: false,
-      alpha: false,
-      // enabled for saving screen shots of the canvas,
-      // may wish to disable this for perf reasons
-      preserveDrawingBuffer: true,
-      failIfMajorPerformanceCaveat: true
-    }, opt));
-
-    this.renderer.domElement.style.position = 'fixed';
-    this.renderer.setPixelRatio( window.devicePixelRatio );
-
-    this.renderer.sortObjects = false;
-    this.canvas = this.renderer.domElement;
 
     // really basic touch handler that propagates through the scene
     this.touchHandler = createTouches(this.canvas, {
@@ -43,6 +29,19 @@ module.exports = class WebGLApp extends EventEmitter {
 
     document.addEventListener('keydown', ev => this.onKeydown(ev) );
 
+    this.renderer = new THREE.WebGLRenderer(assign({
+      antialias: false,
+      alpha: false,
+      // enabled for saving screen shots of the canvas,
+      // may wish to disable this for perf reasons
+      preserveDrawingBuffer: true,
+      failIfMajorPerformanceCaveat: true
+    }, opt));
+
+    this.renderer.domElement.style.position = 'fixed';
+    this.renderer.sortObjects = false;
+    this.canvas = this.renderer.domElement;
+
     // default background color
     const background = defined(opt.background, '#fff');
     const backgroundAlpha = defined(opt.backgroundAlpha, 1);
@@ -50,6 +49,7 @@ module.exports = class WebGLApp extends EventEmitter {
 
     // clamp pixel ratio for performance
     this.maxPixelRatio = defined(opt.maxPixelRatio, 2);
+    this.renderer.setPixelRatio( this.maxPixelRatio );
 
     // clamp delta to stepping anything too far forward
     this.maxDeltaTime = defined(opt.maxDeltaTime, 1 / 30);
@@ -68,6 +68,15 @@ module.exports = class WebGLApp extends EventEmitter {
     this.dev = defined( query.dev ) ? query.dev : false;
 
     this.scene = new THREE.Scene();
+
+    // setup effect composer
+    this.composer = new EffectComposer( this.renderer );
+
+    const effectPass = new EffectPass(this.camera, new BloomEffect());
+    effectPass.renderToScreen = true;
+
+    this.composer.addPass(new RenderPass(this.scene, this.camera));
+    this.composer.addPass(effectPass);
 
     // handle resize events
     window.addEventListener('resize', () => this.resize());
@@ -139,7 +148,8 @@ module.exports = class WebGLApp extends EventEmitter {
   }
 
   draw () {
-    this.renderer.render(this.scene, this.camera);
+    // this.renderer.render(this.scene, this.camera);
+    this.composer.render( this.delta );
     return this;
   }
 
