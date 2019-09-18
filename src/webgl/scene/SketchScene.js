@@ -44,7 +44,7 @@ module.exports = class SketchScene extends THREE.Object3D {
   controlsInit() {
     // set up a simple orbit controller
     this.controls = createOrbitControls({
-      element: webgl.canvas,
+      element: webgl.viewport,
       parent: window,
       distance: 4,
       zoom: false

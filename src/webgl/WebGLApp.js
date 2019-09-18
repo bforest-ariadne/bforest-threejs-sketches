@@ -11,6 +11,9 @@ module.exports = class WebGLApp extends EventEmitter {
   constructor (opt = {}) {
     super();
     this.opt = opt;
+    this.canvas = opt.canvas;
+    this.viewport = opt.viewport;
+    this.aside = opt.aside;
     this.query = query;
     this.clock = new THREE.Clock();
     this.frameCount = 0;
@@ -18,9 +21,9 @@ module.exports = class WebGLApp extends EventEmitter {
     this.loadingPage = document.getElementById('loadingPage');
 
     // really basic touch handler that propagates through the scene
-    this.touchHandler = createTouches(this.canvas, {
+    this.touchHandler = createTouches(this.viewport, {
       // filtered: false
-      target: this.canvas,
+      target: this.viewport,
       filtered: true
     });
     this.touchHandler.on('start', (ev, pos) => this.onTouchStart(ev, pos));
@@ -221,6 +224,10 @@ module.exports = class WebGLApp extends EventEmitter {
   }
 
   onKeydown( ev ) {
+    if ( ev.altKey && this.aside !== null ) {
+      ev.preventDefault();
+      this.aside.style.visibility = (this.aside.style.visibility === 'hidden') ? 'visible' : 'hidden';
+    }
     this._traverse('onKeydown', ev);
   }
 

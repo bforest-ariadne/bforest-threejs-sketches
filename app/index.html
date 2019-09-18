@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, shrink-to-fit=0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-  <title>test</title>
+  <meta name="viewport" content="width=device-width, shrink-to-fit=0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, initial-scale=1, viewport-fit=cover">
+  <title>BForest Three.js Sketches</title>
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
@@ -19,7 +19,28 @@
           </div>
       </div>
     </div>
-    <canvas class="main-canvas" style="display: block; position: absolute; z-index: -1000;"></canvas>
+    
+    <div role="main" id="viewport">
+      <canvas class="main-canvas" style="display: block; position: absolute; z-index: -1000;"></canvas>
+    </div>
+      
+		<div role="complementary" id="aside">
+			<div class="info">
+				<p>
+          <h3>Bforest Three.js Sketches</h3>
+					<!-- <a href="http://forums.xonotic.org/showthread.php?tid=3755">Skybox</a> by <a href="http://ingar.intranifty.net">Stijn Ingar Buys</a>
+					(<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA-3.0</a>) |
+					<a href="http://www.inscapedigital.com/lens-dirt/">Lens Dirt</a> by <a href="https://twitter.com/inscapedigital?lang=en">Javert Valbarr</a> -->
+				</p>
+				<p>
+					<!-- <a href="http://dactilardesign.deviantart.com/art/Crate-generator-342135330">Crate</a> by <a href="http://dactilardesign.deviantart.com">dactilardesign</a> |
+					<a href="https://sketchfab.com/models/fee2b59583084ae1a755a1b02133a42c">Fantasy Tree 1</a> by <a href="https://sketchfab.com/bumstrum">3DMaesen</a>
+					(<a href="https://creativecommons.org/licenses/by/4.0/">CC-BY-4.0</a>, <a title="Removed leaves and resized textures">modified</a>) -->
+				</p>
+				<p>Press ALT to hide the overlay</p>
+			</div>
+			<!-- <a href="https://github.com/vanruesc/postprocessing"><img class="github" src="github.svg" alt="Github"></a> -->
+		</div>
     <script src="bundle.js"></script>
 </body>
 </html>
