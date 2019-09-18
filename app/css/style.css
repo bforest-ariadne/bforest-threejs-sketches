@@ -7,7 +7,7 @@ body {
   margin: 0;
   overflow: hidden;
   background-color: black;
-	color: rgb(175, 170, 160);
+	color: rgb(175, 175, 175);
 	font-family: sans-serif;
 	line-height: 150%;
 }
@@ -89,7 +89,7 @@ div[role="complementary"] {
 #loading {
   /* display: block; */
   /* position: relative; */
-  color: white;
+  /* color: white; */
   /* top: 322px; */
   margin: auto;
   font-size: 2em;
@@ -135,7 +135,7 @@ div[role="complementary"] {
   top: 20px;
   left: 20px;
   border-radius: 50%;
-  box-shadow: 0 4px 0 0 #ffffff;
+  box-shadow: 0 4px 0 0 rgb(175, 175, 175);
   -webkit-transform-origin: 30px 32px;
   transform-origin: 30px 32px;
 }
