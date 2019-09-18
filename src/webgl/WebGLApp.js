@@ -37,9 +37,9 @@ module.exports = class WebGLApp extends EventEmitter {
       target: this.canvas,
       filtered: true
     });
-    this.touchHandler.on('start', (ev, pos) => this._traverse('onTouchStart', ev, pos));
-    this.touchHandler.on('end', (ev, pos) => this._traverse('onTouchEnd', ev, pos));
-    this.touchHandler.on('move', (ev, pos) => this._traverse('onTouchMove', ev, pos));
+    this.touchHandler.on('start', (ev, pos) => this.onTouchStart(ev, pos));
+    this.touchHandler.on('end', (ev, pos) => this.onTouchEnd(ev, pos));
+    this.touchHandler.on('move', (ev, pos) => this.onTouchMove(ev, pos));
 
     // default background color
     const background = defined(opt.background, '#fff');
@@ -194,6 +194,18 @@ module.exports = class WebGLApp extends EventEmitter {
     this._rafID = null;
     this._running = false;
     return this;
+  }
+
+  onTouchStart( ev, pos ) {
+    this._traverse('onTouchStart', ev, pos);
+  }
+
+  onTouchEnd( ev, pos ) {
+    this._traverse('onTouchEnd', ev, pos);
+  }
+
+  onTouchMove( ev, pos ) {
+    this._traverse(ev, pos);
   }
 
   _traverse = (fn, ...args) => {
