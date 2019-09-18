@@ -7,7 +7,7 @@ const dat = require('dat.gui');
 const gui = new dat.GUI();
 
 if (!query.gui) {
-  document.querySelector('.dg.ac').style.display = 'none';
+  document.querySelector('.dg.main.a').style.display = 'none';
 }
 
 // Grab our canvas

@@ -41,6 +41,8 @@ module.exports = class WebGLApp extends EventEmitter {
     this.touchHandler.on('end', (ev, pos) => this.onTouchEnd(ev, pos));
     this.touchHandler.on('move', (ev, pos) => this.onTouchMove(ev, pos));
 
+    document.addEventListener('keydown', ev => this.onKeydown(ev) );
+
     // default background color
     const background = defined(opt.background, '#fff');
     const backgroundAlpha = defined(opt.backgroundAlpha, 1);
@@ -206,6 +208,10 @@ module.exports = class WebGLApp extends EventEmitter {
 
   onTouchMove( ev, pos ) {
     this._traverse(ev, pos);
+  }
+
+  onKeydown( ev ) {
+    this.log(ev);
   }
 
   _traverse = (fn, ...args) => {
