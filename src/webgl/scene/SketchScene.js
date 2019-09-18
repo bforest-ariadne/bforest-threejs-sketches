@@ -1,6 +1,8 @@
 const { gui, webgl } = require('../../context');
 const createOrbitControls = require('orbit-controls');
 const defined = require('defined');
+const basicSMAA = require('../postProcessing/basicSMAA');
+
 
 const name = 'sketchScene';
 
@@ -25,6 +27,7 @@ module.exports = class SketchScene extends THREE.Object3D {
 
   init() {
     this.controlsInit();
+    basicSMAA();
     this.mesh = new THREE.Mesh(
       new THREE.BoxGeometry(1, 1, 1),
       new THREE.MeshBasicMaterial({

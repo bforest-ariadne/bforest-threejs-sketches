@@ -38,7 +38,7 @@ module.exports = function () {
     let found = false;
     for ( let i in scenes ) {
       let sceneName = scenes[i].name.toLowerCase();
-      let queryName = defined( query.scene, false ).toLowerCase();
+      let queryName = defined( query.scene, '' ).toLowerCase();
       if ( sceneName === queryName ) {
         webgl.scene.add( new scenes[i]() );
         found = true;

@@ -4,10 +4,11 @@ const { BPoseObj, bPoseObjAssets } = require('../objects/bposeObj');
 // const { convertRange, clamp } = require('../../util/utils');
 const query = require('../../util/query');
 const basicBloom = require('../postProcessing/basicBloom');
+const defined = require('defined');
 
 const name = 'bpose';/*  */
 
-if ( query.scene.toLowerCase() === name ) {
+if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
   for ( let i in bPoseObjAssets ) {
     assets.queue( bPoseObjAssets[i] );
   }

@@ -2,16 +2,17 @@ const WebGLApp = require('./webgl/WebGLApp');
 const AssetManager = require('./util/AssetManager');
 const query = require('./util/query');
 const dat = require('dat.gui');
+const defined = require('defined');
 
 const viewport = document.getElementById('viewport');
 const aside = document.getElementById('aside');
 // Setup dat.gui
-const gui = new dat.GUI({ autoPlace: false });
+const gui = new dat.GUI({ 
+  autoPlace: false,
+  closed: true,
+  hideable: true
+});
 aside.appendChild(gui.domElement);
-
-if (!query.gui) {
-  document.querySelector('.dg.main.a').style.display = 'none';
-}
 
 // Grab our canvas
 const canvas = document.querySelector('.main-canvas');
@@ -24,9 +25,15 @@ const webgl = new WebGLApp({
 });
 
 // setup dev mode
-if (query.dev) {
+if ( defined(query.dev) ) {
   console.log('dev mode');
   webgl.setDev(true);
+  global.gui = gui;
+}
+
+if ( !defined(query.gui, false) ) {
+  // document.querySelector('.dg.main.a').style.display = 'none';
+  gui.hide();
 }
 
 // Setup an asset manager

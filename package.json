@@ -13,7 +13,7 @@
   "dependencies": {
     "@hughsk/fulltilt": "^0.7.1",
     "clamp": "^1.0.1",
-    "dat.gui": "^0.7.0",
+    "dat.gui": "^0.7.6",
     "defined": "^1.0.0",
     "glslify-hex": "^2.1.1",
     "gsap": "^2.0.1",
