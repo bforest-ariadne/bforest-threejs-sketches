@@ -43,21 +43,21 @@ module.exports = class WebGLApp extends EventEmitter {
 
     this.renderer = new THREE.WebGLRenderer(assign({
       antialias: false,
-      alpha: false,
-      // enabled for saving screen shots of the canvas,
-      // may wish to disable this for perf reasons
-      preserveDrawingBuffer: true,
-      failIfMajorPerformanceCaveat: true
+      // alpha: false,
+      // // enabled for saving screen shots of the canvas,
+      // // may wish to disable this for perf reasons
+      // preserveDrawingBuffer: false,
+      // failIfMajorPerformanceCaveat: true
     }, opt));
 
     this.renderer.domElement.style.position = 'fixed';
-    this.renderer.sortObjects = false;
+    // this.renderer.sortObjects = false;
     this.canvas = this.renderer.domElement;
 
     // default background color
-    const background = defined(opt.background, '#fff');
+    const background = defined(opt.background, '#000');
     const backgroundAlpha = defined(opt.backgroundAlpha, 1);
-    this.renderer.setClearColor(background, backgroundAlpha);
+    // this.renderer.setClearColor(background, backgroundAlpha);
 
     // clamp pixel ratio for performance
     this.maxPixelRatio = defined(opt.maxPixelRatio, 2);

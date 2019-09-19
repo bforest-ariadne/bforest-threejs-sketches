@@ -1,6 +1,24 @@
 const SketchScene = require('./SketchScene');
-const { webgl } = require('../../context');
+const { webgl, assets } = require('../../context');
+const basicFeedback = require('../postProcessing/basicFeedback');
+const query = require('../../util/query');
+const defined = require('defined');
+
 const name = 'feedbacktest';
+
+const path = 'https://vanruesc.github.io/postprocessing/public/demo/textures/skies/space3/';
+const format = '.jpg';
+const names = [ 'px', 'nx', 'py', 'ny', 'pz', 'nz' ];
+let urls = [];
+
+for ( let i in names ) {
+  urls[i] = names[i] + format;
+}
+
+var loader = new THREE.CubeTextureLoader();
+loader.setPath( path );
+
+var textureCube = loader.load( urls );
 
 module.exports = class FeedbackTest extends SketchScene {
   constructor () {
@@ -12,7 +30,9 @@ module.exports = class FeedbackTest extends SketchScene {
     this.controls.position = [ 0, 0, 20 ];
 
     webgl.scene.fog = new THREE.FogExp2(0x000000, 0.025);
+    webgl.scene.background = textureCube;
     webgl.renderer.setClearColor( webgl.scene.fog.color, 1);
+    basicFeedback();
 
     // Lights.
 
