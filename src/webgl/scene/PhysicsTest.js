@@ -20,6 +20,14 @@ module.exports = class PhysicsTest extends SketchScene {
 
     const physics = webgl.physics;
 
+    this.ball = new THREE.Mesh(
+      new THREE.SphereBufferGeometry( 0.1, 20, 20 ),
+      new THREE.MeshStandardMaterial()
+    );
+    this.ball.position.y = 1;
+    this.add( this.ball );
+    physics.aniMeshes.push( this.ball );
+
     this.ground = new THREE.Mesh(
       new THREE.PlaneBufferGeometry( 10, 10, 5, 5 ),
       new THREE.MeshStandardMaterial()
@@ -35,17 +43,14 @@ module.exports = class PhysicsTest extends SketchScene {
     this.add( this.box );
     physics.meshes.push( this.box );
 
-    this.ball = new THREE.Mesh(
-      new THREE.SphereBufferGeometry( 0.1, 20, 20 ),
-      new THREE.MeshStandardMaterial()
-    );
-    this.ball.position.y = 1;
-    this.add( this.ball );
-    physics.aniMeshes.push( this.ball );
+
+
+    const ambientLight = new THREE.AmbientLight();
+    this.add( ambientLight );
 
   }
   update (dt = 0) {
     super.update();
-    this.rotation.x += dt * 0.1;
+    // this.rotation.x += dt * 0.1;
   }
 };

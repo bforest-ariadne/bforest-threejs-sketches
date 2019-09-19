@@ -1,9 +1,5 @@
-// import * as THREE from 'three';
-// import * as CANNON from './vendor/cannon.js';
-const CANNON = require('../../vendor/cannon.js');
+const CANNON = require('../../vendor/cannon');
 const SimulationSceneTest = require( '../scene/simulationSceneTest' );
-// const SimSceneA = require( './scenes/simSceneA' );
-// const SimSceneB = require( './scenes/simSceneB' );
 const defined = require('defined');
 
 module.exports = function ( self ) {
@@ -50,25 +46,25 @@ module.exports = function ( self ) {
     sPositionsArray = e.data.sPositionsArray;
     sQuaternionsArray = e.data.sQuaternionsArray;
 
-    let side = e.data.side;
-    if ( side === 'test' ) {
+    let scene = e.data.scene;
+    if ( scene === 'test' ) {
       scene = new SimulationSceneTest({
         bodies: bodies,
         aniBodies: aniBodies,
         world: world
       });
-    } else if ( side === sideB ) {
-      scene = new SimSceneB({
-        bodies: bodies,
-        aniBodies: aniBodies,
-        world: world
-      });
+    } else if ( scene === sideB ) {
+      // scene = new SimSceneB({
+      //   bodies: bodies,
+      //   aniBodies: aniBodies,
+      //   world: world
+      // });
     } else {
-      scene = new SimSceneA({
-        bodies: bodies,
-        aniBodies: aniBodies,
-        world: world
-      });
+      // scene = new SimSceneA({
+      //   bodies: bodies,
+      //   aniBodies: aniBodies,
+      //   world: world
+      // });
     }
 
     scene.onMessage( e );

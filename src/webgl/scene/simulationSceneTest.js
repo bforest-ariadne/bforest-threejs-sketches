@@ -1,5 +1,5 @@
 const { EventEmitter } = require('events');
-const CANNON = require('../vendor/cannon.js');
+const CANNON = require('../../vendor/cannon.js');
 
 module.exports = class SimulationSceneTest extends EventEmitter {
   constructor( opt = {} ) {
