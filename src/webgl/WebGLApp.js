@@ -24,9 +24,10 @@ module.exports = class WebGLApp extends EventEmitter {
     this.assetManager = {};
     this.onRenderFcts = [];
     this.sceneName = 'test';
-    this.physicsReady = false;
+    this.physicsReady = true;
     this.onReady = noop;
     this.ready = false;
+    this.shown = false;
 
     // really basic touch handler that propagates through the scene
     this.touchHandler = createTouches(this.viewport, {
@@ -80,6 +81,13 @@ module.exports = class WebGLApp extends EventEmitter {
 
     this.scene = new THREE.Scene();
 
+    this.on( 'show', () => {
+      this.shown = true;
+      if ( this.dev ) {
+        this.log( 'shown at frame ', this.frameCount );
+      }
+    });
+
     // handle resize events
     window.addEventListener('resize', () => this.resize());
     window.addEventListener('orientationchange', () => this.resize());
@@ -90,6 +98,7 @@ module.exports = class WebGLApp extends EventEmitter {
 
   initPhysics() {
     // init physics
+    this.physicsReady = false;
     this.physics = new Physics( this, {
       onReady: () => {
         this.physicsReady = true;
@@ -143,7 +152,13 @@ module.exports = class WebGLApp extends EventEmitter {
     this.draw();
     this.frameCount++;
 
-    if ( this.frameCount === 10 ) this.emit('show');
+    if ( this._checkReady() ) this.emit('show');
+  }
+
+  _checkReady() {
+    // this.log('checkready');
+    if ( this.dev && !this.shown ) this.log('frame', this.frameCount);
+    return !this.shown && this.frameCount > 10 && this.physicsReady;
   }
 
   debug() {
@@ -166,7 +181,7 @@ module.exports = class WebGLApp extends EventEmitter {
   }
 
   start () {
-    this.log('app start', 'physics ready', this.physicsReady );
+    this.log( 'app start' );
     if ( this.dev && this.frameCount === 0 ) {
       this.debug();
     }
@@ -248,6 +263,15 @@ module.exports = class WebGLApp extends EventEmitter {
       ev.preventDefault();
       this.aside.style.visibility = (this.aside.style.visibility === 'hidden') ? 'visible' : 'hidden';
     }
+    // dev key commands
+    if ( this.dev ) {
+      // this.log( ev );
+      // toggle app run with space
+      if ( ev.keyCode === 32 && !ev.shiftKey ) {
+        if ( this.running ) { this.stop(); } else { this.start(); }
+      }
+    }
+
     this._traverse('onKeydown', ev);
   }
 
