@@ -12,6 +12,7 @@ module.exports = class SketchScene extends THREE.Object3D {
     super();
     this.name = defined( sceneName, name );
     webgl.sceneObj = this;
+    webgl.sceneName = this.name;
 
     this.dev = webgl.dev;
     this.debugGlobals = [];

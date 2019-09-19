@@ -1,5 +1,5 @@
 const CANNON = require('../../vendor/cannon');
-const SimulationSceneTest = require( '../scene/simulationSceneTest' );
+const PhysicsTestSim = require( '../scene/PhysicsTest-sim' );
 const defined = require('defined');
 
 module.exports = function ( self ) {
@@ -42,15 +42,15 @@ module.exports = function ( self ) {
     sQuaternionsArray = e.data.sQuaternionsArray;
 
     let scene = e.data.scene;
-    if ( scene === 'test' ) {
-      scene = new SimulationSceneTest({
+    if ( scene === 'physicstest' ) {
+      scene = new PhysicsTestSim({
         bodies: bodies,
         aniBodies: aniBodies,
         world: world
       });
     } else {
       // TODO: put empty scene here
-      scene = new SimulationSceneTest({
+      scene = new PhysicsTestSim({
         bodies: bodies,
         aniBodies: aniBodies,
         world: world

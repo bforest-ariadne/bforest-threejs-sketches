@@ -1,7 +1,7 @@
 const { EventEmitter } = require('events');
 const CANNON = require('../../vendor/cannon.js');
 
-module.exports = class SimulationSceneTest extends EventEmitter {
+module.exports = class PhysicsTestSim extends EventEmitter {
   constructor( opt = {} ) {
     super();
 
@@ -9,7 +9,7 @@ module.exports = class SimulationSceneTest extends EventEmitter {
     this.aniBodies = opt.aniBodies;
     this.world = opt.world;
 
-    this.name = 'testScene';
+    this.name = 'physicstest';
     this.step = 0;
     this.ready = false;
     this.testVec = new CANNON.Vec3();

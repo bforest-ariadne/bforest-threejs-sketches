@@ -156,9 +156,8 @@ module.exports = class WebGLApp extends EventEmitter {
   }
 
   _checkReady() {
-    // this.log('checkready');
-    if ( this.dev && !this.shown ) this.log('frame', this.frameCount);
-    return !this.shown && this.frameCount > 10 && this.physicsReady;
+    // if ( this.dev && !this.shown ) this.log('frame', this.frameCount);
+    return !this.shown && this.frameCount > 1 && this.physicsReady;
   }
 
   debug() {

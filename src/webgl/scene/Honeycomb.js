@@ -16,8 +16,7 @@ const gltfKey = query.scene === name ? assets.queue({
 
 module.exports = class Honeycomb extends SketchScene {
   constructor () {
-    super();
-    this.name = name;
+    super(name);
   }
 
   init() {

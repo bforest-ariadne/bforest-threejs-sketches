@@ -3,12 +3,13 @@ const SpinningBox = require('./webgl/scene/SpinningBox');
 const Bpose = require('./webgl/scene/bpose');
 const SketchScene = require('./webgl/scene/SketchScene');
 const PhysicsTest = require('./webgl/scene/PhysicsTest');
+const FeedbackTest = require('./webgl/scene/FeedbackTest')
 const query = require('./util/query');
 const defined = require('defined');
 const { TweenMax } = require( 'gsap/umd/TweenMax' );
 
 const { assets, webgl } = require('./context');
-const scenes = [ Bpose, Honeycomb, SpinningBox, SketchScene, PhysicsTest ];
+const scenes = [ Bpose, Honeycomb, SpinningBox, SketchScene, PhysicsTest, FeedbackTest ];
 const DefaultScene = SketchScene;
 
 module.exports = function () {

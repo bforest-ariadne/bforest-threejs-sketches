@@ -3,8 +3,7 @@ const name = 'spinningbox';
 
 module.exports = class SpinningBox extends SketchScene {
   constructor () {
-    super();
-    this.name = name;
+    super(name);
   }
   init() {
     this.controlsInit();

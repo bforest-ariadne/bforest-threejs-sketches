@@ -7,7 +7,6 @@ const name = 'physicstest';
 module.exports = class PhysicsTest extends SketchScene {
   constructor () {
     super( name );
-    // this.name = name;
   }
   init() {
     webgl.initPhysics();

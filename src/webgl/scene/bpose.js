@@ -15,8 +15,7 @@ if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
 }
 module.exports = class Bpose extends SketchScene {
   constructor () {
-    super();
-    this.name = name;
+    super(name);
   }
 
   init() {
