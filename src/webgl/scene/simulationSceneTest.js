@@ -62,7 +62,7 @@ module.exports = class SimulationSceneTest extends EventEmitter {
       sleepSpeedLimit: 0.001
     });
     this.boxBody.addShape( boxShape );
-    this.boxBody.position.set(0, 1.0, 0.3);
+    this.boxBody.position.set(0, 2.0, 0.3);
     // this.boxBody.velocity.set(10000, 0,0);
     this.world.addBody( this.boxBody );
     this.bodies.push( this.boxBody );

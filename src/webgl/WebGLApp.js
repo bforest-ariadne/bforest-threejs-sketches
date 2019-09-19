@@ -76,6 +76,15 @@ module.exports = class WebGLApp extends EventEmitter {
 
     this.scene = new THREE.Scene();
 
+    // handle resize events
+    window.addEventListener('resize', () => this.resize());
+    window.addEventListener('orientationchange', () => this.resize());
+
+    // force an initial resize event
+    this.resize();
+  }
+
+  initPhysics() {
     // init physics
     this.physics = new Physics( this, {
       onReady: () => {
@@ -85,13 +94,6 @@ module.exports = class WebGLApp extends EventEmitter {
         });
       }
     });
-
-    // handle resize events
-    window.addEventListener('resize', () => this.resize());
-    window.addEventListener('orientationchange', () => this.resize());
-
-    // force an initial resize event
-    this.resize();
   }
 
   initPost() {

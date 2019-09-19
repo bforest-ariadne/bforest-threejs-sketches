@@ -3,14 +3,14 @@ const createOrbitControls = require('orbit-controls');
 const defined = require('defined');
 const basicSMAA = require('../postProcessing/basicSMAA');
 
-const name = 'sketchScene';
+let name = 'sketchScene';
 
 const tmpTarget = new THREE.Vector3();
 
 module.exports = class SketchScene extends THREE.Object3D {
-  constructor () {
+  constructor ( sceneName ) {
     super();
-    this.name = name;
+    this.name = defined( sceneName, name );
     webgl.sceneObj = this;
 
     this.debugGlobals = [];
@@ -49,7 +49,7 @@ module.exports = class SketchScene extends THREE.Object3D {
       element: webgl.viewport,
       parent: window,
       distance: 4,
-      zoom: false
+      zoom: true
     });
   }
 

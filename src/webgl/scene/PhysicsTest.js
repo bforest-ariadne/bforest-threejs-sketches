@@ -1,24 +1,24 @@
 const SketchScene = require('./SketchScene');
 const { webgl } = require('../../context');
+const basicSMAA = require('../postProcessing/basicSMAA');
 
 const name = 'physicstest';
 
 module.exports = class PhysicsTest extends SketchScene {
   constructor () {
-    super();
-    this.name = name;
+    super( name );
+    // this.name = name;
   }
   init() {
+    webgl.initPhysics();
     this.controlsInit();
+    this.controls.position = [ 0, 1, 5 ];
+    basicSMAA();
+
     console.log('init', this.name );
-    // this.add(new THREE.Mesh(
-    //   new THREE.BoxGeometry(1, 1, 1),
-    //   new THREE.MeshBasicMaterial({
-    //     wireframe: true, color: 'yellow'
-    //   })
-    // ));
 
     const physics = webgl.physics;
+    this.R = 0.5;
 
     this.ball = new THREE.Mesh(
       new THREE.SphereBufferGeometry( 0.1, 20, 20 ),
@@ -33,6 +33,7 @@ module.exports = class PhysicsTest extends SketchScene {
       new THREE.MeshStandardMaterial()
     );
     this.ground.position.y = 0;
+    this.ground.rotation.x = -Math.PI / 2;
     this.add( this.ground );
     physics.aniMeshes.push( this.ground );
 
@@ -43,14 +44,14 @@ module.exports = class PhysicsTest extends SketchScene {
     this.add( this.box );
     physics.meshes.push( this.box );
 
-
-
-    const ambientLight = new THREE.AmbientLight();
-    this.add( ambientLight );
-
+    const dLight = new THREE.DirectionalLight();
+    dLight.position.set( -1, 1, 2 );
+    this.add( dLight );
   }
-  update (dt = 0) {
+
+  update (delta = 0, now = 0, frame = 0) {
     super.update();
+    this.ball.position.set( this.R * Math.sin( now  ), 1, this.R * Math.cos( now ) );
     // this.rotation.x += dt * 0.1;
   }
 };
