@@ -43,8 +43,8 @@ module.exports = class SimulationSceneTest extends EventEmitter {
     });
     sphereBody.addShape(sphereShape);
     sphereBody.position.set(0, 0, 0);
-    // this.world.addBody(sphereBody);
-    // this.aniBodies.push( sphereBody );
+    this.world.addBody(sphereBody);
+    this.aniBodies.push( sphereBody );
 
     // Ground plane
     var plane = new CANNON.Plane();
@@ -66,32 +66,6 @@ module.exports = class SimulationSceneTest extends EventEmitter {
     // this.boxBody.velocity.set(10000, 0,0);
     this.world.addBody( this.boxBody );
     this.bodies.push( this.boxBody );
-
-    // create hole
-    let radius = 0.85;
-    let height1 = 2;
-    let holeBody = new CANNON.Body({ mass: 0 });
-    let wallShape = new CANNON.Box( new CANNON.Vec3( radius, height1 * 0.5, radius * 0.1 * 0.5 ) );
-    let wallPos1 = new CANNON.Vec3( 0, -2, radius );
-    // holeBody.addShape( wallShape, wallPos1 );
-
-    // wall bodies for debuggin position
-    let wallBody0 = createWallBody(radius, (height1 * 0.5), (radius * 0.1 * 0.5), 0, (-0.5 * height1), radius );
-    let wallBody1 = createWallBody(radius, (height1 * 0.5), (radius * 0.1 * 0.5), 0, (-0.5 * height1), -1 * radius );
-    let wallBody2 = createWallBody( (radius * 0.1 * 0.5), (height1 * 0.5), radius, radius, (-0.5 * height1), 0 );
-    let wallBody3 = createWallBody( (radius * 0.1 * 0.5), (height1 * 0.5), radius, -1 * radius, (-0.5 * height1), 0 );
-
-    function createWallBody( sizeX, sizeY, sizeZ, posX, posY, posZ ) {
-      let shape = new CANNON.Box( new CANNON.Vec3( sizeX, sizeY, sizeZ ) );
-      let wallBody = new CANNON.Body( {
-        mass: 0,
-        shape: shape,
-        position: new CANNON.Vec3( posX, posY, posZ )
-      } );
-      _this.world.addBody( wallBody );
-      _this.bodies.push( wallBody );
-      return wallBody;
-    }
 
     this.ready = true;
   }

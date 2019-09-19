@@ -2,7 +2,7 @@ var work = require('webworkify');
 // const query = require('./util/query');
 
 module.exports = class Physics {
-  constructor( app, {
+  constructor( webgl, {
     rS,
     // max number of kinematic meshes
     Nmesh = 10,
@@ -155,8 +155,8 @@ module.exports = class Physics {
         clothSize: clothSize,
         clothMass: clothMass,
         init: true,
-        dev: app.dev,
-        side: app.side,
+        dev: webgl.dev,
+        scene: webgl.sceneName,
         positionsArray: positionsArray,
         quaternionsArray: quaternionsArray,
         particlesArray: particlesArray,

@@ -1,9 +1,9 @@
 // import * as THREE from 'three';
 // import * as CANNON from './vendor/cannon.js';
-const CANNON = require('./vendor/cannon.js');
-const SimulationSceneTest = require( './scenes/simulationSceneTest' );
-const SimSceneA = require( './scenes/simSceneA' );
-const SimSceneB = require( './scenes/simSceneB' );
+const CANNON = require('../../vendor/cannon.js');
+const SimulationSceneTest = require( '../scene/simulationSceneTest' );
+// const SimSceneA = require( './scenes/simSceneA' );
+// const SimSceneB = require( './scenes/simSceneB' );
 const defined = require('defined');
 
 module.exports = function ( self ) {

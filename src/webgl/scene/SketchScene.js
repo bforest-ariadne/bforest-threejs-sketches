@@ -3,7 +3,6 @@ const createOrbitControls = require('orbit-controls');
 const defined = require('defined');
 const basicSMAA = require('../postProcessing/basicSMAA');
 
-
 const name = 'sketchScene';
 
 const tmpTarget = new THREE.Vector3();

@@ -10,8 +10,11 @@ const aside = document.getElementById('aside');
 const gui = new dat.GUI({ 
   autoPlace: false,
   closed: true,
-  hideable: true
+  hideable: true,
+  resizable: true,
+  scrollable: true
 });
+
 aside.appendChild(gui.domElement);
 
 // Grab our canvas

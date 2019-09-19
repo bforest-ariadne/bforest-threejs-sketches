@@ -5,6 +5,7 @@ const rightNow = require('right-now');
 // const noop = () => {};
 const createTouches = require('touches');
 const query = require('../util/query');
+const Physics = require('./physics/physics-interface');
 const { BloomEffect, EffectComposer, EffectPass, RenderPass, KernelSize, BlendFunction, SMAAEffect, BrightnessContrastEffect } = require('postprocessing');
 
 module.exports = class WebGLApp extends EventEmitter {
@@ -20,6 +21,8 @@ module.exports = class WebGLApp extends EventEmitter {
     this.lastTimeMsec = null;
     this.loadingPage = document.getElementById('loadingPage');
     this.assetManager = {};
+    this.onRenderFcts = [];
+    this.sceneName = 'test';
 
     // really basic touch handler that propagates through the scene
     this.touchHandler = createTouches(this.viewport, {
@@ -72,6 +75,16 @@ module.exports = class WebGLApp extends EventEmitter {
     this.dev = defined( query.dev ) ? query.dev : false;
 
     this.scene = new THREE.Scene();
+
+    // init physics
+    this.physics = new Physics( this, {
+      onReady: () => {
+        this.onRenderFcts.push( (delta, now, frameCount) => {
+          this.physics.update( delta );
+          // this.glStats.set( 'cannon', 1 / ( this.physics.cannonFrame / 1000 ) );
+        });
+      }
+    });
 
     // handle resize events
     window.addEventListener('resize', () => this.resize());
@@ -157,11 +170,16 @@ module.exports = class WebGLApp extends EventEmitter {
     saveDataURI(file, dataURI);
   }
 
-  update (dt = 0, time = 0) {
+  update (delta = 0, now = 0, frame = 0) {
     // recursively tell all child objects to update
+
+    this.onRenderFcts.forEach( ( onRenderFct ) => {
+      onRenderFct( delta, now, frame );
+    } );
+
     this.scene.traverse(obj => {
       if (typeof obj.update === 'function') {
-        obj.update(dt, time);
+        obj.update(delta, now, frame);
       }
     });
 
