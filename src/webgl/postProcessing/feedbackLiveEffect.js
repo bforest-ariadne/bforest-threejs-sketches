@@ -1,10 +1,10 @@
 // ported from https://jsfiddle.net/2awLpf5u/1/ https://github.com/vanruesc/postprocessing/issues/145
 
 const PP = require('postprocessing');
-const FeedbackMaterial = require('../materials/feedbackMaterial');
+// const FeedbackMaterial = require('../materials/feedbackMaterial');
 const LiveFeedbackMaterial = require('../materials/liveFeedbackMaterial');
 
-module.exports = class FeedbackEffect extends PP.TextureEffect {
+module.exports = class FeedbackLiveEffect extends PP.TextureEffect {
   constructor({ blendFunction = PP.BlendFunction.NORMAL, mixAmount = 0.01, live = true } = {}) {
     super({ blendFunction });
 
@@ -47,25 +47,22 @@ module.exports = class FeedbackEffect extends PP.TextureEffect {
      * @private
      */
 
-    if ( live ) {
-      this.feedbackPass = new PP.ShaderPass(
-        new LiveFeedbackMaterial(this.renderTarget1.texture, mixAmount)
-      );
-    } else {
-      this.feedbackPass = new PP.ShaderPass(
-        new FeedbackMaterial(this.renderTarget1.texture, mixAmount)
-      );
-    }
-    // this.feedbackPass = new PP.ShaderPass(
-    //   new FeedbackMaterial(this.renderTarget1.texture, mixAmount)
-    // );
+    // if ( live ) {
+    //   this.feedbackPass = new PP.ShaderPass(
+    //     new LiveFeedbackMaterial(this.renderTarget1.texture, mixAmount)
+    //   );
+    // } else {
+    //   this.feedbackPass = new PP.ShaderPass(
+    //     new FeedbackMaterial(this.renderTarget1.texture, mixAmount)
+    //   );
+    // }
+    this.feedbackPass = new PP.ShaderPass(
+      new LiveFeedbackMaterial(this.renderTarget1.texture, mixAmount)
+    );
 
     this.feedbackMaterial.mixAmount = mixAmount;
-    this.feedbackMaterial.iResolution.set( window.innerWidth, window.innerHeight );
-    this.feedbackMaterial.iTime = 0.0;
-    this.feedbackMaterial.uniform1 = 0.0;
-    this.feedbackMaterial.uniform2 = 0.0;
-    this.feedbackMaterial.uniform3 = 0.0;
+
+
   }
 
   /**
@@ -77,7 +74,6 @@ module.exports = class FeedbackEffect extends PP.TextureEffect {
    */
 
   update(renderer, inputBuffer, deltaTime) {
-    // this.feedbackMaterial.iTime += deltaTime;
     // The render targets get swapped each frame.
     const feedbackMaterial = this.feedbackPass.getFullscreenMaterial();
     feedbackMaterial.uniforms.feedbackBuffer.value = this.renderTarget1.texture;
@@ -107,7 +103,6 @@ module.exports = class FeedbackEffect extends PP.TextureEffect {
   setSize(width, height) {
     this.renderTarget0.setSize(width, height);
     this.renderTarget1.setSize(width, height);
-    this.feedbackMaterial.iResolution.set( width, height, 0.0);
   }
   /**
    * The luminance material.

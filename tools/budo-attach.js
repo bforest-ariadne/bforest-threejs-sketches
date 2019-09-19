@@ -12,6 +12,7 @@ module.exports = function budoAttach (budoApp) {
     .on('watch', (e, file) => {
       // Regular CSS/HTML reload for budo
       const ext = path.extname(file);
+      console.log('changed', ext);
       if (ext && /\.(css|html?)$/i.test(ext)) {
         budoApp.reload(file);
       }
@@ -28,13 +29,16 @@ module.exports = function budoAttach (budoApp) {
       }
     })
     .on('update', function (src, deps) {
+      console.log('update',  deps );
       if (wss && reloader.isShaderReload(deps)) {
+        console.log('is shader reload');
         // Shader reload event, send the message data
         const event = JSON.stringify(reloader.getEvent(deps));
         wss.clients.forEach(client => {
           client.send(event);
         });
       } else {
+        console.log('regular js');
         // Regular JS file reload
         budoApp.reload();
       }
