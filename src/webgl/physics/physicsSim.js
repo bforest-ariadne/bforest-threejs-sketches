@@ -19,17 +19,12 @@ module.exports = function ( self ) {
   var cannonFrame;
   let dev = false;
   self.this = this;
-
-  // eslint-disable-next-line no-unused-vars
-  const sideA = 'a';
-  const sideB = 'b';
-
   var scene;
 
   var sPositionsArray, sQuaternionsArray, positionsArray, quaternionsArray, particlesArray;
 
   function init(e) {
-    console.log('workerInit');
+    log('workerInit');
     dev = e.data.dev;
     self.dev = dev;
 
@@ -53,18 +48,13 @@ module.exports = function ( self ) {
         aniBodies: aniBodies,
         world: world
       });
-    } else if ( scene === sideB ) {
-      // scene = new SimSceneB({
-      //   bodies: bodies,
-      //   aniBodies: aniBodies,
-      //   world: world
-      // });
     } else {
-      // scene = new SimSceneA({
-      //   bodies: bodies,
-      //   aniBodies: aniBodies,
-      //   world: world
-      // });
+      // TODO: put empty scene here
+      scene = new SimulationSceneTest({
+        bodies: bodies,
+        aniBodies: aniBodies,
+        world: world
+      });
     }
 
     scene.onMessage( e );
@@ -92,11 +82,10 @@ module.exports = function ( self ) {
       sPositionsArray = e.data.sPositionsArray;
       sQuaternionsArray = e.data.sQuaternionsArray;
     } else {
-      console.log('worker first frame');
+      log('worker first frame');
     }
 
     // replace values in the pos and quat array with world updated pos and quat
-    // console.log("bodies", bodies);
     for (let i = 0; i !== bodies.length; i++) {
       let b = bodies[i];
       let p = b.position;
@@ -169,9 +158,19 @@ module.exports = function ( self ) {
     global.scene = scene;
   }
 
-  self.onmessage = function(e) {
-    // console.log("workerMessage Received: ", e.data);
+  function log() {
+    // logging for debug only
+    if ( self.dev ) {
+      const css = 'background: #00ffff;';
+      const text = ' ';
+      let cssArray = ['%c '.concat(text), css];
+      var args = Array.prototype.slice.call(arguments);
+      let final = cssArray.concat(args);
+      console.log.apply(this, final);
+    }
+  }
 
+  self.onmessage = function(e) {
     // if world pause received, pause the works
     if (e.data.worldPause) {
       worldPause = true;
@@ -183,16 +182,14 @@ module.exports = function ( self ) {
     }
 
     if (e.data.worldBodies) {
-      console.log('world.bodies: ', world.bodies);
+      log('world.bodies: ', world.bodies);
     }
     if (e.data.clothDamp) {
-      // console.log("clothDamp: ", e.data.clothDamp);
       for (let i in particles) {
         particles[i].linearDamping = e.data.clothDamp;
       }
     }
     if (e.data.clothMassUpdate) {
-      // console.log("clothDamp: ", e.data.clothDamp);
       for (let i in particles) {
         particles[i].mass = e.data.clothMass;
         particles[i].updateMassProperties();
@@ -201,7 +198,7 @@ module.exports = function ( self ) {
 
     if (e.data.worldBodiesPos) {
       for (let i in world.bodies) {
-        console.log('world.bodies: ', i, world.bodies[i].position);
+        log('world.bodies: ', i, world.bodies[i].position);
       }
     }
 

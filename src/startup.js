@@ -22,8 +22,6 @@ module.exports = function () {
 
   // Preload any queued assets
   assets.loadQueued(() => {
-    console.log('Done loading');
-
     webgl.on( 'show', () => {
       // Show canvas
       webgl.canvas.style.visibility = '';

@@ -14,6 +14,7 @@ module.exports = class SimulationSceneTest extends EventEmitter {
     this.ready = false;
     this.testVec = new CANNON.Vec3();
 
+    // eslint-disable-next-line no-unused-vars
     var _this = this;
 
     // Contact Materials

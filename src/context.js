@@ -6,8 +6,9 @@ const defined = require('defined');
 
 const viewport = document.getElementById('viewport');
 const aside = document.getElementById('aside');
+
 // Setup dat.gui
-const gui = new dat.GUI({ 
+const gui = new dat.GUI({
   autoPlace: false,
   closed: true,
   hideable: true,
@@ -29,13 +30,11 @@ const webgl = new WebGLApp({
 
 // setup dev mode
 if ( defined(query.dev) ) {
-  console.log('dev mode');
   webgl.setDev(true);
   global.gui = gui;
 }
 
 if ( !defined(query.gui, false) ) {
-  // document.querySelector('.dg.main.a').style.display = 'none';
   gui.hide();
 }
 

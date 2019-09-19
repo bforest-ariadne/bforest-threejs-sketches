@@ -5,8 +5,9 @@ const rightNow = require('right-now');
 // const noop = () => {};
 const createTouches = require('touches');
 const query = require('../util/query');
+const noop = () => {};
 const Physics = require('./physics/physics-interface');
-const { BloomEffect, EffectComposer, EffectPass, RenderPass, KernelSize, BlendFunction, SMAAEffect, BrightnessContrastEffect } = require('postprocessing');
+const { SMAAEffect } = require('postprocessing');
 
 module.exports = class WebGLApp extends EventEmitter {
   constructor (opt = {}) {
@@ -23,6 +24,9 @@ module.exports = class WebGLApp extends EventEmitter {
     this.assetManager = {};
     this.onRenderFcts = [];
     this.sceneName = 'test';
+    this.physicsReady = false;
+    this.onReady = noop;
+    this.ready = false;
 
     // really basic touch handler that propagates through the scene
     this.touchHandler = createTouches(this.viewport, {
@@ -88,6 +92,7 @@ module.exports = class WebGLApp extends EventEmitter {
     // init physics
     this.physics = new Physics( this, {
       onReady: () => {
+        this.physicsReady = true;
         this.onRenderFcts.push( (delta, now, frameCount) => {
           this.physics.update( delta );
           // this.glStats.set( 'cannon', 1 / ( this.physics.cannonFrame / 1000 ) );
@@ -96,80 +101,8 @@ module.exports = class WebGLApp extends EventEmitter {
     });
   }
 
-  initPost() {
-    // setup effect composer
-    this.composer = new EffectComposer( this.renderer );
-
-    const smaaEffect = new SMAAEffect(this.assetManager.get('smaa-search'), this.assetManager.get('smaa-area'));
-    smaaEffect.colorEdgesMaterial.setEdgeDetectionThreshold(0.05);
-
-    const bloomEffect = new BloomEffect({
-      blendFunction: BlendFunction.SCREEN,
-      kernelSize: KernelSize.MEDIUM,
-      luminanceThreshold: 0.5,
-      luminanceSmoothing: 0.00,
-      height: 480});
-
-    bloomEffect.inverted = true;
-    bloomEffect.blendMode.opacity.value = 2.3;
-
-    const brightContrastEffect = new BrightnessContrastEffect();
-
-    const effectPass = new EffectPass(this.camera, brightContrastEffect );
-    effectPass.renderToScreen = true;
-
-    this.composer.addPass(new RenderPass(this.scene, this.camera));
-    this.composer.addPass(effectPass);
-  }
-
   get running () {
     return this._running;
-  }
-
-  resize (width, height, pixelRatio) {
-    // get default values
-    width = defined(width, window.innerWidth);
-    height = defined(height, window.innerHeight);
-    pixelRatio = defined(pixelRatio, Math.min(this.maxPixelRatio, window.devicePixelRatio));
-
-    this.width = width;
-    this.height = height;
-    this.pixelRatio = pixelRatio;
-
-    // update pixel ratio if necessary
-    if (this.renderer.getPixelRatio() !== pixelRatio) {
-      this.renderer.setPixelRatio(pixelRatio);
-    }
-
-    // setup new size & update camera aspect if necessary
-    defined( this.composer, this.renderer ).setSize(width, height);
-    if (this.camera.isPerspectiveCamera) {
-      this.camera.aspect = width / height;
-    }
-    this.camera.updateProjectionMatrix();
-
-    this._traverse('onResize');
-
-    // draw a frame to ensure the new size has been registered visually
-    this.draw();
-    return this;
-  }
-
-  // convenience function to trigger a PNG download of the canvas
-  saveScreenshot (opt = {}) {
-    // force a specific output size
-    this.resize(defined(opt.width, 2560), defined(opt.height, 1440), 1, true);
-    this.draw();
-
-    const dataURI = this.canvas.toDataURL('image/png');
-
-    // reset to default size
-    this.resize();
-    this.draw();
-
-    // save
-    const file = defined(opt.fileName, defaultFile('.png'));
-    saveDataURI(file, dataURI);
   }
 
   update (delta = 0, now = 0, frame = 0) {
@@ -233,7 +166,7 @@ module.exports = class WebGLApp extends EventEmitter {
   }
 
   start () {
-    this.log('app start');
+    this.log('app start', 'physics ready', this.physicsReady );
     if ( this.dev && this.frameCount === 0 ) {
       this.debug();
     }
@@ -250,6 +183,52 @@ module.exports = class WebGLApp extends EventEmitter {
     this._rafID = null;
     this._running = false;
     return this;
+  }
+
+  resize (width, height, pixelRatio) {
+    // get default values
+    width = defined(width, window.innerWidth);
+    height = defined(height, window.innerHeight);
+    pixelRatio = defined(pixelRatio, Math.min(this.maxPixelRatio, window.devicePixelRatio));
+
+    this.width = width;
+    this.height = height;
+    this.pixelRatio = pixelRatio;
+
+    // update pixel ratio if necessary
+    if (this.renderer.getPixelRatio() !== pixelRatio) {
+      this.renderer.setPixelRatio(pixelRatio);
+    }
+
+    // setup new size & update camera aspect if necessary
+    defined( this.composer, this.renderer ).setSize(width, height);
+    if (this.camera.isPerspectiveCamera) {
+      this.camera.aspect = width / height;
+    }
+    this.camera.updateProjectionMatrix();
+
+    this._traverse('onResize');
+
+    // draw a frame to ensure the new size has been registered visually
+    this.draw();
+    return this;
+  }
+
+  // convenience function to trigger a PNG download of the canvas
+  saveScreenshot (opt = {}) {
+    // force a specific output size
+    this.resize(defined(opt.width, 2560), defined(opt.height, 1440), 1, true);
+    this.draw();
+
+    const dataURI = this.canvas.toDataURL('image/png');
+
+    // reset to default size
+    this.resize();
+    this.draw();
+
+    // save
+    const file = defined(opt.fileName, defaultFile('.png'));
+    saveDataURI(file, dataURI);
   }
 
   onTouchStart( ev, pos ) {

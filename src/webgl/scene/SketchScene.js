@@ -13,6 +13,7 @@ module.exports = class SketchScene extends THREE.Object3D {
     this.name = defined( sceneName, name );
     webgl.sceneObj = this;
 
+    this.dev = webgl.dev;
     this.debugGlobals = [];
     this.debugGlobalsLive = [];
 
@@ -100,5 +101,17 @@ module.exports = class SketchScene extends THREE.Object3D {
     this.debugGlobalsLive.forEach( debugGlobal => {
       global[debugGlobal] = this[debugGlobal];
     } );
+  }
+
+  log() {
+    // logging for debug only
+    if ( this.dev ) {
+      const css = 'background: #00ff00; color: #ff00ff';
+      const text = ' ';
+      let cssArray = ['%c '.concat(text), css];
+      var args = Array.prototype.slice.call(arguments);
+      let final = cssArray.concat(args);
+      console.log.apply(this, final);
+    }
   }
 };
