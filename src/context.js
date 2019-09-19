@@ -10,7 +10,7 @@ const aside = document.getElementById('aside');
 // Setup dat.gui
 const gui = new dat.GUI({
   autoPlace: false,
-  closed: true,
+  closed: false,
   hideable: true,
   resizable: true,
   scrollable: true
