@@ -51,6 +51,7 @@ module.exports = class PhysicsTest extends SketchScene {
   update (delta = 0, now = 0, frame = 0) {
     super.update();
     this.ball.position.set( this.R * Math.sin( now ), 1, this.R * Math.cos( now ) );
+    webgl.composer.passes[2].effects[0].feedbackMaterial.iTime = now;
     // this.rotation.x += dt * 0.1;
   }
 };

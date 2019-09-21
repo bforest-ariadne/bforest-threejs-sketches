@@ -1,15 +1,8 @@
-// const Honeycomb = require('./webgl/scene/Honeycomb');
-// const SpinningBox = require('./webgl/scene/SpinningBox');
-// const Bpose = require('./webgl/scene/bpose');
-// const SketchScene = require('./webgl/scene/SketchScene');
-// const PhysicsTTest = require('./webgl/scene/PhysicsTest');
-// const FeedbackTest = require('./webgl/scene/FeedbackTest');
 const query = require('./util/query');
 const defined = require('defined');
 const { TweenMax } = require( 'gsap/umd/TweenMax' );
 
 const { assets, webgl } = require('./context');
-// const scenes = [ Bpose, Honeycomb, SpinningBox, SketchScene, PhysicsTTest, FeedbackTest ];
 const scenes = [
   require('./webgl/scene/SketchScene'),
   require('./webgl/scene/Honeycomb'),
@@ -18,7 +11,6 @@ const scenes = [
   require('./webgl/scene/PhysicsTest'),
   require('./webgl/scene/FeedbackTest')
 ];
-
 
 const DefaultScene = scenes[0];
 

@@ -6,6 +6,7 @@ const rightNow = require('right-now');
 const createTouches = require('touches');
 const query = require('../util/query');
 const noop = () => {};
+const Stats = require('stats.js');
 const Physics = require('./physics/physics-interface');
 const { SMAAEffect } = require('postprocessing');
 
@@ -28,6 +29,8 @@ module.exports = class WebGLApp extends EventEmitter {
     this.onReady = noop;
     this.ready = false;
     this.shown = false;
+    this.stats = new Stats();
+    this.aside.appendChild( this.stats.dom );
 
     // really basic touch handler that propagates through the scene
     this.touchHandler = createTouches(this.viewport, {
@@ -142,6 +145,7 @@ module.exports = class WebGLApp extends EventEmitter {
   animate = nowMsec => {
     if (!this.running) return;
     window.requestAnimationFrame(this.animate);
+    this.stats.begin();
 
     // measure time
     this.lastTimeMsec = this.lastTimeMsec || nowMsec - 1000 / 60;
@@ -153,6 +157,7 @@ module.exports = class WebGLApp extends EventEmitter {
     this.frameCount++;
 
     if ( this._checkReady() ) this.emit('show');
+    this.stats.end();
   }
 
   _checkReady() {
@@ -165,6 +170,7 @@ module.exports = class WebGLApp extends EventEmitter {
     global.camera = this.camera;
     global.scene = this.scene;
     global.app = this;
+    global.stats = this.stats;
 
     this.scene.traverse(obj => {
       if (typeof obj.debug === 'function') {

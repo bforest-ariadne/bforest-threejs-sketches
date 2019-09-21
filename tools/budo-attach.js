@@ -29,16 +29,16 @@ module.exports = function budoAttach (budoApp) {
       }
     })
     .on('update', function (src, deps) {
-      console.log('update',  deps );
+      // console.log('update',  deps );
       if (wss && reloader.isShaderReload(deps)) {
-        console.log('is shader reload');
+        // console.log('is shader reload');
         // Shader reload event, send the message data
         const event = JSON.stringify(reloader.getEvent(deps));
         wss.clients.forEach(client => {
           client.send(event);
         });
       } else {
-        console.log('regular js');
+        // console.log('regular js');
         // Regular JS file reload
         budoApp.reload();
       }
