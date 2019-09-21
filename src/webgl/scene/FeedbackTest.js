@@ -30,7 +30,7 @@ module.exports = class FeedbackTest extends SketchScene {
     this.controls.position = [ 0, 0, 20 ];
 
     webgl.scene.fog = new THREE.FogExp2(0x000000, 0.025);
-    webgl.scene.background = textureCube;
+    // webgl.scene.background = textureCube;
     webgl.renderer.setClearColor( webgl.scene.fog.color, 1);
     basicFeedback();
 

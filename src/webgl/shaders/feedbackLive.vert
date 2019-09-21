@@ -3,7 +3,8 @@ varying vec2 vUv2;
 
 void main() {
 
-	vUv = position.xy * 0.5 + 0.5;
+	// vUv = position.xy * 0.5 + 0.5;
+	vUv = uv;
 	vUv2 = mix(vec2(0.5), vUv, 0.999);
 
 

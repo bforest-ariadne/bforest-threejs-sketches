@@ -25,7 +25,9 @@ module.exports = class FeedbackMaterial extends LiveShaderMaterial {
         iResolution: new THREE.Uniform(new THREE.Vector3( window.innerWidth, window.innerHeight, 0.0 ) ),
         uniform1: new THREE.Uniform(0.0),
         uniform2: new THREE.Uniform(0.0),
-        uniform3: new THREE.Uniform(0.0)
+        uniform3: new THREE.Uniform(0.0),
+        USE_RGB_SHIFT: new THREE.Uniform(0),
+        USE_HUE_SHIFT: new THREE.Uniform(0)
       },
 
       depthWrite: false,

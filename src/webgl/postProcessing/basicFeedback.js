@@ -1,6 +1,8 @@
 const { EffectComposer, EffectPass, RenderPass, SMAAEffect } = require('postprocessing');
 const { webgl, assets, gui } = require('../../context');
 const FeedbackEffect = require('./feedbackEffect');
+const defined = require('defined');
+
 // const FeedbackLiveEffect = require('./feedbackLiveEffect');
 
 module.exports = function basicBloom( useGui = true ) {
@@ -24,9 +26,36 @@ module.exports = function basicBloom( useGui = true ) {
     const params = {
       'mixAmount': 0.3,
       'uniform1': 0.0,
-      'uniform2': 0.0,
-      'uniform3': 0.0
+      'uniform2': 300,
+      'uniform3': 45
     };
+
+    if ( defined( gui.document ) ) {
+      let guiDatMixin = {
+        add( object, key, min, max, step ) {
+          let opt = {};
+          if ( typeof min !== 'undefined' ) opt.min = min;
+          if ( typeof max !== 'undefined' ) opt.max = max;
+          if ( typeof step !== 'undefined' ) opt.step = step;
+          console.log('opt', opt, min, max);
+          return this.addInput( object, key, opt );
+        }
+      };
+
+      let inputBindingMixin = {
+        onChange( cb ) {
+          return this.on( 'change', cb );
+        }
+      };
+      // apply Tweakpanel -> dat.gui mixin
+      Object.assign( gui.__proto__, guiDatMixin );
+
+      // apply Tweakpanel.inputAPI -> dat.gui.inputController mixin
+      let testParams = {'test': 'test'};
+      let input = gui.addInput( testParams, 'test' );
+      Object.assign( input.__proto__, inputBindingMixin );
+      input.dispose();
+    }
 
     gui.addInput( params, 'mixAmount', {
       min: 0,
@@ -46,19 +75,18 @@ module.exports = function basicBloom( useGui = true ) {
 
     gui.addInput( params, 'uniform2', {
       min: 0,
-      max: 1,
-      step: 0.01
+      max: 300
     }).on( 'change', () => {
       feedbackEffect.feedbackMaterial.uniform2 = Number.parseFloat(params.uniform2);
     });
 
-    gui.addInput( params, 'uniform3', {
-      min: 0,
-      max: 1,
-      step: 0.01
-    }).on( 'change', () => {
-      feedbackEffect.feedbackMaterial.uniform3 = Number.parseFloat(params.uniform3);
-    });
+    // gui.addInput( params, 'uniform3', {
+    //   min: 0,
+    //   max: 1,
+    //   step: 0.01
+    // }).on( 'change', () => {
+    //   feedbackEffect.feedbackMaterial.uniform3 = Number.parseFloat(params.uniform3);
+    // });
 
     // gui.addInput( params, 'uniform1' ).min(0.0).max(10.0).step(0.01).onChange( () => {
     //   feedbackEffect.feedbackMaterial.uniform1 = Number.parseFloat(params.uniform1);
@@ -66,9 +94,12 @@ module.exports = function basicBloom( useGui = true ) {
     // gui.addInput( params, 'uniform2' ).min(0.0).max(1.0).step(0.01).onChange( () => {
     //   feedbackEffect.feedbackMaterial.uniform2 = Number.parseFloat(params.uniform2);
     // });
-    // gui.addInput( params, 'uniform3' ).min(0.0).max(1.0).step(0.01).onChange( () => {
-    //   feedbackEffect.feedbackMaterial.uniform3 = Number.parseFloat(params.uniform3);
-    // });
+    let u3gui = gui.add( params, 'uniform3', 0.0, 100 ).onChange( () => {
+      feedbackEffect.feedbackMaterial.uniform3 = Number.parseFloat(params.uniform3);
+    });
+
+    global.u3gui = u3gui;
+    global.defined = defined;
   };
 
   if ( useGui ) setupGui();
