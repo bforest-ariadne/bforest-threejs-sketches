@@ -1,18 +1,11 @@
-#define PI     3.14159265358
-#define TWO_PI 6.28318530718
-#define feedbackSpeed	0.002
-
-uniform sampler2D inputBuffer;
-uniform sampler2D feedbackBuffer;
-uniform float mixAmount;
-uniform float iTime;
-uniform vec3 iResolution;
-uniform float uniform1;
-uniform float uniform2;
-uniform float uniform3;
-
+uniform sampler2D currentFrame;
+uniform sampler2D backbuffer;
+uniform vec2 resolution;
+uniform float threshold;
+uniform float offset;
+uniform float time;
+uniform float shift;
 varying vec2 vUv;
-varying vec2 vUv2;
 
 uniform int USE_RGB_SHIFT;
 uniform int USE_HUE_SHIFT;
@@ -36,17 +29,8 @@ vec3 hueShift(vec3 color, float degree){
 	return rgb;
 }
 
-
 void main(){
-
-  float threshold = uniform1;
-  float offset = uniform2;
-  float time = iTime;
-  float shift = uniform3;
 	vec2 st = vUv;
-  vec2 resolution = iResolution.xy;
-
-
 
 	vec2	off_x = vec2(offset/resolution.x, 0.0);
 	vec2	off_y = vec2(0.0, offset/resolution.y);
@@ -61,13 +45,13 @@ void main(){
 	vec4	flow = vec4(0.0);
 
 	//get the difference
-	scr_dif = texture2D(inputBuffer, st) - texture2D(feedbackBuffer, st);
+	scr_dif = texture2D(currentFrame, st) - texture2D(backbuffer, st);
 
 	//calculate the gradient
-	gradx =	texture2D(feedbackBuffer, st + off_x) - texture2D(feedbackBuffer, st - off_x);
-	gradx += texture2D(inputBuffer, st + off_x) - texture2D(inputBuffer, st - off_x);
-	grady =	texture2D(feedbackBuffer, st + off_y) - texture2D(feedbackBuffer, st -off_y);
-	grady += texture2D(inputBuffer, st + off_y) - texture2D(inputBuffer, st - off_y);
+	gradx =	texture2D(backbuffer, st + off_x) - texture2D(backbuffer, st - off_x);
+	gradx += texture2D(currentFrame, st + off_x) - texture2D(currentFrame, st - off_x);
+	grady =	texture2D(backbuffer, st + off_y) - texture2D(backbuffer, st -off_y);
+	grady += texture2D(currentFrame, st + off_y) - texture2D(currentFrame, st - off_y);
 
 	gradmag = sqrt((gradx*gradx)+(grady*grady)+f4l);
 	vx = scr_dif*(gradx/gradmag);
@@ -91,13 +75,13 @@ void main(){
 		pos.y = gl_FragCoord.y+flow.y;
 
 		if(USE_RGB_SHIFT > 0){
-			float r = texture2D(feedbackBuffer, vec2((pos.x+cos(flow.x))/resolution.x, (pos.y+sin(flow.y))/resolution.y)).r;
-			float g = texture2D(feedbackBuffer, vec2(pos.x/resolution.x, pos.y/resolution.y)).g;
-			float b = texture2D(feedbackBuffer, vec2((pos.x-cos(flow.x))/resolution.x, (pos.y-sin(flow.y))/resolution.y)).b;
+			float r = texture2D(backbuffer, vec2((pos.x+cos(flow.x))/resolution.x, (pos.y+sin(flow.y))/resolution.y)).r;
+			float g = texture2D(backbuffer, vec2(pos.x/resolution.x, pos.y/resolution.y)).g;
+			float b = texture2D(backbuffer, vec2((pos.x-cos(flow.x))/resolution.x, (pos.y-sin(flow.y))/resolution.y)).b;
 
 			newColor.rgb = vec3(r, g, b);
 		}else{
-			newColor = texture2D(feedbackBuffer, vec2(pos.x/resolution.x, pos.y/resolution.y));
+			newColor = texture2D(backbuffer, vec2(pos.x/resolution.x, pos.y/resolution.y));
 		}
 		
 		if(USE_HUE_SHIFT > 0){
@@ -105,8 +89,9 @@ void main(){
 		}
 		
 	}else{
-		newColor = texture2D(inputBuffer, vUv);
+		newColor = texture2D(currentFrame, vUv);
 	}
 
 	gl_FragColor = newColor;
 }
+

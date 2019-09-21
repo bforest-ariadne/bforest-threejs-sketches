@@ -4,7 +4,7 @@ const PP = require('postprocessing');
 const FeedbackMaterial = require('../materials/feedbackMaterial');
 const LiveFeedbackMaterial = require('../materials/liveFeedbackMaterial');
 
-module.exports = class FeedbackEffect extends PP.TextureEffect {
+module.exports = class DatamoshEffect extends PP.TextureEffect {
   constructor({ blendFunction = PP.BlendFunction.NORMAL, mixAmount = 0.01, live = true } = {}) {
     super({ blendFunction });
 

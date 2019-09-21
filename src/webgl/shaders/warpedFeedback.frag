@@ -1,4 +1,3 @@
-// https://www.shadertoy.com/view/4syyDK
 #define PI     3.14159265358
 #define TWO_PI 6.28318530718
 #define feedbackSpeed	0.002
@@ -8,6 +7,9 @@ uniform sampler2D feedbackBuffer;
 uniform float mixAmount;
 uniform float iTime;
 uniform vec3 iResolution;
+uniform float uniform1;
+uniform float uniform2;
+uniform float uniform3;
 
 varying vec2 vUv;
 varying vec2 vUv2;
@@ -26,14 +28,14 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     
 
     // oscillate or manually control brightness threshold for seed pixels
-    float brightnessThreshold = 0.6 + 0.4 * sin(iTime);
+    float brightnessThreshold = 0.6 + 0.4 * sin(uniform1);
     // if(iMouse.z > 0.) brightnessThreshold = iMouse.x / iResolution.x;
     if(luma(texColor.rgb) > brightnessThreshold) {
         // if bright enough, modify color & draw seed pixels on top
         fragColor = vec4(
-            texColor.r + 0.25 * sin(iTime),
-            texColor.g + 0.25 * sin(iTime * 0.8),
-            texColor.b + 0.25 * sin(iTime * 0.7),
+            texColor.r + 0.25 * sin(uniform1),
+            texColor.g + 0.25 * sin(uniform1 * 0.8),
+            texColor.b + 0.25 * sin(uniform1 * 0.7),
             1.
             );
     } else {
