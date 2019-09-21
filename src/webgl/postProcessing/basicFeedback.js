@@ -28,18 +28,47 @@ module.exports = function basicBloom( useGui = true ) {
       'uniform3': 0.0
     };
 
-    gui.add( params, 'mixAmount' ).min(0.0).max(1.0).step(0.01).onChange( () => {
+    gui.addInput( params, 'mixAmount', {
+      min: 0,
+      max: 1,
+      step: 0.01
+    }).on( 'change', () => {
       feedbackEffect.feedbackMaterial.mixAmount = Number.parseFloat(params.mixAmount);
     });
-    gui.add( params, 'uniform1' ).min(0.0).max(10.0).step(0.01).onChange( () => {
+
+    gui.addInput( params, 'uniform1', {
+      min: 0,
+      max: 1,
+      step: 0.01
+    }).on( 'change', () => {
       feedbackEffect.feedbackMaterial.uniform1 = Number.parseFloat(params.uniform1);
     });
-    gui.add( params, 'uniform2' ).min(0.0).max(1.0).step(0.01).onChange( () => {
+
+    gui.addInput( params, 'uniform2', {
+      min: 0,
+      max: 1,
+      step: 0.01
+    }).on( 'change', () => {
       feedbackEffect.feedbackMaterial.uniform2 = Number.parseFloat(params.uniform2);
     });
-    gui.add( params, 'uniform3' ).min(0.0).max(1.0).step(0.01).onChange( () => {
+
+    gui.addInput( params, 'uniform3', {
+      min: 0,
+      max: 1,
+      step: 0.01
+    }).on( 'change', () => {
       feedbackEffect.feedbackMaterial.uniform3 = Number.parseFloat(params.uniform3);
     });
+
+    // gui.addInput( params, 'uniform1' ).min(0.0).max(10.0).step(0.01).onChange( () => {
+    //   feedbackEffect.feedbackMaterial.uniform1 = Number.parseFloat(params.uniform1);
+    // });
+    // gui.addInput( params, 'uniform2' ).min(0.0).max(1.0).step(0.01).onChange( () => {
+    //   feedbackEffect.feedbackMaterial.uniform2 = Number.parseFloat(params.uniform2);
+    // });
+    // gui.addInput( params, 'uniform3' ).min(0.0).max(1.0).step(0.01).onChange( () => {
+    //   feedbackEffect.feedbackMaterial.uniform3 = Number.parseFloat(params.uniform3);
+    // });
   };
 
   if ( useGui ) setupGui();

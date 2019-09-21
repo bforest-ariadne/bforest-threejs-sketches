@@ -3,20 +3,25 @@ const AssetManager = require('./util/AssetManager');
 const query = require('./util/query');
 const dat = require('dat.gui');
 const defined = require('defined');
+const Tweakpane = require('tweakpane');
 
 const viewport = document.getElementById('viewport');
 const aside = document.getElementById('aside');
 
 // Setup dat.gui
-const gui = new dat.GUI({
-  autoPlace: false,
-  closed: false,
-  hideable: true,
-  resizable: true,
-  scrollable: true
+// const gui = new dat.GUI({
+//   autoPlace: false,
+//   closed: false,
+//   hideable: true,
+//   resizable: true,
+//   scrollable: true
+// });
+const gui = new Tweakpane({
+  container: document.getElementById('aside'),
+  title: 'parameters'
 });
 
-aside.appendChild(gui.domElement);
+// aside.appendChild(gui.domElement);
 
 // Grab our canvas
 const canvas = document.querySelector('.main-canvas');
@@ -35,7 +40,7 @@ if ( defined(query.dev) ) {
 }
 
 if ( !defined(query.gui, false) ) {
-  gui.hide();
+  // gui.hide();
 }
 
 // Setup an asset manager
