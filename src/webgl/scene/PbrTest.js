@@ -1,7 +1,7 @@
 const SketchScene = require('./SketchScene');
 const { webgl, assets } = require('../../context');
 const postProcessSetup = require('../postProcessing/basicTonemap');
-const { createIronMaterial, ironAssets } = require('../materials/dammagedIron')
+const { createIronMaterial, ironAssets } = require('../materials/dammagedIron');
 const query = require('../../util/query');
 const defined = require('defined');
 
@@ -56,13 +56,16 @@ module.exports = class PbrTest extends SketchScene {
     const positions = [];
     const orientations = [];
     const scales = [];
+    const radius = [];
     let vector = new THREE.Vector4();
     let vector3 = new THREE.Vector3();
-    let quat = new THREE.Quaternion();
-    let euler = new THREE.Euler();
     let x, y, z, w;
     const cell = 1;
     const grid = 5;
+
+    this.moveQ = new THREE.Quaternion( 0.5, 0.5, 0.5, 0.0 ).normalize();
+    this.tmpQ = new THREE.Quaternion();
+    this.currentQ = new THREE.Quaternion();
 
     for (let i = 0; i < this.N; ++i) {
       if ( this.useBufferGeo ) {
@@ -73,17 +76,17 @@ module.exports = class PbrTest extends SketchScene {
         positions.push( vector3.x, vector3.y, vector3.z );
 
         // orientations
-        // x = Math.random() * 2;
-        // y = Math.random() * 2;
-        // z = Math.random() * 2;
-        // w = Math.random() * 2;
-        // vector.set( x, y, z, w );
-        euler.set(Math.random() * 2, Math.random() * 2, Math.random() * 2);
-        quat.setFromEuler( euler );
-        orientations.push( quat.x, quat.y, quat.z, quat.w );
+        x = Math.random() * 2 - 1;
+        y = Math.random() * 2 - 1;
+        z = Math.random() * 2 - 1;
+        w = Math.random() * 2 - 1;
+        vector.set( x, y, z, w ).normalize();
+        orientations.push( vector.x, vector.y, vector.z, vector.w );
 
         x = y = z = Math.random();
         scales.push( x, y, z );
+
+        radius.push(Math.min(x, Math.min(y, z)));
 
       } else {
         mesh = new THREE.Mesh(bufferGeometry, material);
@@ -100,9 +103,13 @@ module.exports = class PbrTest extends SketchScene {
       this.geometry = new THREE.InstancedBufferGeometry();
       this.geometry.copy( bufferGeometry );
 
+      this.orientationAttribute = new THREE.InstancedBufferAttribute( new Float32Array( orientations ), 4 ).setDynamic( true );
+
       this.geometry.addAttribute( 'offset', new THREE.InstancedBufferAttribute( new Float32Array(positions), 3 ) );
-      this.geometry.addAttribute( 'orientation', new THREE.InstancedBufferAttribute( new Float32Array(orientations), 4 ).setDynamic( true ) );
+      this.geometry.addAttribute( 'orientation', this.orientationAttribute );
       this.geometry.addAttribute( 'scale', new THREE.InstancedBufferAttribute( new Float32Array(scales), 3 ) );
+      this.geometry.addAttribute( 'radius', new THREE.InstancedBufferAttribute( new Float32Array(radius), 1 ) );
+
 
       // modify material
 
@@ -112,10 +119,9 @@ module.exports = class PbrTest extends SketchScene {
       };
 
       material.onBeforeCompile = shader => {
-  
         shader.uniforms.time = this.shaderUniforms.time;
         shader.uniforms.speed = this.shaderUniforms.speed;
-       
+
         shader.vertexShader = `
         uniform float time;
         uniform float speed;
@@ -127,7 +133,7 @@ module.exports = class PbrTest extends SketchScene {
           return v + 2.0 * cross( q.xyz, cross( q.xyz, v ) + q.w * v );
         }
         ` + shader.vertexShader;
-        
+
         shader.vertexShader = shader.vertexShader.replace(
           `#include <begin_vertex>`,
           `#include <begin_vertex>
@@ -149,8 +155,20 @@ module.exports = class PbrTest extends SketchScene {
     this.add(object);
   }
 
-  update (dt = 0) {
+  update (delta = 0, now = 0, frame = 0) {
     super.update();
-    this.object.rotation.x += dt * 0.1;
+    this.object.rotation.x += delta * 0.1;
+
+    this.shaderUniforms.time.value = now;
+
+    let qDelta = delta * 0.2;
+
+    this.tmpQ.set( this.moveQ.x * qDelta, this.moveQ.y * qDelta, this.moveQ.z * qDelta, 1 ).normalize();
+    for ( let i = 0, il = this.orientationAttribute.count; i < il; i++ ) {
+      this.currentQ.fromArray( this.orientationAttribute.array, ( i * 4 ) );
+      this.currentQ.multiply( this.tmpQ );
+      this.orientationAttribute.setXYZW( i, this.currentQ.x, this.currentQ.y, this.currentQ.z, this.currentQ.w );
+    }
+    this.orientationAttribute.needsUpdate = true;
   }
 };
