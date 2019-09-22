@@ -1,38 +1,36 @@
-const { webgl, assets } = require('../../context');
-const query = require('../../util/query');
-const defined = require('defined');
+const { assets } = require('../../context');
 
 const ironAssets = [
-{
-  url: 'assets/textures/iron1_bpr/Metal_DamagedIron_2k_metallic.jpg',
-  key: 'iron_m',
-  texture: true
-},
-{
-  url: 'assets/textures/iron1_bpr/Metal_DamagedIron_2k_n.jpg',
-  key: 'iron_n',
-  texture: true
-},
-{
-  url: 'assets/textures/iron1_bpr/Metal_DamagedIron_2k_roughness.jpg',
-  key: 'iron_r',
-  texture: true
-},
-{
-  url: 'assets/textures/iron1_bpr/Metal_DamagedIron_2k_ao.jpg',
-  key: 'iron_a',
-  texture: true
-},
-{
-  url: 'assets/textures/iron1_bpr/Metal_DamagedIron_2k_basecolor.jpg',
-  key: 'iron_c',
-  texture: true
-},
-{
-  url: 'assets/textures/iron1_bpr/Metal_DamagedIron_2k_h.jpg',
-  key: 'iron_h',
-  texture: true
-}];
+  {
+    url: 'assets/textures/iron1_bpr/Metal_DamagedIron_2k_metallic.jpg',
+    key: 'iron_m',
+    texture: true
+  },
+  {
+    url: 'assets/textures/iron1_bpr/Metal_DamagedIron_2k_n.jpg',
+    key: 'iron_n',
+    texture: true
+  },
+  {
+    url: 'assets/textures/iron1_bpr/Metal_DamagedIron_2k_roughness.jpg',
+    key: 'iron_r',
+    texture: true
+  },
+  {
+    url: 'assets/textures/iron1_bpr/Metal_DamagedIron_2k_ao.jpg',
+    key: 'iron_a',
+    texture: true
+  },
+  {
+    url: 'assets/textures/iron1_bpr/Metal_DamagedIron_2k_basecolor.jpg',
+    key: 'iron_c',
+    texture: true
+  },
+  {
+    url: 'assets/textures/iron1_bpr/Metal_DamagedIron_2k_h.jpg',
+    key: 'iron_h',
+    texture: true
+  }];
 
 const createIronMaterial = () => {
   const ironMaterial = new THREE.MeshStandardMaterial({
@@ -50,9 +48,7 @@ const createIronMaterial = () => {
     flatShading: true
   });
   // ironMaterial.needsUpdate = true
-  return ironMaterial
-}
-
-
+  return ironMaterial;
+};
 
 module.exports = { createIronMaterial, ironAssets };

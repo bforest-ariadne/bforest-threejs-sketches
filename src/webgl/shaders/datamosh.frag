@@ -44,6 +44,7 @@ void main(){
 
 	vec2	off_x = vec2(offset/resolution.x, 0.0);
 	vec2	off_y = vec2(0.0, offset/resolution.y);
+	
 
 	vec4	scr_dif;
 	vec4	gradx;
