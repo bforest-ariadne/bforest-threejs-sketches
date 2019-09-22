@@ -2,7 +2,7 @@ const SketchScene = require('./SketchScene');
 const { webgl, assets, gui } = require('../../context');
 const postProcessSetup = require('../postProcessing/basicSSAO');
 const { createIronMaterial, ironAssets } = require('../materials/dammagedIron');
-const { createMarble1Material, marble1Assets } = require('../materials/marbleFloor');
+const { createMetal1Material, metal1Assets } = require('../materials/metalFloor1');
 const query = require('../../util/query');
 const defined = require('defined');
 
@@ -20,8 +20,8 @@ if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
   for ( let i in ironAssets ) {
     assets.queue( ironAssets[i] );
   }
-  for ( let i in marble1Assets ) {
-    assets.queue( marble1Assets[i] );
+  for ( let i in metal1Assets ) {
+    assets.queue( metal1Assets[i] );
   }
 }
 
@@ -66,7 +66,7 @@ module.exports = class PbrTest extends SketchScene {
 
     // ground
 
-    const marble1Mat = createMarble1Material( env.target.texture );
+    const marble1Mat = createMetal1Material( env.target.texture );
     // marble1Mat.env = env.target.texture;
     marble1Mat.side = THREE.DoubleSide;
     marble1Mat.needsUpdate = true;
