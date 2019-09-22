@@ -46,13 +46,15 @@ module.exports = class FeedbackTest extends SketchScene {
 
     const object = new THREE.Object3D();
     this.object = object;
-    const geometry = new THREE.SphereBufferGeometry(1, 4, 4);
-
     let material, mesh;
-
     material = createIronMaterial();
     material.envMap = env.target.texture;
     material.needsUpdate = true;
+
+
+    const geometry = new THREE.SphereBufferGeometry(1, 4, 4);
+
+
 
     for (let i = 0; i < 100; ++i) {
       mesh = new THREE.Mesh(geometry, material);

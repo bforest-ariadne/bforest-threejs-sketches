@@ -42,7 +42,7 @@ const createIronMaterial = () => {
     normalMap: assets.get('iron_n'),
     aoMap: assets.get('iron_a'),
     map: assets.get('iron_c'),
-    displacement: assets.get('iron_h'),
+    // displacementMap: assets.get('iron_h'),
     normalScale: new THREE.Vector2(0.1, 0.1),
     // envMap: env.target.texture,
     flatShading: true
