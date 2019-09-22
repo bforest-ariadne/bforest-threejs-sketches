@@ -1,28 +1,11 @@
 const SketchScene = require('./SketchScene');
 const { webgl, assets } = require('../../context');
-const basicFeedback = require('../postProcessing/basicFeedback');
-const basicDatamosh = require('../postProcessing/basicDatamosh');
 const postProcessSetup = require('../postProcessing/basicTonemap');
 const { createIronMaterial, ironAssets } = require('../materials/dammagedIron')
 const query = require('../../util/query');
 const defined = require('defined');
 
 const name = 'pbrtest';
-
-const path = 'https://vanruesc.github.io/postprocessing/public/demo/textures/skies/space3/';
-const format = '.jpg';
-const names = [ 'px', 'nx', 'py', 'ny', 'pz', 'nz' ];
-let urls = [];
-
-for ( let i in names ) {
-  urls[i] = names[i] + format;
-}
-
-var loader = new THREE.CubeTextureLoader();
-loader.setPath( path );
-
-var textureCube = loader.load( urls );
-
 
 if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
   assets.queue({
@@ -56,7 +39,6 @@ module.exports = class PbrTest extends SketchScene {
     webgl.renderer.gammaOutput = true;
 
     postProcessSetup();
-
 
     // Objects.
 
