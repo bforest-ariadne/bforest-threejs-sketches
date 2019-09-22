@@ -2,32 +2,32 @@ const { assets } = require('../../context');
 
 const ironAssets = [
   {
-    url: 'assets/textures/iron1_bpr/Metal_DamagedIron_2k_metallic.jpg',
+    url: 'assets/textures/iron1_pbr/Metal_DamagedIron_2k_metallic.jpg',
     key: 'iron_m',
     texture: true
   },
   {
-    url: 'assets/textures/iron1_bpr/Metal_DamagedIron_2k_n.jpg',
+    url: 'assets/textures/iron1_pbr/Metal_DamagedIron_2k_n.jpg',
     key: 'iron_n',
     texture: true
   },
   {
-    url: 'assets/textures/iron1_bpr/Metal_DamagedIron_2k_roughness.jpg',
+    url: 'assets/textures/iron1_pbr/Metal_DamagedIron_2k_roughness.jpg',
     key: 'iron_r',
     texture: true
   },
   {
-    url: 'assets/textures/iron1_bpr/Metal_DamagedIron_2k_ao.jpg',
+    url: 'assets/textures/iron1_pbr/Metal_DamagedIron_2k_ao.jpg',
     key: 'iron_a',
     texture: true
   },
   {
-    url: 'assets/textures/iron1_bpr/Metal_DamagedIron_2k_basecolor.jpg',
+    url: 'assets/textures/iron1_pbr/Metal_DamagedIron_2k_basecolor.jpg',
     key: 'iron_c',
     texture: true
   },
   {
-    url: 'assets/textures/iron1_bpr/Metal_DamagedIron_2k_h.jpg',
+    url: 'assets/textures/iron1_pbr/Metal_DamagedIron_2k_h.jpg',
     key: 'iron_h',
     texture: true
   }];

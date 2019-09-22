@@ -44,6 +44,7 @@ module.exports = function basicBloom( useGui = true ) {
     };
 
     let f = gui.addFolder({title: 'Luminance'});
+		f.expanded = false;
 
     f.addInput(params, 'resolution', {
       options: {'64': 64, '128': 128, '256': 256, '512': 512, '1024': 1024}
