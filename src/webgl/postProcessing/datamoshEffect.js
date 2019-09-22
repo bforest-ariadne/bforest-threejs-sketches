@@ -1,15 +1,15 @@
 // ported from https://jsfiddle.net/2awLpf5u/1/ https://github.com/vanruesc/postprocessing/issues/145
 
 const PP = require('postprocessing');
-const FeedbackMaterial = require('../materials/feedbackMaterial');
-const LiveFeedbackMaterial = require('../materials/liveFeedbackMaterial');
+// const FeedbackMaterial = require('../materials/feedbackMaterial');
+// const LiveFeedbackMaterial = require('../materials/liveFeedbackMaterial');
+const DataMoshMaterial = require('../materials/datamoshMaterial');
 
 module.exports = class DatamoshEffect extends PP.TextureEffect {
-  constructor({ blendFunction = PP.BlendFunction.NORMAL, mixAmount = 0.01, live = true } = {}) {
+  constructor({ blendFunction = PP.BlendFunction.NORMAL, mixAmount = 0.01, threshold = 0.5, live = true } = {}) {
     super({ blendFunction });
 
-    this.name = 'FeedbackEffect';
-    this.uniforms.set('mixAmount', new THREE.Uniform(mixAmount));
+    this.name = 'DatamoshEffect';
 
     /**
     * A render targeTHREE.
@@ -47,25 +47,16 @@ module.exports = class DatamoshEffect extends PP.TextureEffect {
      * @private
      */
 
-    if ( live ) {
-      this.feedbackPass = new PP.ShaderPass(
-        new LiveFeedbackMaterial(this.renderTarget1.texture, mixAmount)
-      );
-    } else {
-      this.feedbackPass = new PP.ShaderPass(
-        new FeedbackMaterial(this.renderTarget1.texture, mixAmount)
-      );
-    }
-    // this.feedbackPass = new PP.ShaderPass(
-    //   new FeedbackMaterial(this.renderTarget1.texture, mixAmount)
-    // );
+    this.datamoshPass = new PP.ShaderPass(
+      new DataMoshMaterial(this.renderTarget1.texture, mixAmount)
+    );
 
-    this.feedbackMaterial.mixAmount = mixAmount;
-    this.feedbackMaterial.iResolution.set( window.innerWidth, window.innerHeight );
-    this.feedbackMaterial.iTime = 0.0;
-    this.feedbackMaterial.uniform1 = 0.0;
-    this.feedbackMaterial.uniform2 = 0.0;
-    this.feedbackMaterial.uniform3 = 0.0;
+    // this.dataMoshMaterial.mixAmount = mixAmount;
+    this.dataMoshMaterial.iResolution.set( window.innerWidth, window.innerHeight );
+    this.dataMoshMaterial.iTime = 0.0;
+    this.dataMoshMaterial.threshold = 0.8;
+    this.dataMoshMaterial.offset = 50.0;
+
   }
 
   /**
@@ -77,14 +68,14 @@ module.exports = class DatamoshEffect extends PP.TextureEffect {
    */
 
   update(renderer, inputBuffer, deltaTime) {
-    this.feedbackMaterial.iTime += deltaTime;
+    this.dataMoshMaterial.iTime += deltaTime;
     // The render targets get swapped each frame.
-    const feedbackMaterial = this.feedbackPass.getFullscreenMaterial();
-    feedbackMaterial.uniforms.feedbackBuffer.value = this.renderTarget1.texture;
+    const dataMoshMaterial = this.datamoshPass.getFullscreenMaterial();
+    dataMoshMaterial.uniforms.feedbackBuffer.value = this.renderTarget1.texture;
     this.uniforms.get('texture').value = this.renderTarget0.texture;
 
     // Update the feedback buffer based on the previous resulTHREE.
-    this.feedbackPass.render(renderer, inputBuffer, this.renderTarget0);
+    this.datamoshPass.render(renderer, inputBuffer, this.renderTarget0);
 
     /* Swap buffers because reading from a render target and writing to it at
     the same time results in undefined behaviour. */
@@ -107,7 +98,7 @@ module.exports = class DatamoshEffect extends PP.TextureEffect {
   setSize(width, height) {
     this.renderTarget0.setSize(width, height);
     this.renderTarget1.setSize(width, height);
-    this.feedbackMaterial.iResolution.set( width, height, 0.0);
+    this.dataMoshMaterial.iResolution.set( width, height, 0.0);
   }
   /**
    * The luminance material.
@@ -115,10 +106,9 @@ module.exports = class DatamoshEffect extends PP.TextureEffect {
    * @type {LuminanceMaterial}
    */
 
-  get feedbackMaterial() {
+  get dataMoshMaterial() {
 
-    return this.feedbackPass.getFullscreenMaterial();
+    return this.datamoshPass.getFullscreenMaterial();
 
   }
-
 };

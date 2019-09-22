@@ -63,8 +63,8 @@ module.exports = class FeedbackEffect extends PP.TextureEffect {
     this.feedbackMaterial.mixAmount = mixAmount;
     this.feedbackMaterial.iResolution.set( window.innerWidth, window.innerHeight );
     this.feedbackMaterial.iTime = 0.0;
-    this.feedbackMaterial.uniform1 = 0.0;
-    this.feedbackMaterial.uniform2 = 0.0;
+    this.feedbackMaterial.uniform1 = 0.8;
+    this.feedbackMaterial.uniform2 = 50.0;
     this.feedbackMaterial.uniform3 = 0.0;
   }
 
@@ -88,9 +88,12 @@ module.exports = class FeedbackEffect extends PP.TextureEffect {
 
     /* Swap buffers because reading from a render target and writing to it at
     the same time results in undefined behaviour. */
-    const buffer = this.renderTarget0;
-    this.renderTarget0 = this.renderTarget1;
-    this.renderTarget1 = buffer;
+
+    if ( Math.sin(this.feedbackMaterial.iTime) < .9999 ) {
+      const buffer = this.renderTarget0;
+      this.renderTarget0 = this.renderTarget1;
+      this.renderTarget1 = buffer;
+    }
 
     /* After this, the texture shader of the parent class simply draws the
     feedback buffer. See Image shader in shadertoy feedback example:

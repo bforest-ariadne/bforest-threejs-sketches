@@ -103,6 +103,7 @@ void main(){
 		if(USE_HUE_SHIFT > 0){
 			newColor.rgb = hueShift(newColor.rgb, length(flow.xy)*shift);
 		}
+
 		
 	}else{
 		newColor = texture2D(inputBuffer, vUv);

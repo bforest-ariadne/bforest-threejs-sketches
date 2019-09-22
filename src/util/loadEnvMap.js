@@ -45,6 +45,7 @@ module.exports = function loadEnvMap (opt = {}, cb = noop) {
   }
 
   function onCubeMapLoaded (cubeMap) {
+    let hdrCubeRenderTarget = undefined;
     if (opt.pbr || typeof opt.level === 'number') {
       // prefilter the environment map for irradiance
       const pmremGenerator = new THREE.PMREMGenerator(cubeMap);
@@ -52,15 +53,22 @@ module.exports = function loadEnvMap (opt = {}, cb = noop) {
       if (opt.pbr) {
         const pmremCubeUVPacker = new THREE.PMREMCubeUVPacker(pmremGenerator.cubeLods);
         pmremCubeUVPacker.update(renderer);
-        const target = pmremCubeUVPacker.CubeUVRenderTarget;
-        cubeMap = target.texture;
+        hdrCubeRenderTarget = pmremCubeUVPacker.CubeUVRenderTarget;
+        // cubeMap = target.texture;
+        cubeMap.magFilter = THREE.LinearFilter;
+        cubeMap.needsUpdate = true;
+
+        pmremGenerator.dispose();
+        pmremCubeUVPacker.dispose();
+
       } else {
         const idx = clamp(Math.floor(opt.level), 0, pmremGenerator.cubeLods.length);
         cubeMap = pmremGenerator.cubeLods[idx].texture;
       }
     }
     if (opt.mapping) cubeMap.mapping = opt.mapping;
-    cb(null, cubeMap);
+    let returnObject = typeof hdrCubeRenderTarget === 'undefined' ? cubeMap : {cubeMap: cubeMap, target: hdrCubeRenderTarget};
+    cb(null, returnObject );
     cb = noop;
   }
 }

@@ -4,6 +4,6 @@ const glslify = require('glslify');
 const path = require('path');
 
 module.exports = require('shader-reload')({
-  vertex: glslify(path.resolve(__dirname, './feedbackLive.vert')),
-  fragment: glslify(path.resolve(__dirname, './feedbackLive.frag'))
+  vertex: glslify(path.resolve(__dirname, './datamosh.vert')),
+  fragment: glslify(path.resolve(__dirname, './datamosh.frag'))
 });

@@ -2,6 +2,10 @@ global.THREE = require('three');
 
 // include any additional ThreeJS vendor libraries here
 require('three/examples/js/loaders/GLTFLoader.js');
+require('three/examples/js/loaders/HDRCubeTextureLoader.js');
+require('three/examples/js/loaders/RGBELoader.js');
+require('three/examples/js/pmrem/PMREMGenerator.js');
+require('three/examples/js/pmrem/PMREMCubeUVPacker.js');
 // require('three/examples/js/ShaderSkin.js');
 require('three/examples/js/shaders/BleachBypassShader.js');
 require('three/examples/js/shaders/ConvolutionShader.js');

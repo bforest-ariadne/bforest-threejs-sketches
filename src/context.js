@@ -21,6 +21,40 @@ const gui = new Tweakpane({
   title: 'parameters'
 });
 
+// tweaksphere -> dat.gui mixins
+if ( defined( gui.document ) ) {
+  let guiDatMixin = {
+    add( object, key, min, max, step ) {
+      let opt = {};
+      if ( typeof min !== 'undefined' ) opt.min = min;
+      if ( typeof max !== 'undefined' ) opt.max = max;
+      if ( typeof step !== 'undefined' ) opt.step = step;
+      console.log('opt', opt, min, max);
+      return this.addInput( object, key, opt );
+    }
+  };
+
+  let inputBindingMixin = {
+    onChange( cb ) {
+      return this.on( 'change', cb );
+    }
+  };
+  // apply Tweakpanel -> dat.gui mixin
+  Object.assign( gui.__proto__, guiDatMixin );
+
+  // apply Tweakpanel.inputAPI -> dat.gui.inputController mixin
+  let testParams = {'test': 'test'};
+  let input = gui.addInput( testParams, 'test' );
+  Object.assign( input.__proto__, inputBindingMixin );
+  input.dispose();
+
+  let folder = gui.addFolder({title:'test'});
+  Object.assign( folder.__proto__, guiDatMixin );
+  folder.dispose();
+
+  gui.element.style.backgroundColor = '#2f31372e';
+}
+
 // aside.appendChild(gui.domElement);
 
 // Grab our canvas
