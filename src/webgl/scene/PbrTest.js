@@ -1,5 +1,5 @@
 const SketchScene = require('./SketchScene');
-const { webgl, assets } = require('../../context');
+const { webgl, assets, gui } = require('../../context');
 const postProcessSetup = require('../postProcessing/basicTonemap');
 const { createIronMaterial, ironAssets } = require('../materials/dammagedIron');
 const query = require('../../util/query');
@@ -26,6 +26,9 @@ module.exports = class PbrTest extends SketchScene {
     super(name);
   }
   init() {
+    this.pars = {
+      envMapIntensity: 0.2
+    };
     this.controlsInit();
     this.controls.distance = 20;
     this.controls.position = [ 0, 0, 20 ];
@@ -36,7 +39,7 @@ module.exports = class PbrTest extends SketchScene {
     const smooth = false;
 
     webgl.scene.fog = new THREE.FogExp2(0x000000, 0.00025);
-    webgl.scene.background = env.cubeMap;
+    // webgl.scene.background = env.cubeMap;
     webgl.renderer.setClearColor( webgl.scene.fog.color, 1);
 
     webgl.renderer.gammaInput = true;
@@ -112,8 +115,6 @@ module.exports = class PbrTest extends SketchScene {
       if ( defined( this.spotlight.shadow.map ) ) this.spotlightShadowMapViewer.render( webgl.renderer );
     });
 
-    
-
     let bufferGeometry;
     if ( smooth ) {
       bufferGeometry = new THREE.BoxBufferGeometry(2, 2, 2, 9, 9, 9);
@@ -171,7 +172,6 @@ module.exports = class PbrTest extends SketchScene {
         // smooth radius
 
         radius.push(Math.min(x, Math.min(y, z)));
-
       } else {
         mesh = new THREE.Mesh(bufferGeometry, material);
         mesh.position.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
@@ -194,7 +194,6 @@ module.exports = class PbrTest extends SketchScene {
       this.geometry.addAttribute( 'scale', new THREE.InstancedBufferAttribute( new Float32Array(scales), 3 ) );
       this.geometry.addAttribute( 'radius', new THREE.InstancedBufferAttribute( new Float32Array(radius), 1 ) );
       this.geometry.addAttribute( 'rotation', new THREE.InstancedBufferAttribute( new Float32Array(rotationXYZ), 3 ) );
-
 
       // modify material
 
@@ -255,12 +254,14 @@ module.exports = class PbrTest extends SketchScene {
         
             transformed = signs * box + normalize(position) * radius;
             
-            // re-compute normals for correct shadows and reflections
-            objectNormal = all(equal(p, transformed)) ? normal : normalize(position); 
-            transformedNormal = normalize(normalMatrix * objectNormal);
-            // vNormal = transformedNormal;
+            #ifdef STANDARD
+              // re-compute normals for correct shadows and reflections
+              objectNormal = all(equal(p, transformed)) ? normal : normalize(position); 
+              transformedNormal = normalize(normalMatrix * objectNormal);
+              // vNormal = transformedNormal;
 
-            vNormal = (vec4(transformedNormal, 1.0) * r).xyz;
+              vNormal = (vec4(transformedNormal, 1.0) * r).xyz;
+            #endif
           #endif
 
           #ifdef FLAT_SHADED
@@ -275,14 +276,31 @@ module.exports = class PbrTest extends SketchScene {
         );
       };
 
+      // custom depth material - required for instanced shadows
+      var customDepthMaterial = new THREE.MeshDepthMaterial();
+      customDepthMaterial.onBeforeCompile = material.onBeforeCompile;
+      customDepthMaterial.depthPacking = THREE.RGBADepthPacking;
+
       mesh = new THREE.Mesh( this.geometry, material );
       mesh.name = 'instanced mesh';
+      mesh.customDepthMaterial = customDepthMaterial;
       mesh.castShadow = true;
       mesh.receiveShadow = true;
       object.add( mesh );
     }
 
     this.add(object);
+
+    gui.addInput( this.pars, 'envMapIntensity', {
+      min: 0.0,
+      max: 1.0,
+      step: 0.01,
+      label: 'env level'
+    }).on( 'change', () => {
+      this.adjustEnvIntensity();
+    });
+
+    this.adjustEnvIntensity();
   }
 
   update (delta = 0, now = 0, frame = 0) {
@@ -303,6 +321,15 @@ module.exports = class PbrTest extends SketchScene {
     //   this.orientationAttribute.setXYZW( i, this.currentQ.x, this.currentQ.y, this.currentQ.z, this.currentQ.w );
     // }
     // this.orientationAttribute.needsUpdate = true;
+  }
+
+  adjustEnvIntensity( value ) {
+    if ( defined( value, false ) ) this.pars.envMapIntensity = value;
+    this.traverse( child => {
+      if ( defined( child.material, false) && defined( child.material.envMap, false ) ) {
+        child.material.envMapIntensity = this.pars.envMapIntensity;
+      }
+    });
   }
 
   onResize() {
