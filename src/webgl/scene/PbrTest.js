@@ -2,6 +2,7 @@ const SketchScene = require('./SketchScene');
 const { webgl, assets, gui } = require('../../context');
 const postProcessSetup = require('../postProcessing/basicSSAO');
 const { createIronMaterial, ironAssets } = require('../materials/dammagedIron');
+const { createMarble1Material, marble1Assets } = require('../materials/marbleFloor');
 const query = require('../../util/query');
 const defined = require('defined');
 
@@ -19,7 +20,11 @@ if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
   for ( let i in ironAssets ) {
     assets.queue( ironAssets[i] );
   }
+  for ( let i in marble1Assets ) {
+    assets.queue( marble1Assets[i] );
+  }
 }
+
 
 module.exports = class PbrTest extends SketchScene {
   constructor () {
@@ -28,7 +33,7 @@ module.exports = class PbrTest extends SketchScene {
   }
   init() {
     this.pars = {
-      envMapIntensity: 0.0
+      envMapIntensity: 0.01
       // envMapIntensity: 0.2
     };
     this.controlsInit();
@@ -61,14 +66,14 @@ module.exports = class PbrTest extends SketchScene {
 
     // ground
 
+    const marble1Mat = createMarble1Material( env.target.texture );
+    // marble1Mat.env = env.target.texture;
+    marble1Mat.side = THREE.DoubleSide;
+    marble1Mat.needsUpdate = true;
+
     const plane = new THREE.Mesh(
-      new THREE.PlaneBufferGeometry( 80, 80),
-      new THREE.MeshStandardMaterial({
-        envMap: env.target.texture,
-        metalness: 0,
-        roughness: 0.6,
-        side: THREE.DoubleSide
-      })
+      new THREE.PlaneBufferGeometry( 80, 80 ),
+      marble1Mat
     );
     plane.rotation.x = -Math.PI / 2;
     plane.position.y = -4;
