@@ -3,6 +3,7 @@ const { webgl, assets } = require('../../context');
 const basicFeedback = require('../postProcessing/basicFeedback');
 const basicDatamosh = require('../postProcessing/basicDatamosh');
 const postProcessSetup = require('../postProcessing/basicTonemap');
+const { createIronMaterial, ironAssets } = require('../materials/dammagedIron')
 const query = require('../../util/query');
 const defined = require('defined');
 
@@ -22,44 +23,20 @@ loader.setPath( path );
 
 var textureCube = loader.load( urls );
 
-assets.queue({
-  url: 'assets/textures/studio_small_02_1024/',
-  key: 'env',
-  envMap: true,
-  hdr: true,
-  pbr: true
-});
 
-assets.queue({
-  url: 'assets/textures/iron1_bpr/Metal_DamagedIron_2k_metallic.jpg',
-  key: 'iron_m',
-  texture: true
-});
-assets.queue({
-  url: 'assets/textures/iron1_bpr/Metal_DamagedIron_2k_n.jpg',
-  key: 'iron_n',
-  texture: true
-});
-assets.queue({
-  url: 'assets/textures/iron1_bpr/Metal_DamagedIron_2k_roughness.jpg',
-  key: 'iron_r',
-  texture: true
-});
-assets.queue({
-  url: 'assets/textures/iron1_bpr/Metal_DamagedIron_2k_ao.jpg',
-  key: 'iron_a',
-  texture: true
-});
-assets.queue({
-  url: 'assets/textures/iron1_bpr/Metal_DamagedIron_2k_basecolor.jpg',
-  key: 'iron_c',
-  texture: true
-});
-assets.queue({
-  url: 'assets/textures/iron1_bpr/Metal_DamagedIron_2k_h.jpg',
-  key: 'iron_h',
-  texture: true
-});
+if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
+  assets.queue({
+    url: 'assets/textures/studio_small_02_1024/',
+    key: 'env',
+    envMap: true,
+    hdr: true,
+    pbr: true
+  });
+
+  for ( let i in ironAssets ) {
+    assets.queue( ironAssets[i] );
+  }
+}
 
 module.exports = class PbrTest extends SketchScene {
   constructor () {
@@ -69,13 +46,7 @@ module.exports = class PbrTest extends SketchScene {
     this.controlsInit();
     this.controls.distance = 20;
     this.controls.position = [ 0, 0, 20 ];
-
     let env = assets.get('env');
-    global.env = env;
-    // env.mapping = THREE.EquirectangularReflectionMapping;
-    // env.minFilter = THREE.LinearMipmapLinearFilter;
-    // env.encoding = THREE.sRGBEncoding;
-
 
     webgl.scene.fog = new THREE.FogExp2(0x000000, 0.025);
     webgl.scene.background = env.cubeMap;
@@ -83,14 +54,9 @@ module.exports = class PbrTest extends SketchScene {
 
     webgl.renderer.gammaInput = true;
     webgl.renderer.gammaOutput = true;
-    // basicFeedback();
-    // basicDatamosh();
+
     postProcessSetup();
 
-    // Lights.
-
-    // this.add(new THREE.AmbientLight(0xcccccc));
-    // this.add(new THREE.DirectionalLight(0xffffff));
 
     // Objects.
 
@@ -100,32 +66,11 @@ module.exports = class PbrTest extends SketchScene {
 
     let material, mesh;
 
-    // let crackedNormal = assets.get('crackedNormal');
-    // crackedNormal.repeat.set(4, 4);
-    // crackedNormal.wrapS = crackedNormal.wrapT = THREE.RepeatWrapping;
-
-    material = new THREE.MeshStandardMaterial({
-      // color: 0xffffff * Math.random(),
-      color: 0xffffff,
-      roughness: 1.0,
-      metalness: 1.0,
-      // normalMap: crackedNormal,
-      roughnessMap: assets.get('iron_r'),
-      metalnessMap: assets.get('iron_m'),
-      normalMap: assets.get('iron_n'),
-      aoMap: assets.get('iron_a'),
-      map: assets.get('iron_c'),
-      displacement: assets.get('iron_h'),
-      normalScale: new THREE.Vector2(0.1, 0.1),
-      envMap: env.target.texture,
-      flatShading: true
-      });
-      material.needsUpdate = true
-    
+    material = createIronMaterial();
+    material.envMap = env.target.texture;
+    material.needsUpdate = true;
 
     for (let i = 0; i < 100; ++i) {
-
-
       mesh = new THREE.Mesh(geometry, material);
       mesh.position.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
       mesh.position.multiplyScalar(Math.random() * 10);
@@ -136,6 +81,7 @@ module.exports = class PbrTest extends SketchScene {
 
     this.add(object);
   }
+
   update (dt = 0) {
     super.update();
     this.object.rotation.x += dt * 0.1;

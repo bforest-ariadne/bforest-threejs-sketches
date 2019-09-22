@@ -71,26 +71,14 @@ module.exports = class FeedbackTest extends SketchScene {
     this.controls.position = [ 0, 0, 20 ];
 
     let env = assets.get('env');
-    global.env = env;
-    // env.mapping = THREE.EquirectangularReflectionMapping;
-    // env.minFilter = THREE.LinearMipmapLinearFilter;
-    // env.encoding = THREE.sRGBEncoding;
-
 
     webgl.scene.fog = new THREE.FogExp2(0x000000, 0.025);
     webgl.scene.background = env.cubeMap;
     webgl.renderer.setClearColor( webgl.scene.fog.color, 1);
-
     webgl.renderer.gammaInput = true;
     webgl.renderer.gammaOutput = true;
-    // basicFeedback();
-    // basicDatamosh();
+
     postProcessSetup();
-
-    // Lights.
-
-    // this.add(new THREE.AmbientLight(0xcccccc));
-    // this.add(new THREE.DirectionalLight(0xffffff));
 
     // Objects.
 
@@ -99,12 +87,7 @@ module.exports = class FeedbackTest extends SketchScene {
     const geometry = new THREE.SphereBufferGeometry(1, 4, 4);
 
     let material, mesh;
-
-    // let crackedNormal = assets.get('crackedNormal');
-    // crackedNormal.repeat.set(4, 4);
-    // crackedNormal.wrapS = crackedNormal.wrapT = THREE.RepeatWrapping;
     
-
     for (let i = 0; i < 100; ++i) {
       material = new THREE.MeshStandardMaterial({
         // color: 0xffffff * Math.random(),
