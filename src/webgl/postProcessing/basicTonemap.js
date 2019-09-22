@@ -22,39 +22,16 @@ module.exports = function basicBloom( useGui = true ) {
     adaptationRate: 5.0
   });
 
-  const datamoshEffect = new DatamoshEffect({ mixAmount: 0.1, live: true });
 
-  const smaaPass = new EffectPass(webgl.camera, smaaEffect );
-  smaaPass.dithering = true;
-
-  const effectPass = new EffectPass(webgl.camera, datamoshEffect, toneMappingEffect );
+  const effectPass = new EffectPass(webgl.camera, smaaEffect, toneMappingEffect );
   // smaaPass.renderToScreen = true;
+  effectPass.dithering = true;
   effectPass.renderToScreen = true;
 
   webgl.composer.addPass(new RenderPass(webgl.scene, webgl.camera));
-  webgl.composer.addPass(smaaPass);
   webgl.composer.addPass(effectPass);
 
   const setupGui = () => {
-    // const params = {
-    //   threshold: 0.0,
-    //   offset: 50
-    // };
-
-    gui.addInput( datamoshEffect.dataMoshMaterial.uniforms.threshold, 'value', {
-      min: 0,
-      max: 1,
-      step: 0.01
-    }).on( 'change', () => {
-      // datamoshEffect.dataMoshMaterial.uniforms.threshold.value = Number.parseFloat(params.threshold);
-    });
-
-    gui.addInput( datamoshEffect.dataMoshMaterial.uniforms.offset, 'value', {
-      min: 0,
-      max: 300
-    }).on( 'change', () => {
-      // datamoshEffect.dataMoshMaterial.uniforms.offset.value = Number.parseFloat(params.offset);
-    });
 
     const effect = toneMappingEffect;
     const blendMode = effect.blendMode;
@@ -70,6 +47,7 @@ module.exports = function basicBloom( useGui = true ) {
 			"opacity": blendMode.opacity.value,
 			"blend mode": blendMode.blendFunction
 		};
+
 
 
 		let f = gui.addFolder({title: "Luminance"});
@@ -111,6 +89,23 @@ module.exports = function basicBloom( useGui = true ) {
 			effect.uniforms.get("middleGrey").value = params["middle grey"];
 
 		});
+
+		// f.open();
+
+		// gui.addInput(params, "opacity", {min: 0.0, max: 1.0, step: 0.01}).on( 'change',() => {
+
+		// 	blendMode.opacity.value = params.opacity;
+
+		// });
+
+		// gui.addInput(params, "blend mode", BlendFunction).on( 'change',() => {
+
+		// 	blendMode.blendFunction = Number.parseInt(params["blend mode"]);
+		// 	pass.recompile();
+
+		// });
+
+		// gui.addInput(effectPass, "dithering");
 
 
     global.toneMappingEffect = toneMappingEffect;

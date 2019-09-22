@@ -1,12 +1,12 @@
 const SketchScene = require('./SketchScene');
 const { webgl, assets } = require('../../context');
-// const basicFeedback = require('../postProcessing/basicFeedback');
-// const basicDatamosh = require('../postProcessing/basicDatamosh');
-const postProcessSetup = require('../postProcessing/basicDatamosh');
+const basicFeedback = require('../postProcessing/basicFeedback');
+const basicDatamosh = require('../postProcessing/basicDatamosh');
+const postProcessSetup = require('../postProcessing/basicTonemap');
 const query = require('../../util/query');
 const defined = require('defined');
 
-const name = 'feedbacktest';
+const name = 'pbrtest';
 
 const path = 'https://vanruesc.github.io/postprocessing/public/demo/textures/skies/space3/';
 const format = '.jpg';
@@ -61,7 +61,7 @@ assets.queue({
   texture: true
 });
 
-module.exports = class FeedbackTest extends SketchScene {
+module.exports = class PbrTest extends SketchScene {
   constructor () {
     super(name);
   }
@@ -103,26 +103,28 @@ module.exports = class FeedbackTest extends SketchScene {
     // let crackedNormal = assets.get('crackedNormal');
     // crackedNormal.repeat.set(4, 4);
     // crackedNormal.wrapS = crackedNormal.wrapT = THREE.RepeatWrapping;
+
+    material = new THREE.MeshStandardMaterial({
+      // color: 0xffffff * Math.random(),
+      color: 0xffffff,
+      roughness: 1.0,
+      metalness: 1.0,
+      // normalMap: crackedNormal,
+      roughnessMap: assets.get('iron_r'),
+      metalnessMap: assets.get('iron_m'),
+      normalMap: assets.get('iron_n'),
+      aoMap: assets.get('iron_a'),
+      map: assets.get('iron_c'),
+      displacement: assets.get('iron_h'),
+      normalScale: new THREE.Vector2(0.1, 0.1),
+      envMap: env.target.texture,
+      flatShading: true
+      });
+      material.needsUpdate = true
     
 
     for (let i = 0; i < 100; ++i) {
-      material = new THREE.MeshStandardMaterial({
-        // color: 0xffffff * Math.random(),
-        color: 0xffffff,
-        roughness: 1.0,
-        metalness: 1.0,
-        // normalMap: crackedNormal,
-        roughnessMap: assets.get('iron_r'),
-        metalnessMap: assets.get('iron_m'),
-        normalMap: assets.get('iron_n'),
-        aoMap: assets.get('iron_a'),
-        map: assets.get('iron_c'),
-        displacement: assets.get('iron_h'),
-        normalScale: new THREE.Vector2(0.1, 0.1),
-        envMap: env.target.texture,
-        flatShading: true
-      });
-      material.needsUpdate = true
+
 
       mesh = new THREE.Mesh(geometry, material);
       mesh.position.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();

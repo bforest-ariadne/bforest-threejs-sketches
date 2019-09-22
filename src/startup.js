@@ -9,7 +9,8 @@ const scenes = [
   require('./webgl/scene/SpinningBox'),
   require('./webgl/scene/bpose'),
   require('./webgl/scene/PhysicsTest'),
-  require('./webgl/scene/FeedbackTest')
+  require('./webgl/scene/FeedbackTest'),
+  require('./webgl/scene/PbrTest'),
 ];
 
 const DefaultScene = scenes[0];
