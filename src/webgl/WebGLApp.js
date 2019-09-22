@@ -49,7 +49,7 @@ module.exports = class WebGLApp extends EventEmitter {
       alpha: false,
       // enabled for saving screen shots of the canvas,
       // may wish to disable this for perf reasons
-      preserveDrawingBuffer: false,
+      // preserveDrawingBuffer: false,
       failIfMajorPerformanceCaveat: true
     }, opt));
 
@@ -154,6 +154,7 @@ module.exports = class WebGLApp extends EventEmitter {
 
     this.update( this.delta, nowMsec / 1000, this.frameCount );
     this.draw();
+    this.emit('afterRender');
     this.frameCount++;
 
     if ( this._checkReady() ) this.emit('show');

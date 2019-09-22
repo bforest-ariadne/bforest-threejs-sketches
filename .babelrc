@@ -9,6 +9,6 @@
   "ignore": "src/vendor/*.js",
   "plugins": [
     "babel-plugin-transform-class-properties",
-    "import-to-require"
+    "babel-plugin-import-to-require"
   ]
 }

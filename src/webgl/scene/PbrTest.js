@@ -35,14 +35,16 @@ module.exports = class PbrTest extends SketchScene {
     this.N = 100;
     const smooth = false;
 
-    webgl.scene.fog = new THREE.FogExp2(0x000000, 0.025);
+    webgl.scene.fog = new THREE.FogExp2(0x000000, 0.00025);
     webgl.scene.background = env.cubeMap;
     webgl.renderer.setClearColor( webgl.scene.fog.color, 1);
 
     webgl.renderer.gammaInput = true;
     webgl.renderer.gammaOutput = true;
+    webgl.renderer.shadowMap.enabled = true;
+    webgl.renderer.autoClear = false;
 
-    postProcessSetup();
+    // postProcessSetup();
 
     // Objects.
     const object = new THREE.Object3D();
@@ -51,6 +53,66 @@ module.exports = class PbrTest extends SketchScene {
     material = createIronMaterial();
     material.envMap = env.target.texture;
     material.needsUpdate = true;
+
+    // ground
+
+    const plane = new THREE.Mesh(
+      new THREE.PlaneBufferGeometry( 80, 80),
+      new THREE.MeshStandardMaterial({
+        envMap: env.target.texture,
+        metalness: 0,
+        roughness: 0.6
+      })
+    );
+    plane.rotation.x = -Math.PI / 2;
+    plane.position.y = -4;
+    plane.receiveShadow = true;
+    this.add( plane );
+
+    // spotlight
+    const spotlight = new THREE.SpotLight( 0xffffff, 1, 0, Math.PI / 5, 0.3 );
+    spotlight.position.set( 5, 12, 5 );
+    spotlight.target.position.set( 0, 0, 0 );
+    spotlight.castShadow = true;
+    spotlight.shadow.mapSize.width = 1024;
+    spotlight.shadow.mapSize.height = 1024;
+    spotlight.shadow.camera.near = 5;
+    spotlight.shadow.camera.far = 30;
+    spotlight.name = 'spotlight';
+    this.add( spotlight );
+    this.spotlight = spotlight;
+
+    this.lightHelper = new THREE.SpotLightHelper( spotlight );
+    this.add( this.lightHelper );
+
+    const testBox = new THREE.Mesh(
+      new THREE.BoxBufferGeometry( 2, 2, 2),
+      new THREE.MeshStandardMaterial({
+        envMap: env.target.texture,
+        metalness: 0,
+        roughness: 0.6,
+        color: '0x888888'
+      })
+    );
+    testBox.position.y = -2;
+    testBox.receiveShadow = true;
+    testBox.castShadow = true;
+    this.add( testBox );
+
+    this.shadowCameraHelper = new THREE.CameraHelper( spotlight.shadow.camera );
+    this.add( this.shadowCameraHelper );
+
+    this.add( new THREE.CameraHelper( spotlight.shadow.camera ) );
+
+    this.spotlightShadowMapViewer = new THREE.ShadowMapViewer( spotlight );
+    this.spotlightShadowMapViewer.size.set( 128, 128 );
+    this.spotlightShadowMapViewer.position.set( 10, 70 );
+    this.spotlightShadowMapViewer.update();
+    webgl.on( 'afterRender', () => {
+      if ( defined( this.spotlight.shadow.map ) ) this.spotlightShadowMapViewer.render( webgl.renderer );
+    });
+
+    
 
     let bufferGeometry;
     if ( smooth ) {
@@ -215,6 +277,8 @@ module.exports = class PbrTest extends SketchScene {
 
       mesh = new THREE.Mesh( this.geometry, material );
       mesh.name = 'instanced mesh';
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
       object.add( mesh );
     }
 
@@ -223,6 +287,9 @@ module.exports = class PbrTest extends SketchScene {
 
   update (delta = 0, now = 0, frame = 0) {
     super.update();
+    this.lightHelper.update();
+    this.shadowCameraHelper.update();
+
     this.object.rotation.x += delta * 0.1;
 
     this.shaderUniforms.time.value = now;
@@ -236,5 +303,9 @@ module.exports = class PbrTest extends SketchScene {
     //   this.orientationAttribute.setXYZW( i, this.currentQ.x, this.currentQ.y, this.currentQ.z, this.currentQ.w );
     // }
     // this.orientationAttribute.needsUpdate = true;
+  }
+
+  onResize() {
+    this.spotlightShadowMapViewer.updateForWindowResize();
   }
 };
