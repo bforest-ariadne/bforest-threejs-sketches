@@ -1,6 +1,6 @@
 const SketchScene = require('./SketchScene');
 const { webgl, assets, gui } = require('../../context');
-const postProcessSetup = require('../postProcessing/basicTonemap');
+const postProcessSetup = require('../postProcessing/basicSSAO');
 const { createIronMaterial, ironAssets } = require('../materials/dammagedIron');
 const query = require('../../util/query');
 const defined = require('defined');
@@ -24,10 +24,12 @@ if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
 module.exports = class PbrTest extends SketchScene {
   constructor () {
     super(name);
+    this.animate = true;
   }
   init() {
     this.pars = {
-      envMapIntensity: 0.2
+      envMapIntensity: 0.0
+      // envMapIntensity: 0.2
     };
     this.controlsInit();
     this.controls.distance = 20;
@@ -47,15 +49,15 @@ module.exports = class PbrTest extends SketchScene {
     webgl.renderer.shadowMap.enabled = true;
     webgl.renderer.autoClear = false;
 
-    // postProcessSetup();
+    postProcessSetup();
 
     // Objects.
     const object = new THREE.Object3D();
     this.object = object;
-    let material, mesh;
-    material = createIronMaterial();
-    material.envMap = env.target.texture;
-    material.needsUpdate = true;
+    let ironMaterial, mesh;
+    ironMaterial = createIronMaterial();
+    ironMaterial.envMap = env.target.texture;
+    ironMaterial.needsUpdate = true;
 
     // ground
 
@@ -64,46 +66,54 @@ module.exports = class PbrTest extends SketchScene {
       new THREE.MeshStandardMaterial({
         envMap: env.target.texture,
         metalness: 0,
-        roughness: 0.6
+        roughness: 0.6,
+        side: THREE.DoubleSide
       })
     );
     plane.rotation.x = -Math.PI / 2;
     plane.position.y = -4;
     plane.receiveShadow = true;
+    plane.name = 'ground';
+    plane.onBeforeRender = (renderer, scene, camera, geometry, material) => {
+      material.side = THREE.DoubleSide;
+    };
     this.add( plane );
+
+    
 
     // spotlight
     const spotlight = new THREE.SpotLight( 0xffffff, 1, 0, Math.PI / 5, 0.3 );
     spotlight.position.set( 5, 12, 5 );
     spotlight.target.position.set( 0, 0, 0 );
     spotlight.castShadow = true;
-    spotlight.shadow.mapSize.width = 1024;
-    spotlight.shadow.mapSize.height = 1024;
-    spotlight.shadow.camera.near = 5;
+    spotlight.shadow.mapSize.width = 2048;
+    spotlight.shadow.mapSize.height = 2048;
+    spotlight.shadow.camera.near = 1;
     spotlight.shadow.camera.far = 30;
+    spotlight.distance = 30;
     spotlight.name = 'spotlight';
     this.add( spotlight );
     this.spotlight = spotlight;
 
-    this.lightHelper = new THREE.SpotLightHelper( spotlight );
-    this.add( this.lightHelper );
+    // this.lightHelper = new THREE.SpotLightHelper( spotlight );
+    // this.add( this.lightHelper );
 
-    const testBox = new THREE.Mesh(
-      new THREE.BoxBufferGeometry( 2, 2, 2),
-      new THREE.MeshStandardMaterial({
-        envMap: env.target.texture,
-        metalness: 0,
-        roughness: 0.6,
-        color: '0x888888'
-      })
-    );
-    testBox.position.y = -2;
-    testBox.receiveShadow = true;
-    testBox.castShadow = true;
-    this.add( testBox );
+    // const testBox = new THREE.Mesh(
+    //   new THREE.BoxBufferGeometry( 2, 2, 2),
+    //   new THREE.MeshStandardMaterial({
+    //     envMap: env.target.texture,
+    //     metalness: 0,
+    //     roughness: 0.6,
+    //     color: '0x888888'
+    //   })
+    // );
+    // testBox.position.y = -2;
+    // testBox.receiveShadow = true;
+    // testBox.castShadow = true;
+    // this.add( testBox );
 
-    this.shadowCameraHelper = new THREE.CameraHelper( spotlight.shadow.camera );
-    this.add( this.shadowCameraHelper );
+    // this.shadowCameraHelper = new THREE.CameraHelper( spotlight.shadow.camera );
+    // this.add( this.shadowCameraHelper );
 
     this.add( new THREE.CameraHelper( spotlight.shadow.camera ) );
 
@@ -118,10 +128,11 @@ module.exports = class PbrTest extends SketchScene {
     let bufferGeometry;
     if ( smooth ) {
       bufferGeometry = new THREE.BoxBufferGeometry(2, 2, 2, 9, 9, 9);
-      material.flatShading = false;
+      ironMaterial.flatShading = false;
     } else {
       bufferGeometry = new THREE.SphereBufferGeometry(1, 4, 4);
-      material.flatShading = true;
+      // bufferGeometry = new THREE.BoxBufferGeometry(2, 2, 2, 9, 9, 9);
+      ironMaterial.flatShading = true;
     }
 
     const positions = [];
@@ -173,7 +184,7 @@ module.exports = class PbrTest extends SketchScene {
 
         radius.push(Math.min(x, Math.min(y, z)));
       } else {
-        mesh = new THREE.Mesh(bufferGeometry, material);
+        mesh = new THREE.Mesh(bufferGeometry, ironMaterial);
         mesh.position.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
         mesh.position.multiplyScalar(Math.random() * 10);
         mesh.rotation.set(Math.random() * 2, Math.random() * 2, Math.random() * 2);
@@ -202,7 +213,7 @@ module.exports = class PbrTest extends SketchScene {
         speed: {value: 50}
       };
 
-      material.onBeforeCompile = shader => {
+      ironMaterial.onBeforeCompile = shader => {
         shader.uniforms.time = this.shaderUniforms.time;
         shader.uniforms.speed = this.shaderUniforms.speed;
 
@@ -245,26 +256,26 @@ module.exports = class PbrTest extends SketchScene {
 
           mat4 r = rotateXYZ();
 
-          #ifndef FLAT_SHADED
-            vec3 signs = sign(position);
-            float radius = radius - 0.001;
-            vec3 box = scale - vec3(radius);
-            box = vec3(max(0.0, box.x), max(0.0, box.y), max(0.0, box.z));
-            vec3 p = signs * box;
+          #if !defined(FLAT_SHADED) && !defined(NORMAL)
+            // vec3 signs = sign(position);
+            // float radius = radius - 0.001;
+            // vec3 box = scale - vec3(radius);
+            // box = vec3(max(0.0, box.x), max(0.0, box.y), max(0.0, box.z));
+            // vec3 p = signs * box;
         
-            transformed = signs * box + normalize(position) * radius;
+            // transformed = signs * box + normalize(position) * radius;
             
-            #ifdef STANDARD
-              // re-compute normals for correct shadows and reflections
-              objectNormal = all(equal(p, transformed)) ? normal : normalize(position); 
-              transformedNormal = normalize(normalMatrix * objectNormal);
-              // vNormal = transformedNormal;
+            // #ifdef STANDARD
+            //   // re-compute normals for correct shadows and reflections
+            //   objectNormal = all(equal(p, transformed)) ? normal : normalize(position); 
+            //   transformedNormal = normalize(normalMatrix * objectNormal);
+            //   // vNormal = transformedNormal;
 
-              vNormal = (vec4(transformedNormal, 1.0) * r).xyz;
-            #endif
+            //   vNormal = (vec4(transformedNormal, 1.0) * r).xyz;
+            // #endif
           #endif
 
-          #ifdef FLAT_SHADED
+          #if !defined(FLAT_SHADED) && !defined(NORMAL)
             transformed *= scale.x;
           #endif
           // vec3 vPosition = applyQuaternionToVector( orientation, transformed );
@@ -278,12 +289,16 @@ module.exports = class PbrTest extends SketchScene {
 
       // custom depth material - required for instanced shadows
       var customDepthMaterial = new THREE.MeshDepthMaterial();
-      customDepthMaterial.onBeforeCompile = material.onBeforeCompile;
+      customDepthMaterial.onBeforeCompile = ironMaterial.onBeforeCompile;
       customDepthMaterial.depthPacking = THREE.RGBADepthPacking;
 
-      mesh = new THREE.Mesh( this.geometry, material );
+      mesh = new THREE.Mesh( this.geometry, ironMaterial );
       mesh.name = 'instanced mesh';
       mesh.customDepthMaterial = customDepthMaterial;
+      mesh.onBeforeRender = (renderer, scene, camera, geometry, material) => {
+        material.onBeforeCompile = ironMaterial.onBeforeCompile;
+        material.side = ironMaterial.side;
+      };
       mesh.castShadow = true;
       mesh.receiveShadow = true;
       object.add( mesh );
@@ -305,12 +320,14 @@ module.exports = class PbrTest extends SketchScene {
 
   update (delta = 0, now = 0, frame = 0) {
     super.update();
-    this.lightHelper.update();
-    this.shadowCameraHelper.update();
+    if ( defined( this.lightHelper ) ) this.lightHelper.update();
+    if ( defined( this.shadowCameraHelper ) ) this.shadowCameraHelper.update();
+
+    if ( !this.animate ) return;
 
     this.object.rotation.x += delta * 0.1;
 
-    this.shaderUniforms.time.value = now;
+    if ( defined( this.shaderUniforms ) ) this.shaderUniforms.time.value = now;
 
     // let qDelta = delta * 0.2;
 
@@ -334,5 +351,11 @@ module.exports = class PbrTest extends SketchScene {
 
   onResize() {
     this.spotlightShadowMapViewer.updateForWindowResize();
+  }
+
+  onKeydown(ev) {
+    if ( ev.keyCode === 32 && !ev.shiftKey ) {
+      this.animate = !this.animate;
+    }
   }
 };
