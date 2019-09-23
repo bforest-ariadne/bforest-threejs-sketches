@@ -1,6 +1,6 @@
 const { assets } = require('../../context');
 
-const marble1Assets = [
+const materialAssets = [
   {
     url: 'assets/textures/notOpen/marbleFloor1/marbleFloor1_metallic.jpg',
     key: 'floor_m',
@@ -32,23 +32,23 @@ const marble1Assets = [
     texture: true
   }];
 
-const createMarble1Material = ( envMap ) => {
+const createMaterial = ( envMap ) => {
   const ironMaterial = new THREE.MeshStandardMaterial({
-    color: 0xffffff,
-    roughness: 1.0,
-    metalness: 1.0,
+    // color: 0xffffff,
+    // roughness: 1.0,
+    // metalness: 1.0,
     roughnessMap: assets.get('floor_r'),
     metalnessMap: assets.get('floor_m'),
     normalMap: assets.get('floor_n'),
     aoMap: assets.get('floor_a'),
     map: assets.get('floor_c'),
-    displacementMap: assets.get('floor_h'),
+    // displacementMap: assets.get('floor_h'),
     // normalScale: new THREE.Vector2(0.1, 0.1),
     envMap: envMap,
     flatShading: true
   });
 
-  const textures = [ ironMaterial.roughnessMap, ironMaterial.metalnessMap, ironMaterial.normalMap, ironMaterial.map, ironMaterial.aoMap, ironMaterial.displacementMap ];
+  const textures = [ ironMaterial.roughnessMap, ironMaterial.metalnessMap, ironMaterial.normalMap, ironMaterial.map, ironMaterial.aoMap ];
 
   for ( let i in textures ) {
     textures[i].wrapS = THREE.RepeatWrapping;
@@ -60,4 +60,4 @@ const createMarble1Material = ( envMap ) => {
   return ironMaterial;
 };
 
-module.exports = { createMarble1Material, marble1Assets };
+module.exports = { createMaterial, materialAssets };

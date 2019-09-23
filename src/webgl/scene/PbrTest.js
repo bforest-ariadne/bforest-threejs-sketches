@@ -1,8 +1,8 @@
 const SketchScene = require('./SketchScene');
 const { webgl, assets, gui } = require('../../context');
 const postProcessSetup = require('../postProcessing/basicSSAO');
-const { createIronMaterial, ironAssets } = require('../materials/dammagedIron');
-const { createMetal1Material, metal1Assets } = require('../materials/metalFloor1');
+const { createIronMaterial, ironAssets } = require('../materials/dammagedIron1');
+const { createMaterial, materialAssets } = require('../materials/marbleFloor');
 const query = require('../../util/query');
 const defined = require('defined');
 
@@ -20,8 +20,8 @@ if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
   for ( let i in ironAssets ) {
     assets.queue( ironAssets[i] );
   }
-  for ( let i in metal1Assets ) {
-    assets.queue( metal1Assets[i] );
+  for ( let i in materialAssets ) {
+    assets.queue( materialAssets[i] );
   }
 }
 
@@ -33,12 +33,12 @@ module.exports = class PbrTest extends SketchScene {
   }
   init() {
     this.pars = {
-      envMapIntensity: 0.01
+      envMapIntensity: 0.12
       // envMapIntensity: 0.2
     };
     this.controlsInit();
-    this.controls.distance = 20;
-    this.controls.position = [ 0, 0, 20 ];
+    this.controls.distance = 10;
+    this.controls.position = [ 8, 2, -7.4 ];
     let env = assets.get('env');
 
     this.useBufferGeo = true;
@@ -53,6 +53,7 @@ module.exports = class PbrTest extends SketchScene {
     webgl.renderer.gammaOutput = true;
     webgl.renderer.shadowMap.enabled = true;
     webgl.renderer.autoClear = false;
+    webgl.renderer.physicallyCorrectLights = true;
 
     postProcessSetup();
 
@@ -66,13 +67,13 @@ module.exports = class PbrTest extends SketchScene {
 
     // ground
 
-    const marble1Mat = createMetal1Material( env.target.texture );
+    const marble1Mat = createMaterial( env.target.texture );
     // marble1Mat.env = env.target.texture;
     marble1Mat.side = THREE.DoubleSide;
     marble1Mat.needsUpdate = true;
 
     const plane = new THREE.Mesh(
-      new THREE.PlaneBufferGeometry( 80, 80 ),
+      new THREE.PlaneBufferGeometry( 40, 40, 40, 40 ),
       marble1Mat
     );
     plane.rotation.x = -Math.PI / 2;
@@ -87,7 +88,7 @@ module.exports = class PbrTest extends SketchScene {
     
 
     // spotlight
-    const spotlight = new THREE.SpotLight( 0xffffff, 1, 0, Math.PI / 5, 0.3 );
+    const spotlight = new THREE.SpotLight( 0xffffff, 100, 0, Math.PI / 5, 0.3 );
     spotlight.position.set( 5, 12, 5 );
     spotlight.target.position.set( 0, 0, 0 );
     spotlight.castShadow = true;
@@ -120,15 +121,15 @@ module.exports = class PbrTest extends SketchScene {
     // this.shadowCameraHelper = new THREE.CameraHelper( spotlight.shadow.camera );
     // this.add( this.shadowCameraHelper );
 
-    this.add( new THREE.CameraHelper( spotlight.shadow.camera ) );
+    // this.add( new THREE.CameraHelper( spotlight.shadow.camera ) );
 
-    this.spotlightShadowMapViewer = new THREE.ShadowMapViewer( spotlight );
-    this.spotlightShadowMapViewer.size.set( 128, 128 );
-    this.spotlightShadowMapViewer.position.set( 10, 70 );
-    this.spotlightShadowMapViewer.update();
-    webgl.on( 'afterRender', () => {
-      if ( defined( this.spotlight.shadow.map ) ) this.spotlightShadowMapViewer.render( webgl.renderer );
-    });
+    // this.spotlightShadowMapViewer = new THREE.ShadowMapViewer( spotlight );
+    // this.spotlightShadowMapViewer.size.set( 128, 128 );
+    // this.spotlightShadowMapViewer.position.set( 10, 70 );
+    // this.spotlightShadowMapViewer.update();
+    // webgl.on( 'afterRender', () => {
+    //   if ( defined( this.spotlight.shadow.map ) ) this.spotlightShadowMapViewer.render( webgl.renderer );
+    // });
 
     let bufferGeometry;
     if ( smooth ) {
@@ -310,6 +311,7 @@ module.exports = class PbrTest extends SketchScene {
     }
 
     this.add(object);
+    object.scale.multiplyScalar(0.36);
 
     gui.addInput( this.pars, 'envMapIntensity', {
       min: 0.0,
@@ -330,9 +332,10 @@ module.exports = class PbrTest extends SketchScene {
 
     if ( !this.animate ) return;
 
-    this.object.rotation.x += delta * 0.1;
+    this.object.rotation.x += delta * 0.2;
+    this.object.rotation.y += delta * 0.3;
 
-    if ( defined( this.shaderUniforms ) ) this.shaderUniforms.time.value = now;
+    if ( defined( this.shaderUniforms ) ) this.shaderUniforms.time.value = now*8;
 
     // let qDelta = delta * 0.2;
 
