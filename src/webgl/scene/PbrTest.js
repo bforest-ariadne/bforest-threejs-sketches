@@ -84,7 +84,7 @@ module.exports = class PbrTest extends SketchScene {
       material.side = THREE.DoubleSide;
     };
     this.add( plane );
-
+    this.plane = plane;
     
 
     // spotlight

@@ -8,6 +8,7 @@ require('three/examples/js/pmrem/PMREMGenerator.js');
 require('three/examples/js/pmrem/PMREMCubeUVPacker.js');
 require('three/examples/js/shaders/UnpackDepthRGBAShader');
 require('three/examples/js/utils/ShadowMapViewer.js');
+require('three/examples/js/exporters/GLTFExporter');
 // require('three/examples/js/ShaderSkin.js');
 require('three/examples/js/shaders/BleachBypassShader.js');
 require('three/examples/js/shaders/ConvolutionShader.js');

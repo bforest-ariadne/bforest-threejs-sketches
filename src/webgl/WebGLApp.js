@@ -2,6 +2,7 @@ const { EventEmitter } = require('events');
 const assign = require('object-assign');
 const defined = require('defined');
 const rightNow = require('right-now');
+const exportGLTF = require('../util/exportGLTF');
 // const noop = () => {};
 const createTouches = require('touches');
 const query = require('../util/query');
@@ -251,6 +252,10 @@ module.exports = class WebGLApp extends EventEmitter {
     // save
     const file = defined(opt.fileName, defaultFile('.png'));
     saveDataURI(file, dataURI);
+  }
+
+  exportGLTF( input, binary=true ) {
+    exportGLTF( input, binary );
   }
 
   onTouchStart( ev, pos ) {
