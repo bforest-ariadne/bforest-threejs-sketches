@@ -23,7 +23,7 @@ if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
   });
 
   assets.queue({
-    url: 'assets/materials/iron2.glb',
+    url: 'assets/materials/iron1_basis.gltf',
     key: 'iron2'
   });
 }
@@ -72,6 +72,17 @@ module.exports = class PbrTest extends SketchScene {
     const object = new THREE.Object3D();
     this.object = object;
     let mesh;
+
+    // var textures = [ ironMaterial.roughnessMap, ironMaterial.normalMap, ironMaterial.map ];
+
+    // for ( let i in textures ) {
+    //   // textures[i].wrapS = THREE.RepeatWrapping;
+    //   // textures[i].wrapT = THREE.RepeatWrapping;
+    //   // textures[i].repeat = new THREE.Vector2( 10, 10 );
+    //   textures[i].magFilter = THREE.LinearFilter;
+    //   textures[i].minFilter = THREE.LinearMipMapLinearFilter;
+    // }
+
     ironMaterial.envMap = env.target.texture;
     ironMaterial.needsUpdate = true;
 
@@ -83,6 +94,17 @@ module.exports = class PbrTest extends SketchScene {
         marble1Mat = child.material;
       }
     });
+
+    var textures = [ marble1Mat.roughnessMap, marble1Mat.normalMap, marble1Mat.map ];
+
+    for ( let i in textures ) {
+      textures[i].wrapS = THREE.RepeatWrapping;
+      textures[i].wrapT = THREE.RepeatWrapping;
+      textures[i].repeat = new THREE.Vector2( 10, 10 );
+      textures[i].magFilter = THREE.LinearFilter;
+      textures[i].minFilter = THREE.LinearMipMapLinearFilter;
+    }
+
     marble1Mat.envMap = env.target.texture;
     marble1Mat.side = THREE.DoubleSide;
     marble1Mat.needsUpdate = true;
@@ -321,6 +343,7 @@ module.exports = class PbrTest extends SketchScene {
       };
       mesh.castShadow = true;
       mesh.receiveShadow = true;
+      global.mesh = mesh;
       object.add( mesh );
     }
 
@@ -366,7 +389,7 @@ module.exports = class PbrTest extends SketchScene {
   }
 
   onKeydown(ev) {
-    if ( ev.keyCode === 32 && !ev.shiftKey ) {
+    if ( ev.keyCode === 32 && ev.shiftKey ) {
       this.animate = !this.animate;
     }
   }

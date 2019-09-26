@@ -189,7 +189,7 @@
   ],
   "images": [
     {
-      "mimeType": "image/jpeg",
+      "mimeType": "image/basis",
       "uri": "../textures/notOpen/iron2_pbr/aorm.basis"
     },
     {
@@ -218,8 +218,7 @@
     }
   ],
   "extensionsUsed": [
-    "GOOGLE_texture_basis",
-    "KHR_texture_transform"
+    "GOOGLE_texture_basis"
   ],
   "extensionsRequired": [
     "GOOGLE_texture_basis"

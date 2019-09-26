@@ -136,6 +136,17 @@
       "pbrMetallicRoughness": {
         "metallicFactor": 0.5,
         "roughnessFactor": 0.5,
+        "metallicRoughnessTexture": {
+          "index": 2,
+          "extensions": {
+            "KHR_texture_transform": {
+              "scale": [
+                4,
+                4
+              ]
+            }
+          }
+        },
         "baseColorTexture": {
           "index": 0,
           "extensions": {
