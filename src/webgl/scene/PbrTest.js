@@ -6,6 +6,8 @@ const defined = require('defined');
 
 const name = 'pbrtest';
 
+// const textureCompression = webgl.mobile ? 'PVRTC' : 'DXT1';
+
 if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
   assets.queue({
     url: 'assets/textures/studio_small_02_1024/',
@@ -16,7 +18,7 @@ if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
   });
 
   assets.queue({
-    url: 'assets/materials/marbleFloor.glb',
+    url: `assets/materials/marbleFloor.glb`,
     key: 'marbleFloor'
   });
 
@@ -51,6 +53,7 @@ module.exports = class PbrTest extends SketchScene {
 
     webgl.renderer.gammaInput = true;
     webgl.renderer.gammaOutput = true;
+    webgl.renderer.gammaFactor = 2.2;
     webgl.renderer.shadowMap.enabled = true;
     webgl.renderer.autoClear = false;
     webgl.renderer.physicallyCorrectLights = true;
@@ -58,8 +61,6 @@ module.exports = class PbrTest extends SketchScene {
     postProcessSetup();
 
     let ironMaterial;
-
-
 
     assets.get('iron2').scene.traverse(child => {
       if (child.isMesh && child.material) {
@@ -349,16 +350,6 @@ module.exports = class PbrTest extends SketchScene {
     this.object.rotation.y += delta * 0.3;
 
     if ( defined( this.shaderUniforms ) ) this.shaderUniforms.time.value = now * 8;
-
-    // let qDelta = delta * 0.2;
-
-    // this.tmpQ.set( this.moveQ.x * qDelta, this.moveQ.y * qDelta, this.moveQ.z * qDelta, 1 ).normalize();
-    // for ( let i = 0, il = this.orientationAttribute.count; i < il; i++ ) {
-    //   this.currentQ.fromArray( this.orientationAttribute.array, ( i * 4 ) );
-    //   this.currentQ.multiply( this.tmpQ );
-    //   this.orientationAttribute.setXYZW( i, this.currentQ.x, this.currentQ.y, this.currentQ.z, this.currentQ.w );
-    // }
-    // this.orientationAttribute.needsUpdate = true;
   }
 
   adjustEnvIntensity( value ) {
@@ -371,7 +362,7 @@ module.exports = class PbrTest extends SketchScene {
   }
 
   onResize() {
-    this.spotlightShadowMapViewer.updateForWindowResize();
+    if ( defined( this.shadowCameraHelper ) ) this.spotlightShadowMapViewer.updateForWindowResize();
   }
 
   onKeydown(ev) {

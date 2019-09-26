@@ -1,11 +1,19 @@
-module.exports = function exportGLTF( input, binary = true ) {
+module.exports = function exportGLTF( input, options = {} ) {
   var gltfExporter = new THREE.GLTFExporter();
-  var options = {
-    onlyVisible: true,
-    binary: binary,
-    forcePowerOfTwoTextures: true,
-    forceIndices: true
-  };
+
+  // var options = {
+  //   onlyVisible: true,
+  //   binary: binary,
+  //   forcePowerOfTwoTextures: true,
+  //   forceIndices: true
+  // };
+
+  if ( options.material ) {
+    const geo = new THREE.PlaneBufferGeometry( 10, 10, 1, 1 );
+    const mesh = input.clone();
+    mesh.geometry = geo;
+    input = mesh;
+  }
   gltfExporter.parse( input, function ( result ) {
     if ( result instanceof ArrayBuffer ) {
       saveArrayBuffer( result, 'scene.glb' );

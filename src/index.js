@@ -1,7 +1,9 @@
 global.THREE = require('three');
 
 // include any additional ThreeJS vendor libraries here
-require('three/examples/js/loaders/GLTFLoader.js');
+// require('three/examples/js/loaders/GLTFLoader.js');
+require('./vendor/GLTFLoader');
+require('three/examples/js/loaders/BasisTextureLoader');
 require('three/examples/js/loaders/HDRCubeTextureLoader.js');
 require('three/examples/js/loaders/RGBELoader.js');
 require('three/examples/js/pmrem/PMREMGenerator.js');
