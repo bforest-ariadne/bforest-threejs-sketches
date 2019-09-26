@@ -18,7 +18,7 @@ if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
   });
 
   assets.queue({
-    url: `assets/materials/marbleFloor.glb`,
+    url: `assets/materials/marbleFloor_basis.gltf`,
     key: 'marbleFloor'
   });
 

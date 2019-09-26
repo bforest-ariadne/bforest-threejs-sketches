@@ -26,7 +26,7 @@ require('three/examples/js/WebGL.js');
 // require('three/examples/js/controls/DeviceOrientationControls.js');
 require('./vendor/DeviceOrientation+OrbitControls.js');
 
-require('three/examples/js/loaders/GLTFLoader.js');
+// require('three/examples/js/loaders/GLTFLoader.js');
 
 // ensure context is loaded before entry
 require('./context');

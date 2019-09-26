@@ -27,7 +27,7 @@ class AssetManager {
     this._onProgressListeners = [];
     this._finishDelay = 0;
 
-    basisLoader.setTranscoderPath( 'assets/js/transcoder/build/' );
+    basisLoader.setTranscoderPath( 'assets/js/basis/' );
     basisLoader.useAlpha = false;
     basisLoader.detectSupport( this._renderer );
     THREE.Loader.Handlers.add( /\.basis$/, basisLoader );
