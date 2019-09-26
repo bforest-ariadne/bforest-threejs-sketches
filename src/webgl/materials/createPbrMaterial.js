@@ -3,6 +3,11 @@ const { assets } = require('../../context');
 // example import this material
 // const { createMaterial, materialAssets } = require('../materials/marbleFloor');
 
+// example load assets
+// for ( let i in materialAssets ) {
+//   assets.queue( materialAssets[i] );
+// }
+
 const materialAssets = [
   {
     url: 'assets/textures/notOpen/marbleFloor1/aorm.jpg',
@@ -26,17 +31,7 @@ const materialAssets = [
   }];
 
 const createMaterial = ( envMap ) => {
-
-  // const mat = assets.get('marbleFloor');
-
-  // mat.scene.traverse(child => {
-  //   if (child.isMesh && child.material) {
-  //     // console.log('material', child.material );
-  //     ironMaterial = child.material;
-  //   }
-  // });
-
-  const ironMaterial = new THREE.MeshStandardMaterial({
+  const material = new THREE.MeshStandardMaterial({
     // color: 0xffffff,
     // roughness: 1.0,
     // metalness: 1.0,
@@ -51,7 +46,7 @@ const createMaterial = ( envMap ) => {
     flatShading: true
   });
 
-  const textures = [ ironMaterial.roughnessMap, ironMaterial.metalnessMap, ironMaterial.normalMap, ironMaterial.map, ironMaterial.aoMap ];
+  const textures = [ material.roughnessMap, material.metalnessMap, material.normalMap, material.map, material.aoMap ];
 
   for ( let i in textures ) {
     textures[i].wrapS = THREE.RepeatWrapping;
@@ -59,8 +54,8 @@ const createMaterial = ( envMap ) => {
     textures[i].repeat = new THREE.Vector2( 4, 4 );
   }
 
-  // ironMaterial.needsUpdate = true
-  return ironMaterial;
+  // material.needsUpdate = true
+  return material;
 };
 
 module.exports = { createMaterial, materialAssets };
