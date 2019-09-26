@@ -2,7 +2,7 @@ const SketchScene = require('./SketchScene');
 const { webgl, assets } = require('../../context');
 // const basicFeedback = require('../postProcessing/basicFeedback');
 // const basicDatamosh = require('../postProcessing/basicDatamosh');
-const { createIronMaterial, ironAssets } = require('../materials/dammagedIron')
+// const { createIronMaterial, ironAssets } = require('../materials/dammagedIron')
 const postProcessSetup = require('../postProcessing/basicDatamosh');
 const query = require('../../util/query');
 const defined = require('defined');
@@ -18,9 +18,11 @@ if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
     pbr: true
   });
 
-  for ( let i in ironAssets ) {
-    assets.queue( ironAssets[i] );
-  }
+  assets.queue({
+    url: 'assets/materials/iron2.glb',
+    key: 'iron2'
+  });
+
 }
 
 module.exports = class FeedbackTest extends SketchScene {
@@ -47,7 +49,12 @@ module.exports = class FeedbackTest extends SketchScene {
     const object = new THREE.Object3D();
     this.object = object;
     let material, mesh;
-    material = createIronMaterial();
+    // material = createIronMaterial();
+    assets.get('iron2').scene.traverse(child => {
+      if (child.isMesh && child.material) {
+        material = child.material;
+      }
+    });
     material.envMap = env.target.texture;
     material.needsUpdate = true;
 

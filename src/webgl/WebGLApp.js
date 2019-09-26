@@ -2,6 +2,7 @@ const { EventEmitter } = require('events');
 const assign = require('object-assign');
 const defined = require('defined');
 const rightNow = require('right-now');
+const { getGPUTier } = require('detect-gpu');
 const exportGLTF = require('../util/exportGLTF');
 // const noop = () => {};
 const createTouches = require('touches');
@@ -32,6 +33,8 @@ module.exports = class WebGLApp extends EventEmitter {
     this.shown = false;
     this.stats = new Stats();
     this.aside.appendChild( this.stats.dom );
+    this.gpuTier = getGPUTier();
+    this.gpuTier.tierNum = parseInt(this.gpuTier.tier.slice(-1));
 
     // really basic touch handler that propagates through the scene
     this.touchHandler = createTouches(this.viewport, {

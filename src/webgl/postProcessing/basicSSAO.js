@@ -18,7 +18,7 @@ module.exports = function basicBloom( useGui = true ) {
 
   const ssaoEffect = new SSAOEffect(webgl.camera, normalPass.renderTarget.texture, {
     blendFunction: BlendFunction.MULTIPLY,
-    samples: 11,
+    samples: Math.floor( 3.66 * webgl.gpuTier.tierNum ),
     rings: 4,
     distanceThreshold: 0.6,
     distanceFalloff: 0.1,

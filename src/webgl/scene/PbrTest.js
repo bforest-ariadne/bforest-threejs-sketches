@@ -57,13 +57,9 @@ module.exports = class PbrTest extends SketchScene {
 
     postProcessSetup();
 
-    let marble1Mat, ironMaterial;
+    let ironMaterial;
 
-    assets.get('marbleFloor').scene.traverse(child => {
-      if (child.isMesh && child.material) {
-        marble1Mat = child.material;
-      }
-    });
+
 
     assets.get('iron2').scene.traverse(child => {
       if (child.isMesh && child.material) {
@@ -75,14 +71,18 @@ module.exports = class PbrTest extends SketchScene {
     const object = new THREE.Object3D();
     this.object = object;
     let mesh;
-    // ironMaterial = createIronMaterial();
     ironMaterial.envMap = env.target.texture;
     ironMaterial.needsUpdate = true;
 
     // ground
 
-    // const marble1Mat = createMaterial( env.target.texture );
-    marble1Mat.env = env.target.texture;
+    let marble1Mat;
+    assets.get('marbleFloor').scene.traverse(child => {
+      if (child.isMesh && child.material) {
+        marble1Mat = child.material;
+      }
+    });
+    marble1Mat.envMap = env.target.texture;
     marble1Mat.side = THREE.DoubleSide;
     marble1Mat.needsUpdate = true;
 
