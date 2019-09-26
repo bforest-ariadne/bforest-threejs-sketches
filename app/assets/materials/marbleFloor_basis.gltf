@@ -230,15 +230,15 @@
   "images": [
     {
       "mimeType": "image/basis",
-      "uri": "marbleFloor1_basecolor.basis"
+      "uri": "../textures/notOpen/marbleFloor1_basecolor.basis"
     },
     {
       "mimeType": "image/basis",
-      "uri": "marbleFloor1_normal.basis"
+      "uri": "../textures/notOpen/marbleFloor1_normal.basis"
     },
     {
       "mimeType": "image/basis",
-      "uri": "marbleFloor1_aorm.basis"
+      "uri": "../textures/notOpen/marbleFloor1_aorm.basis"
     }
   ],
   "meshes": [
