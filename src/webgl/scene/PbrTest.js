@@ -1,8 +1,6 @@
 const SketchScene = require('./SketchScene');
 const { webgl, assets, gui } = require('../../context');
 const postProcessSetup = require('../postProcessing/basicSSAO');
-const { createIronMaterial, ironAssets } = require('../materials/dammagedIron1');
-const { createMaterial, materialAssets } = require('../materials/marbleFloor');
 const query = require('../../util/query');
 const defined = require('defined');
 
@@ -17,14 +15,16 @@ if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
     pbr: true
   });
 
-  for ( let i in ironAssets ) {
-    assets.queue( ironAssets[i] );
-  }
-  for ( let i in materialAssets ) {
-    assets.queue( materialAssets[i] );
-  }
-}
+  assets.queue({
+    url: 'assets/materials/marbleFloor.glb',
+    key: 'marbleFloor'
+  });
 
+  assets.queue({
+    url: 'assets/materials/iron2.glb',
+    key: 'iron2'
+  });
+}
 
 module.exports = class PbrTest extends SketchScene {
   constructor () {
@@ -57,18 +57,32 @@ module.exports = class PbrTest extends SketchScene {
 
     postProcessSetup();
 
+    let marble1Mat, ironMaterial;
+
+    assets.get('marbleFloor').scene.traverse(child => {
+      if (child.isMesh && child.material) {
+        marble1Mat = child.material;
+      }
+    });
+
+    assets.get('iron2').scene.traverse(child => {
+      if (child.isMesh && child.material) {
+        ironMaterial = child.material;
+      }
+    });
+
     // Objects.
     const object = new THREE.Object3D();
     this.object = object;
-    let ironMaterial, mesh;
-    ironMaterial = createIronMaterial();
+    let mesh;
+    // ironMaterial = createIronMaterial();
     ironMaterial.envMap = env.target.texture;
     ironMaterial.needsUpdate = true;
 
     // ground
 
-    const marble1Mat = createMaterial( env.target.texture );
-    // marble1Mat.env = env.target.texture;
+    // const marble1Mat = createMaterial( env.target.texture );
+    marble1Mat.env = env.target.texture;
     marble1Mat.side = THREE.DoubleSide;
     marble1Mat.needsUpdate = true;
 
@@ -85,7 +99,6 @@ module.exports = class PbrTest extends SketchScene {
     };
     this.add( plane );
     this.plane = plane;
-    
 
     // spotlight
     const spotlight = new THREE.SpotLight( 0xffffff, 100, 0, Math.PI / 5, 0.3 );
@@ -335,7 +348,7 @@ module.exports = class PbrTest extends SketchScene {
     this.object.rotation.x += delta * 0.2;
     this.object.rotation.y += delta * 0.3;
 
-    if ( defined( this.shaderUniforms ) ) this.shaderUniforms.time.value = now*8;
+    if ( defined( this.shaderUniforms ) ) this.shaderUniforms.time.value = now * 8;
 
     // let qDelta = delta * 0.2;
 

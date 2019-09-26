@@ -11,20 +11,18 @@ const materialAssets = [
     key: 'floor_n',
     texture: true
   },
-  // {
-  //   url: 'assets/textures/notOpen/marbleFloor1/marbleFloor1_roughness.jpg',
-  //   key: 'floor_r',
-  //   texture: true
-  // },
-  // {
-  //   url: 'assets/textures/notOpen/marbleFloor1/marbleFloor1_ao.jpg',
-  //   key: 'floor_a',
-  //   texture: true
-  // },
   {
     url: 'assets/textures/notOpen/marbleFloor1/marbleFloor1_basecolor.jpg',
     key: 'floor_c',
     texture: true
+  },
+  {
+    url: 'assets/materials/marbleFloor.glb',
+    key: 'marbleFloor'
+  },
+  {
+    url: 'assets/materials/iron2.glb',
+    key: 'iron2'
   },
   {
     url: 'assets/textures/notOpen/marbleFloor1/marbleFloor1_h.jpg',
@@ -33,20 +31,40 @@ const materialAssets = [
   }];
 
 const createMaterial = ( envMap ) => {
-  const ironMaterial = new THREE.MeshStandardMaterial({
-    // color: 0xffffff,
-    // roughness: 1.0,
-    // metalness: 1.0,
-    roughnessMap: assets.get('floor_aorm'),
-    metalnessMap: assets.get('floor_aorm'),
-    normalMap: assets.get('floor_n'),
-    aoMap: assets.get('floor_aorm'),
-    map: assets.get('floor_c'),
-    // displacementMap: assets.get('floor_h'),
-    // normalScale: new THREE.Vector2(0.1, 0.1),
-    envMap: envMap,
-    flatShading: true
+
+  const mat = assets.get('marbleFloor');
+
+  mat.scene.traverse(child => {
+    if (child.isMesh && child.material) {
+      // console.log('material', child.material );
+      ironMaterial = child.material;
+    }
   });
+
+  const iron = assets.get('iron2');
+
+  iron.scene.traverse(child => {
+    if (child.isMesh && child.material) {
+      console.log('iron material', child.material );
+      // ironMaterial = child.material;
+    }
+  });
+
+  // console.log('glb', mat);
+  // const ironMaterial = new THREE.MeshStandardMaterial({
+  //   // color: 0xffffff,
+  //   // roughness: 1.0,
+  //   // metalness: 1.0,
+  //   roughnessMap: assets.get('floor_aorm'),
+  //   metalnessMap: assets.get('floor_aorm'),
+  //   normalMap: assets.get('floor_n'),
+  //   aoMap: assets.get('floor_aorm'),
+  //   map: assets.get('floor_c'),
+  //   // displacementMap: assets.get('floor_h'),
+  //   // normalScale: new THREE.Vector2(0.1, 0.1),
+  //   envMap: envMap,
+  //   flatShading: true
+  // });
 
   const textures = [ ironMaterial.roughnessMap, ironMaterial.metalnessMap, ironMaterial.normalMap, ironMaterial.map, ironMaterial.aoMap ];
 
