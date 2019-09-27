@@ -285,6 +285,7 @@ module.exports = class WebGLApp extends EventEmitter {
       // this.log( ev );
       // toggle app run with space
       if ( ev.keyCode === 32 && !ev.shiftKey ) {
+        ev.preventDefault();
         if ( this.running ) { this.stop(); } else { this.start(); }
       }
     }

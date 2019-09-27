@@ -169,19 +169,19 @@
   "samplers": [
     {
       "magFilter": 9729,
-      "minFilter": 9729,
+      "minFilter": 9985,
       "wrapS": 33071,
       "wrapT": 33071
     },
     {
       "magFilter": 9729,
-      "minFilter": 9729,
+      "minFilter": 9985,
       "wrapS": 33071,
       "wrapT": 33071
     },
     {
       "magFilter": 9729,
-      "minFilter": 9729,
+      "minFilter": 9985,
       "wrapS": 33071,
       "wrapT": 33071
     }

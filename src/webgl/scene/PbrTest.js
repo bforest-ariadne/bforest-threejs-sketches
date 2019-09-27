@@ -68,6 +68,8 @@ module.exports = class PbrTest extends SketchScene {
       }
     });
 
+    // 1003, 1006
+
     // Objects.
     const object = new THREE.Object3D();
     this.object = object;
