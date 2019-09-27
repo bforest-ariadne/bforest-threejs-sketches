@@ -53,7 +53,7 @@ module.exports = class WebGLApp extends EventEmitter {
     this.renderer = new THREE.WebGLRenderer(assign({
       antialias: false,
       alpha: false,
-      logarithmicDepthBuffer: true,
+      logarithmicDepthBuffer: false,
       // enabled for saving screen shots of the canvas,
       // may wish to disable this for perf reasons
       preserveDrawingBuffer: false,
@@ -70,7 +70,7 @@ module.exports = class WebGLApp extends EventEmitter {
     this.renderer.setClearColor(background, backgroundAlpha);
 
     // clamp pixel ratio for performance
-    this.maxPixelRatio = defined(opt.maxPixelRatio, 2);
+    this.maxPixelRatio = defined(opt.maxPixelRatio, this.gpuTier.tierNum);
     this.renderer.setPixelRatio( this.maxPixelRatio );
 
     // clamp delta to stepping anything too far forward

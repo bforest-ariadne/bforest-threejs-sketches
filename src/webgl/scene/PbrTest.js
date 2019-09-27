@@ -70,20 +70,11 @@ module.exports = class PbrTest extends SketchScene {
 
     // 1003, 1006
 
+
     // Objects.
     const object = new THREE.Object3D();
     this.object = object;
     let mesh;
-
-    // var textures = [ ironMaterial.roughnessMap, ironMaterial.normalMap, ironMaterial.map ];
-
-    // for ( let i in textures ) {
-    //   // textures[i].wrapS = THREE.RepeatWrapping;
-    //   // textures[i].wrapT = THREE.RepeatWrapping;
-    //   // textures[i].repeat = new THREE.Vector2( 10, 10 );
-    //   textures[i].magFilter = THREE.LinearFilter;
-    //   textures[i].minFilter = THREE.LinearMipMapLinearFilter;
-    // }
 
     ironMaterial.envMap = env.target.texture;
     ironMaterial.needsUpdate = true;
@@ -142,19 +133,16 @@ module.exports = class PbrTest extends SketchScene {
     // this.lightHelper = new THREE.SpotLightHelper( spotlight );
     // this.add( this.lightHelper );
 
-    // const testBox = new THREE.Mesh(
-    //   new THREE.BoxBufferGeometry( 2, 2, 2),
-    //   new THREE.MeshStandardMaterial({
-    //     envMap: env.target.texture,
-    //     metalness: 0,
-    //     roughness: 0.6,
-    //     color: '0x888888'
-    //   })
-    // );
-    // testBox.position.y = -2;
-    // testBox.receiveShadow = true;
-    // testBox.castShadow = true;
-    // this.add( testBox );
+    let testMat = ironMaterial.clone();
+
+    const testBox = new THREE.Mesh(
+      new THREE.BoxBufferGeometry( 2, 2, 2),
+      testMat
+    );
+    testBox.position.set( 3.0, 2.0, -2.0 );
+    testBox.receiveShadow = true;
+    testBox.castShadow = true;
+    this.add( testBox );
 
     // this.shadowCameraHelper = new THREE.CameraHelper( spotlight.shadow.camera );
     // this.add( this.shadowCameraHelper );
