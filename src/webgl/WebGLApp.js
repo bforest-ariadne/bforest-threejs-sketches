@@ -5,7 +5,7 @@ const rightNow = require('right-now');
 const { getGPUTier } = require('detect-gpu');
 const exportGLTF = require('../util/exportGLTF');
 const isMobile = require('../util/isMobile.js');
-// const noop = () => {};
+const getRenderer = require('../util/getRenderer');
 const createTouches = require('touches');
 const query = require('../util/query');
 const noop = () => {};
@@ -34,8 +34,7 @@ module.exports = class WebGLApp extends EventEmitter {
     this.shown = false;
     this.stats = new Stats();
     this.aside.appendChild( this.stats.dom );
-    this.gpuTier = getGPUTier();
-    this.gpuTier.tierNum = parseInt(this.gpuTier.tier.slice(-1));
+
     this.mobile = isMobile;
 
     // really basic touch handler that propagates through the scene
@@ -60,6 +59,10 @@ module.exports = class WebGLApp extends EventEmitter {
       failIfMajorPerformanceCaveat: true
     }, opt));
 
+    // getRenderer(function(renderer) { console.log(renderer); } );
+
+    this.setGpuInfo();
+
     this.renderer.domElement.style.position = 'fixed';
     // this.renderer.sortObjects = false;
     this.canvas = this.renderer.domElement;
@@ -70,7 +73,7 @@ module.exports = class WebGLApp extends EventEmitter {
     this.renderer.setClearColor(background, backgroundAlpha);
 
     // clamp pixel ratio for performance
-    this.maxPixelRatio = defined(opt.maxPixelRatio, this.gpuTier.tierNum);
+    this.maxPixelRatio = defined(opt.maxPixelRatio, this.gpuInfo.tierNum);
     this.renderer.setPixelRatio( this.maxPixelRatio );
 
     // clamp delta to stepping anything too far forward
@@ -242,6 +245,21 @@ module.exports = class WebGLApp extends EventEmitter {
     return this;
   }
 
+  setGpuInfo() {
+    let renderString = '';
+
+    if ( navigator.userAgent.includes('Apple') ) getRenderer( renderer => { renderString = renderer; } );
+
+    this.gpuInfo = getGPUTier({
+      glContext: this.renderer.getContext(), // Optionally pass in a WebGL context to avoid creating a temporary one internally
+      mobileBenchmarkPercentages: [85, 13, 2, 1], // (Default) [TIER_0, TIER_1, TIER_2, TIER_3]
+      desktopBenchmarkPercentages: [0, 50, 30, 20], // (Default) [TIER_0, TIER_1, TIER_2, TIER_3]
+      forceRendererString: renderString, // (Development) Force a certain renderer string
+      forceMobile: true // (Development) Force the use of mobile benchmarking scores
+    });
+    this.gpuInfo.tierNum = parseInt(this.gpuInfo.tier.slice(-1));
+  }
+
   // convenience function to trigger a PNG download of the canvas
   saveScreenshot (opt = {}) {
     // force a specific output size
@@ -259,11 +277,17 @@ module.exports = class WebGLApp extends EventEmitter {
     saveDataURI(file, dataURI);
   }
 
-  exportGLTF( input, binary=true ) {
+  exportGLTF( input, binary = true ) {
     exportGLTF( input, binary );
   }
 
+  togglePause() {
+    if ( this.running ) { this.stop(); } else { this.start(); }
+  }
+
   onTouchStart( ev, pos ) {
+    if ( this.dev && defined( ev.touches, false ) && ev.touches.length ) this.togglePause();
+
     this._traverse('onTouchStart', ev, pos);
   }
 
@@ -282,11 +306,10 @@ module.exports = class WebGLApp extends EventEmitter {
     }
     // dev key commands
     if ( this.dev ) {
-      // this.log( ev );
       // toggle app run with space
       if ( ev.keyCode === 32 && !ev.shiftKey ) {
         ev.preventDefault();
-        if ( this.running ) { this.stop(); } else { this.start(); }
+        this.togglePause();
       }
     }
 
