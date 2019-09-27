@@ -58,7 +58,7 @@ module.exports = class PbrTest extends SketchScene {
     webgl.renderer.autoClear = false;
     webgl.renderer.physicallyCorrectLights = true;
 
-    postProcessSetup();
+    postProcessSetup( false );
 
     let ironMaterial;
 

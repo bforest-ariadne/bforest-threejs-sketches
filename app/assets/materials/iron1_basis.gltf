@@ -119,10 +119,12 @@
         "metallicFactor": 1,
         "roughnessFactor": 0,
         "metallicRoughnessTexture": {
-          "index": 0
+          "index": 0,
+          "texCoord": 0
         },
         "baseColorTexture": {
-          "index": 1
+          "index": 1,
+          "texCoord": 0
         }
       },
       "normalTexture": {
@@ -131,14 +133,13 @@
       },
       "occlusionTexture": {
         "index": 0,
-        "texCoord": 1
+        "texCoord": 0
       }
     }
   ],
   "textures": [
     {
       "sampler": 0,
-      "source": 0,
       "name": "assets/textures/notOpen/iron2_pbr/aorm.jpg",
       "extensions": {
         "GOOGLE_texture_basis": {
@@ -148,7 +149,6 @@
     },
     {
       "sampler": 1,
-      "source": 1,
       "name": "assets/textures/notOpen/iron2_pbr/Metal_DamagedIron_2k_basecolor.jpg",
       "extensions": {
         "GOOGLE_texture_basis": {
@@ -158,7 +158,6 @@
     },
     {
       "sampler": 2,
-      "source": 2,
       "name": "assets/textures/notOpen/iron2_pbr/Metal_DamagedIron_2k_n.jpg",
       "extensions": {
         "GOOGLE_texture_basis": {
@@ -170,19 +169,19 @@
   "samplers": [
     {
       "magFilter": 9729,
-      "minFilter": 9987,
+      "minFilter": 9729,
       "wrapS": 33071,
       "wrapT": 33071
     },
     {
       "magFilter": 9729,
-      "minFilter": 9987,
+      "minFilter": 9729,
       "wrapS": 33071,
       "wrapT": 33071
     },
     {
       "magFilter": 9729,
-      "minFilter": 9987,
+      "minFilter": 9729,
       "wrapS": 33071,
       "wrapT": 33071
     }
