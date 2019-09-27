@@ -31,6 +31,8 @@ class AssetManager {
     basisLoader.useAlpha = false;
     basisLoader.detectSupport( this._renderer );
     THREE.Loader.Handlers.add( /\.basis$/, basisLoader );
+    basisLoader.workerLimit = 10;
+    global.basisLoader = basisLoader;
   }
 
   addProgressListener (fn) {

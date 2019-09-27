@@ -18,12 +18,12 @@ if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
   });
 
   assets.queue({
-    url: `assets/materials/marbleFloor_basis.gltf`,
+    url: `assets/materials/marbleFloor.glb`,
     key: 'marbleFloor'
   });
 
   assets.queue({
-    url: 'assets/materials/iron1_basis.gltf',
+    url: 'assets/materials/iron1.glb',
     key: 'iron2'
   });
 }
@@ -88,16 +88,6 @@ module.exports = class PbrTest extends SketchScene {
       }
     });
 
-    var textures = [ marble1Mat.roughnessMap, marble1Mat.normalMap, marble1Mat.map ];
-
-    for ( let i in textures ) {
-      textures[i].wrapS = THREE.RepeatWrapping;
-      textures[i].wrapT = THREE.RepeatWrapping;
-      textures[i].repeat = new THREE.Vector2( 10, 10 );
-      textures[i].magFilter = THREE.LinearFilter;
-      textures[i].minFilter = THREE.LinearMipMapLinearFilter;
-    }
-
     marble1Mat.envMap = env.target.texture;
     marble1Mat.side = THREE.DoubleSide;
     marble1Mat.needsUpdate = true;
@@ -133,16 +123,17 @@ module.exports = class PbrTest extends SketchScene {
     // this.lightHelper = new THREE.SpotLightHelper( spotlight );
     // this.add( this.lightHelper );
 
-    let testMat = ironMaterial.clone();
+    // let testMat = ironMaterial.clone();
 
-    const testBox = new THREE.Mesh(
-      new THREE.BoxBufferGeometry( 2, 2, 2),
-      testMat
-    );
-    testBox.position.set( 3.0, 2.0, -2.0 );
-    testBox.receiveShadow = true;
-    testBox.castShadow = true;
-    this.add( testBox );
+    // const testBox = new THREE.Mesh(
+    //   new THREE.BoxBufferGeometry( 2, 2, 2),
+    //   testMat
+    // );
+    // testBox.position.set( 3.0, 2.0, -2.0 );
+    // testBox.receiveShadow = true;
+    // testBox.castShadow = true;
+    // global.box = testBox;
+    // this.add( testBox );
 
     // this.shadowCameraHelper = new THREE.CameraHelper( spotlight.shadow.camera );
     // this.add( this.shadowCameraHelper );

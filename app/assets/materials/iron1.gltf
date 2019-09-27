@@ -1,0 +1,204 @@
+{
+  "asset": {
+    "version": "2.0",
+    "generator": "THREE.GLTFExporter"
+  },
+  "scenes": [
+    {
+      "nodes": [
+        0
+      ],
+      "name": "AuxScene"
+    }
+  ],
+  "scene": 0,
+  "nodes": [
+    {
+      "name": "instanced mesh",
+      "mesh": 0
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 0,
+      "byteLength": 48,
+      "target": 34962,
+      "byteStride": 12
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 48,
+      "byteLength": 48,
+      "target": 34962,
+      "byteStride": 12
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 96,
+      "byteLength": 32,
+      "target": 34962,
+      "byteStride": 8
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 128,
+      "byteLength": 12,
+      "target": 34963
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 140,
+      "uri": "data:application/octet-stream;base64,AACgwAAAoEAAAAAAAACgQAAAoEAAAAAAAACgwAAAoMAAAAAAAACgQAAAoMAAAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAgD8AAIA/AACAPwAAAAAAAAAAAACAPwAAAAAAAAIAAQACAAMAAQA="
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 4,
+      "max": [
+        5,
+        5,
+        0
+      ],
+      "min": [
+        -5,
+        -5,
+        0
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 4,
+      "max": [
+        0,
+        0,
+        1
+      ],
+      "min": [
+        0,
+        0,
+        1
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 4,
+      "max": [
+        1,
+        1
+      ],
+      "min": [
+        0,
+        0
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5123,
+      "count": 6,
+      "max": [
+        3
+      ],
+      "min": [
+        0
+      ],
+      "type": "SCALAR"
+    }
+  ],
+  "materials": [
+    {
+      "pbrMetallicRoughness": {
+        "metallicFactor": 0.5,
+        "roughnessFactor": 0.5,
+        "metallicRoughnessTexture": {
+          "index": 0,
+          "texCoord": 0
+        },
+        "baseColorTexture": {
+          "index": 1,
+          "texCoord": 0
+        }
+      },
+      "normalTexture": {
+        "index": 2,
+        "scale": 1
+      },
+      "occlusionTexture": {
+        "index": 0,
+        "texCoord": 0
+      }
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "name": "assets/textures/notOpen/iron2_pbr/aorm.jpg"
+    },
+    {
+      "sampler": 1,
+      "name": "assets/textures/notOpen/iron2_pbr/Metal_DamagedIron_2k_basecolor.jpg"
+    },
+    {
+      "sampler": 2,
+      "name": "assets/textures/notOpen/iron2_pbr/Metal_DamagedIron_2k_n.jpg"
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9985,
+      "wrapS": 33071,
+      "wrapT": 33071
+    },
+    {
+      "magFilter": 9729,
+      "minFilter": 9985,
+      "wrapS": 33071,
+      "wrapT": 33071
+    },
+    {
+      "magFilter": 9729,
+      "minFilter": 9985,
+      "wrapS": 33071,
+      "wrapT": 33071
+    }
+  ],
+  "images": [
+    {
+      "mimeType": "image/jpeg",
+      "uri": "../textures/notOpen/iron2_pbr/aorm.jpg"
+    },
+    {
+      "mimeType": "image/jpeg",
+      "uri": "../textures/notOpen/iron2_pbr/basecolor.jpg"
+    },
+    {
+      "mimeType": "image/jpeg",
+      "uri": "../textures/notOpen/iron2_pbr/normal.jpg"
+    }
+  ],
+  "meshes": [
+    {
+      "primitives": [
+        {
+          "mode": 4,
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0
+        }
+      ]
+    }
+  ]
+}
