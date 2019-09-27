@@ -10,30 +10,31 @@ const { assets } = require('../../context');
 
 const materialAssets = [
   {
-    url: 'assets/textures/notOpen/marbleFloor1/aorm.jpg',
+    url: 'assets/textures/gold1/aorm.jpg',
     key: 'floor_aorm',
     texture: true
   },
   {
-    url: 'assets/textures/notOpen/marbleFloor1/marbleFloor1_n.jpg',
+    url: 'assets/textures/gold1/normal.jpg',
     key: 'floor_n',
     texture: true
   },
   {
-    url: 'assets/textures/notOpen/marbleFloor1/marbleFloor1_basecolor.jpg',
+    url: 'assets/textures/gold1/basecolor.jpg',
     key: 'floor_c',
     texture: true
-  },
-  {
-    url: 'assets/textures/notOpen/marbleFloor1/marbleFloor1_h.jpg',
-    key: 'floor_h',
-    texture: true
-  }];
+  }
+  // {
+  //   url: 'assets/textures/notOpen/marbleFloor1/marbleFloor1_h.jpg',
+  //   key: 'floor_h',
+  //   texture: true
+  // }
+];
 
 const createMaterial = ( envMap ) => {
   const material = new THREE.MeshStandardMaterial({
     // color: 0xffffff,
-    // roughness: 1.0,
+    roughness: 0.99,
     // metalness: 1.0,
     roughnessMap: assets.get('floor_aorm'),
     metalnessMap: assets.get('floor_aorm'),
@@ -49,9 +50,9 @@ const createMaterial = ( envMap ) => {
   const textures = [ material.roughnessMap, material.metalnessMap, material.normalMap, material.map, material.aoMap ];
 
   for ( let i in textures ) {
-    textures[i].wrapS = THREE.RepeatWrapping;
-    textures[i].wrapT = THREE.RepeatWrapping;
-    textures[i].repeat = new THREE.Vector2( 4, 4 );
+    // textures[i].wrapS = THREE.RepeatWrapping;
+    // textures[i].wrapT = THREE.RepeatWrapping;
+    // textures[i].repeat = new THREE.Vector2( 1, 1 );
   }
 
   // material.needsUpdate = true

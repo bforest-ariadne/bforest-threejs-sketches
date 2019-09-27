@@ -3,6 +3,7 @@ const { webgl, assets, gui } = require('../../context');
 const postProcessSetup = require('../postProcessing/basicSSAO');
 const query = require('../../util/query');
 const defined = require('defined');
+const { createMaterial, materialAssets } = require('../materials/createPbrMaterial');
 
 const name = 'pbrtest';
 
@@ -26,6 +27,10 @@ if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
     url: 'assets/materials/iron1.glb',
     key: 'iron2'
   });
+
+  for ( let i in materialAssets ) {
+    assets.queue( materialAssets[i] );
+  }
 }
 
 module.exports = class PbrTest extends SketchScene {
@@ -68,10 +73,8 @@ module.exports = class PbrTest extends SketchScene {
       }
     });
 
-    // 1003, 1006
+    ironMaterial = createMaterial(env.target.texture);
 
-
-    // Objects.
     const object = new THREE.Object3D();
     this.object = object;
     let mesh;
