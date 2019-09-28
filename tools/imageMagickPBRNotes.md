@@ -8,9 +8,9 @@ If we're missing a material, at this point, we must make a black image to use in
 
 `~/Dropbox/DEV/bforest-threejs-sketches/tools/makeBlackPng.sh 4096x4096`
 
-To convert result to png:
+To convert result to jpg:
 
-`convert aorm.png aorm.jpg`
+`convert -quality 95 aorm.png aorm.jpg`
 
 To strip the color profile from a png:
 
