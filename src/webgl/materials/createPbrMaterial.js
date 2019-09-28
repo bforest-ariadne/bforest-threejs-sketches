@@ -8,25 +8,27 @@ const { assets } = require('../../context');
 //   assets.queue( materialAssets[i] );
 // }
 
+const folder = 'gold1';
+
 const materialAssets = [
   {
-    url: 'assets/textures/gold1/aorm.jpg',
-    key: 'floor_aorm',
+    url: `assets/textures/${folder}/aorm.jpg`,
+    key: 'aorm',
     texture: true
   },
   {
-    url: 'assets/textures/gold1/normal.jpg',
-    key: 'floor_n',
+    url: `assets/textures/${folder}/normal.jpg`,
+    key: 'n',
     texture: true
   },
   {
-    url: 'assets/textures/gold1/basecolor.jpg',
-    key: 'floor_c',
+    url: `assets/textures/${folder}/basecolor.jpg`,
+    key: 'c',
     texture: true
   }
   // {
-  //   url: 'assets/textures/notOpen/marbleFloor1/marbleFloor1_h.jpg',
-  //   key: 'floor_h',
+  //   url: `assets/textures/notOpen/marbleFloor1/marbleFloor1_h.jpg`,
+  //   key: 'h',
   //   texture: true
   // }
 ];
@@ -36,15 +38,16 @@ const createMaterial = ( envMap ) => {
     // color: 0xffffff,
     roughness: 0.99,
     // metalness: 1.0,
-    roughnessMap: assets.get('floor_aorm'),
-    metalnessMap: assets.get('floor_aorm'),
-    normalMap: assets.get('floor_n'),
-    aoMap: assets.get('floor_aorm'),
-    map: assets.get('floor_c'),
-    // displacementMap: assets.get('floor_h'),
+    roughnessMap: assets.get('aorm'),
+    metalnessMap: assets.get('aorm'),
+    normalMap: assets.get('n'),
+    aoMap: assets.get('aorm'),
+    map: assets.get('c'),
+    // displacementMap: assets.get('h'),
     // normalScale: new THREE.Vector2(0.1, 0.1),
     envMap: envMap,
-    flatShading: true
+    flatShading: true,
+    name: folder
   });
 
   const textures = [ material.roughnessMap, material.metalnessMap, material.normalMap, material.map, material.aoMap ];
