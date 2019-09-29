@@ -40,7 +40,8 @@ module.exports = class PbrTest extends SketchScene {
   }
   init() {
     this.pars = {
-      envMapIntensity: 0.12
+      envMapIntensity: 0.12,
+      spotlightIntensity: 100
       // envMapIntensity: 0.2
     };
     this.controlsInit();
@@ -81,6 +82,8 @@ module.exports = class PbrTest extends SketchScene {
 
     ironMaterial.envMap = env.target.texture;
     ironMaterial.needsUpdate = true;
+
+    global.mat = ironMaterial;
 
     // ground
 
@@ -333,6 +336,15 @@ module.exports = class PbrTest extends SketchScene {
 
     this.add(object);
     object.scale.multiplyScalar(0.36);
+
+    gui.addInput( this.pars, 'spotlightIntensity', {
+      min: 0.0,
+      max: 200,
+      step: 1,
+      label: 'spotlight level'
+    }).on( 'change', () => {
+      this.spotlight.intensity = this.pars.spotlightIntensity;
+    });
 
     gui.addInput( this.pars, 'envMapIntensity', {
       min: 0.0,

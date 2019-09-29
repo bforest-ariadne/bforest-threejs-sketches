@@ -8,6 +8,11 @@ module.exports = function exportGLTF( input, options = {} ) {
   //   forceIndices: true
   // };
 
+  var name = 'scene';
+  name = input.name !== '' ? input.name : name;
+  name = options.material && input.material.name !== '' ? input.material.name : name;
+  name = typeof options.name !== 'undefined' ? options.name : name;
+
   if ( options.material ) {
     const geo = new THREE.PlaneBufferGeometry( 10, 10, 1, 1 );
     const mesh = input.clone();
@@ -16,11 +21,11 @@ module.exports = function exportGLTF( input, options = {} ) {
   }
   gltfExporter.parse( input, function ( result ) {
     if ( result instanceof ArrayBuffer ) {
-      saveArrayBuffer( result, 'scene.glb' );
+      saveArrayBuffer( result, name + '.glb' );
     } else {
       var output = JSON.stringify( result, null, 2 );
       console.log( output );
-      saveString( output, 'scene.gltf' );
+      saveString( output, name + '.gltf' );
     }
   }, options );
 };

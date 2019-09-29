@@ -8,7 +8,7 @@ const { assets } = require('../../context');
 //   assets.queue( materialAssets[i] );
 // }
 
-const folder = 'gold1';
+const folder = 'asphalt8';
 
 const materialAssets = [
   {
@@ -27,6 +27,11 @@ const materialAssets = [
     texture: true
   }
   // {
+  //   url: `assets/textures/${folder}/mask.jpg`,
+  //   key: 'mask',
+  //   texture: true
+  // }
+  // {
   //   url: `assets/textures/notOpen/marbleFloor1/marbleFloor1_h.jpg`,
   //   key: 'h',
   //   texture: true
@@ -36,23 +41,31 @@ const materialAssets = [
 const createMaterial = ( envMap ) => {
   const material = new THREE.MeshStandardMaterial({
     // color: 0xffffff,
-    roughness: 0.99,
-    // metalness: 1.0,
+    roughness: 1,
+    metalness: 1,
     roughnessMap: assets.get('aorm'),
     metalnessMap: assets.get('aorm'),
     normalMap: assets.get('n'),
     aoMap: assets.get('aorm'),
     map: assets.get('c'),
     // displacementMap: assets.get('h'),
-    // normalScale: new THREE.Vector2(0.1, 0.1),
+    normalScale: new THREE.Vector2(-1, -1),
     envMap: envMap,
     flatShading: true,
     name: folder
   });
 
-  const textures = [ material.roughnessMap, material.metalnessMap, material.normalMap, material.map, material.aoMap ];
+  // const textures = [ material.roughnessMap, material.metalnessMap, material.normalMap, material.map, material.aoMap ];
+  const textures = [];
+
+  for ( let [ key, value ] of Object.entries( material ) ) {
+    if ( value instanceof THREE.Texture ) {
+      if ( !textures.includes(value) && !value.name.includes('cube') ) textures.push(value);
+    }
+  }
 
   for ( let i in textures ) {
+    textures[i].anisotropy = 8;
     // textures[i].wrapS = THREE.RepeatWrapping;
     // textures[i].wrapT = THREE.RepeatWrapping;
     // textures[i].repeat = new THREE.Vector2( 1, 1 );
