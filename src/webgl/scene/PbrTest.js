@@ -51,7 +51,7 @@ module.exports = class PbrTest extends SketchScene {
 
     this.useBufferGeo = true;
     this.N = 100;
-    const smooth = false;
+    const smooth = true;
 
     webgl.scene.fog = new THREE.FogExp2(0x000000, 0.00025);
     // webgl.scene.background = env.cubeMap;
@@ -156,7 +156,8 @@ module.exports = class PbrTest extends SketchScene {
 
     let bufferGeometry;
     if ( smooth ) {
-      bufferGeometry = new THREE.BoxBufferGeometry(2, 2, 2, 9, 9, 9);
+      // bufferGeometry = new THREE.BoxBufferGeometry(2, 2, 2, 9, 9, 9);
+      bufferGeometry = new THREE.SphereBufferGeometry(1, 10, 10);
       ironMaterial.flatShading = false;
     } else {
       bufferGeometry = new THREE.SphereBufferGeometry(1, 4, 4);
@@ -239,12 +240,20 @@ module.exports = class PbrTest extends SketchScene {
 
       this.shaderUniforms = {
         time: {value: 0},
-        speed: {value: 50}
+        speed: {value: 50},
+        // radius: {value: 1},
+        parallaxScale: {value: 50},
+        parallaxMinLayers: {value: 50},
+        parallaxMaxLayers: {value: 50}
       };
 
       ironMaterial.onBeforeCompile = shader => {
         shader.uniforms.time = this.shaderUniforms.time;
         shader.uniforms.speed = this.shaderUniforms.speed;
+        // shader.uniforms.radius = this.shaderUniforms.radius;
+        shader.uniforms.parallaxScale = this.shaderUniforms.parallaxScale;
+        shader.uniforms.parallaxMinLayers = this.shaderUniforms.parallaxMinLayers;
+        shader.uniforms.parallaxMaxLayers = this.shaderUniforms.parallaxMaxLayers;
 
         shader.vertexShader = `
         uniform float time;
@@ -273,48 +282,192 @@ module.exports = class PbrTest extends SketchScene {
         mat4 rotateXYZ() {
           return rotationMatrix(vec3(1, 0, 0), rotation.x * time) * rotationMatrix(vec3(0, 1, 0), rotation.y * time) * rotationMatrix(vec3(0, 0, 1), rotation.z * time) ;
         }
-        vec3 applyQuaternionToVector( vec4 q, vec3 v ){
-          return v + 2.0 * cross( q.xyz, cross( q.xyz, v ) + q.w * v );
-        }
         
         ` + shader.vertexShader;
 
         shader.vertexShader = shader.vertexShader.replace(
           `#include <begin_vertex>`,
-          `#include <begin_vertex>
+          /* glsl */`
+          #include <begin_vertex>
 
           mat4 r = rotateXYZ();
+          // transformed *= scale.x;
 
-          #if !defined(FLAT_SHADED) && !defined(NORMAL)
-            // vec3 signs = sign(position);
-            // float radius = radius - 0.001;
-            // vec3 box = scale - vec3(radius);
-            // box = vec3(max(0.0, box.x), max(0.0, box.y), max(0.0, box.z));
-            // vec3 p = signs * box;
+        #if !defined(FLAT_SHADED)
+          
+          #ifdef STANDARD
+            // re-compute normals for correct shadows and reflections
+            // objectNormal = all(equal(p, transformed)) ? normal : normalize(position); 
+            // transformedNormal = normalize(normalMatrix * normal);
+
+            // vNormal = (vec4(transformedNormal, 1.0) * r).xyz;
+          #endif
+        #endif
+
+        #ifdef STANDARD
+          transformedNormal = objectNormal;
+          transformedNormal = mat3( r ) * transformedNormal;
+          transformedNormal = normalMatrix * transformedNormal;
+          vNormal = normalize( transformedNormal );
+        #endif
         
-            // transformed = signs * box + normalize(position) * radius;
-            
-            // #ifdef STANDARD
-            //   // re-compute normals for correct shadows and reflections
-            //   objectNormal = all(equal(p, transformed)) ? normal : normalize(position); 
-            //   transformedNormal = normalize(normalMatrix * objectNormal);
-            //   // vNormal = transformedNormal;
+        //transformed *= scale.x;
+        transformed = ( r * vec4(transformed, 1.0)).xyz;
+        transformed = transformed + offset; 
 
-            //   vNormal = (vec4(transformedNormal, 1.0) * r).xyz;
-            // #endif
-          #endif
 
-          #if !defined(FLAT_SHADED) && !defined(NORMAL)
-            transformed *= scale.x;
-          #endif
-          // vec3 vPosition = applyQuaternionToVector( orientation, transformed );
-          transformed = (vec4(transformed, 1.0) * r).xyz;
-          // transformed = vPosition + offset;
-          transformed = transformed + offset;
+
+
+
           
           `
         );
+
+        // shader.fragmentShader = shader.fragmentShader.replace(
+        //   `#include <clipping_planes_pars_fragment>`,
+        //   `
+        //   #include <clipping_planes_pars_fragment>
+        //   uniform float parallaxScale;
+        //   uniform float parallaxMinLayers;
+        //   uniform float parallaxMaxLayers;
+
+        //   #ifdef USE_BUMPMAP
+          
+        //   #ifdef USE_BASIC_PARALLAX
+          
+        //     vec2 parallaxMap( in vec3 V ) {
+          
+        //       float initialHeight = texture2D( bumpMap, vUv ).r;
+          
+        //       // No Offset Limitting: messy, floating output at grazing angles.
+        //       //vec2 texCoordOffset = parallaxScale * V.xy / V.z * initialHeight;
+          
+        //       // Offset Limiting
+        //       vec2 texCoordOffset = parallaxScale * V.xy * initialHeight;
+        //       return vUv - texCoordOffset;
+          
+        //     }
+          
+        //   #else
+          
+        //     vec2 parallaxMap( in vec3 V ) {
+          
+        //       // Determine number of layers from angle between V and N
+        //       float numLayers = mix( parallaxMaxLayers, parallaxMinLayers, abs( dot( vec3( 0.0, 0.0, 1.0 ), V ) ) );
+          
+        //       float layerHeight = 1.0 / numLayers;
+        //       float currentLayerHeight = 0.0;
+        //       // Shift of texture coordinates for each iteration
+        //       vec2 dtex = parallaxScale * V.xy / V.z / numLayers;
+          
+        //       vec2 currentTextureCoords = vUv;
+          
+        //       float heightFromTexture = texture2D( bumpMap, currentTextureCoords ).r;
+          
+        //       // while ( heightFromTexture > currentLayerHeight )
+        //       // Infinite loops are not well supported. Do a large finite
+        //       // loop, but not too large, as it slows down some compilers.
+        //       for ( int i = 0; i < 30; i += 1 ) {
+        //         if ( heightFromTexture <= currentLayerHeight ) {
+        //           break;
+        //         }
+        //         currentLayerHeight += layerHeight;
+        //         // Shift texture coordinates along vector V
+        //         currentTextureCoords -= dtex;
+        //         heightFromTexture = texture2D( bumpMap, currentTextureCoords ).r;
+        //       }
+          
+        //       #ifdef USE_STEEP_PARALLAX
+          
+        //         return currentTextureCoords;
+          
+        //       #elif defined( USE_RELIEF_PARALLAX )
+          
+        //         vec2 deltaTexCoord = dtex / 2.0;
+        //         float deltaHeight = layerHeight / 2.0;
+          
+        //         // Return to the mid point of previous layer
+        //         currentTextureCoords += deltaTexCoord;
+        //         currentLayerHeight -= deltaHeight;
+          
+        //         // Binary search to increase precision of Steep Parallax Mapping
+        //         const int numSearches = 5;
+        //         for ( int i = 0; i < numSearches; i += 1 ) {
+          
+        //           deltaTexCoord /= 2.0;
+        //           deltaHeight /= 2.0;
+        //           heightFromTexture = texture2D( bumpMap, currentTextureCoords ).r;
+        //           // Shift along or against vector V
+        //           if( heightFromTexture > currentLayerHeight ) { // Below the surface
+          
+        //             currentTextureCoords -= deltaTexCoord;
+        //             currentLayerHeight += deltaHeight;
+          
+        //           } else { // above the surface
+          
+        //             currentTextureCoords += deltaTexCoord;
+        //             currentLayerHeight -= deltaHeight;
+          
+        //           }
+          
+        //         }
+        //         return currentTextureCoords;
+          
+        //       #elif defined( USE_OCLUSION_PARALLAX )
+          
+        //         vec2 prevTCoords = currentTextureCoords + dtex;
+          
+        //         // Heights for linear interpolation
+        //         float nextH = heightFromTexture - currentLayerHeight;
+        //         float prevH = texture2D( bumpMap, prevTCoords ).r - currentLayerHeight + layerHeight;
+          
+        //         // Proportions for linear interpolation
+        //         float weight = nextH / ( nextH - prevH );
+          
+        //         // Interpolation of texture coordinates
+        //         return prevTCoords * weight + currentTextureCoords * ( 1.0 - weight );
+          
+        //       #else // NO_PARALLAX
+          
+        //         return vUv;
+          
+        //       #endif
+          
+        //     }
+        //   #endif
+          
+        //   vec2 perturbUv( vec3 surfPosition, vec3 surfNormal, vec3 viewPosition ) {
+          
+        //     vec2 texDx = dFdx( vUv );
+        //     vec2 texDy = dFdy( vUv );
+          
+        //     vec3 vSigmaX = dFdx( surfPosition );
+        //     vec3 vSigmaY = dFdy( surfPosition );
+        //     vec3 vR1 = cross( vSigmaY, surfNormal );
+        //     vec3 vR2 = cross( surfNormal, vSigmaX );
+        //     float fDet = dot( vSigmaX, vR1 );
+          
+        //     vec2 vProjVscr = ( 1.0 / fDet ) * vec2( dot( vR1, viewPosition ), dot( vR2, viewPosition ) );
+        //     vec3 vProjVtex;
+        //     vProjVtex.xy = texDx * vProjVscr.x + texDy * vProjVscr.y;
+        //     vProjVtex.z = dot( surfNormal, viewPosition );
+          
+        //     return parallaxMap( vProjVtex );
+        //   }
+        //   #endif
+          
+        // `);
+
+        // shader.fragmentShader = shader.fragmentShader.replace(
+        //   `#include <clipping_planes_fragment>`,
+        //   `
+        //   #include <clipping_planes_fragment>
+        //   // vUv = perturbUv( -vViewPosition, normalize( vNormal ), normalize( vViewPosition ) );
+          
+        //   `
+        // );
       };
+      
 
       // custom depth material - required for instanced shadows
       var customDepthMaterial = new THREE.MeshDepthMaterial();

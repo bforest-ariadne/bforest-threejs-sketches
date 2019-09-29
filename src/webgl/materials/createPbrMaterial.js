@@ -25,17 +25,17 @@ const materialAssets = [
     url: `assets/textures/${folder}/basecolor.jpg`,
     key: 'c',
     texture: true
-  }
+  },
   // {
   //   url: `assets/textures/${folder}/mask.jpg`,
   //   key: 'mask',
   //   texture: true
   // }
-  // {
-  //   url: `assets/textures/notOpen/marbleFloor1/marbleFloor1_h.jpg`,
-  //   key: 'h',
-  //   texture: true
-  // }
+  {
+    url: `assets/textures/${folder}/height.jpg`,
+    key: 'h',
+    texture: true
+  }
 ];
 
 const createMaterial = ( envMap ) => {
@@ -49,7 +49,7 @@ const createMaterial = ( envMap ) => {
     aoMap: assets.get('aorm'),
     map: assets.get('c'),
     // displacementMap: assets.get('h'),
-    normalScale: new THREE.Vector2(-1, -1),
+    // normalScale: new THREE.Vector2(-1, -1),
     envMap: envMap,
     flatShading: true,
     name: folder
