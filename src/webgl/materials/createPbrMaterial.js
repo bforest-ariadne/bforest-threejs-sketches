@@ -50,6 +50,7 @@ const createMaterial = ( envMap ) => {
     map: assets.get('c'),
     // displacementMap: assets.get('h'),
     // normalScale: new THREE.Vector2(-1, -1),
+    bumpMap: assets.get('h'),
     envMap: envMap,
     flatShading: true,
     name: folder

@@ -52,7 +52,7 @@ if ( defined( gui.document ) ) {
   Object.assign( folder.__proto__, guiDatMixin );
   folder.dispose();
 
-  gui.element.style.backgroundColor = '#2f31372e';
+  gui.element.style.backgroundColor = '#2f3137a1';
 }
 
 // aside.appendChild(gui.domElement);
