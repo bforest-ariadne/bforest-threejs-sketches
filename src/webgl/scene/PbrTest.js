@@ -4,6 +4,7 @@ const postProcessSetup = require('../postProcessing/basicSSAO');
 const query = require('../../util/query');
 const defined = require('defined');
 const { createMaterial, materialAssets } = require('../materials/createPbrMaterial');
+const ParallaxOclusionMaterialModifier = require('../materialModifiers/ParallaxOclusionMaterialModifier');
 
 const name = 'pbrtest';
 
@@ -41,8 +42,8 @@ module.exports = class PbrTest extends SketchScene {
   init() {
     this.pars = {
       envMapIntensity: 0.12,
-      spotlightIntensity: 100,
-      parallaxMode: 'USE_OCLUSION_PARALLAX'
+      spotlightIntensity: 100
+      // parallaxMode: 'USE_OCLUSION_PARALLAX'
       // envMapIntensity: 0.2
     };
     this.controlsInit();
@@ -53,6 +54,8 @@ module.exports = class PbrTest extends SketchScene {
     this.useBufferGeo = true;
     this.N = 100;
     const smooth = true;
+
+    const parallaxOclusionModifier = new ParallaxOclusionMaterialModifier();
 
     webgl.scene.fog = new THREE.FogExp2(0x000000, 0.00025);
     // webgl.scene.background = env.cubeMap;
@@ -174,7 +177,6 @@ module.exports = class PbrTest extends SketchScene {
     let vector3 = new THREE.Vector3();
     let x, y, z;
 
-
     this.moveQ = new THREE.Quaternion( 0.5, 0.5, 0.5, 0.0 ).normalize();
     this.tmpQ = new THREE.Quaternion();
     this.currentQ = new THREE.Quaternion();
@@ -232,19 +234,18 @@ module.exports = class PbrTest extends SketchScene {
         time: {value: 0},
         speed: {value: 1},
         // radius: {value: 1},
-        parallaxScale: {value: -0.01},
-        parallaxMinLayers: {value: 1},
-        parallaxMaxLayers: {value: 30}
+        // parallaxScale: {value: -0.01},
+        // parallaxMinLayers: {value: 1},
+        // parallaxMaxLayers: {value: 30}
       };
 
-      ironMaterial.defines['NO_PARALLAX'] = '';
       ironMaterial.onBeforeCompile = shader => {
         shader.uniforms.time = this.shaderUniforms.time;
         shader.uniforms.speed = this.shaderUniforms.speed;
         // shader.uniforms.radius = this.shaderUniforms.radius;
-        shader.uniforms.parallaxScale = this.shaderUniforms.parallaxScale;
-        shader.uniforms.parallaxMinLayers = this.shaderUniforms.parallaxMinLayers;
-        shader.uniforms.parallaxMaxLayers = this.shaderUniforms.parallaxMaxLayers;
+        // shader.uniforms.parallaxScale = this.shaderUniforms.parallaxScale;
+        // shader.uniforms.parallaxMinLayers = this.shaderUniforms.parallaxMinLayers;
+        // shader.uniforms.parallaxMaxLayers = this.shaderUniforms.parallaxMaxLayers;
 
         shader.vertexShader = `
         uniform float time;
@@ -308,189 +309,188 @@ module.exports = class PbrTest extends SketchScene {
           `
         );
 
-        shader.fragmentShader = `
-        vec2 vUvParallax;
-        ` + shader.fragmentShader;
+        // shader.fragmentShader = `
+        // vec2 vUvParallax;
+        // ` + shader.fragmentShader;
 
-        const replaceAll = function(target, search, replacement) {
-          return target.split(search).join(replacement);
-        };
+        // const replaceAll = function(target, search, replacement) {
+        //   return target.split(search).join(replacement);
+        // };
 
-        const uvReplaceChunks = [
-          'normalmap_pars_fragment',
-          'map_fragment',
-          'alphamap_fragment',
-          'roughnessmap_fragment',
-          'metalnessmap_fragment',
-          'normal_fragment_maps',
-          'clearcoat_normal_fragment_maps',
-          'emissivemap_fragment'
-        ];
+        // const uvReplaceChunks = [
+        //   'normalmap_pars_fragment',
+        //   'map_fragment',
+        //   'alphamap_fragment',
+        //   'roughnessmap_fragment',
+        //   'metalnessmap_fragment',
+        //   'normal_fragment_maps',
+        //   'clearcoat_normal_fragment_maps',
+        //   'emissivemap_fragment'
+        // ];
 
-        for ( let chunkName of uvReplaceChunks ) {
-          shader.fragmentShader = shader.fragmentShader.replace(
-            `#include <${chunkName}>`,
-            replaceAll( THREE.ShaderChunk[chunkName], 'vUv', 'vUvParallax')
-          );
-        }
+        // for ( let chunkName of uvReplaceChunks ) {
+        //   shader.fragmentShader = shader.fragmentShader.replace(
+        //     `#include <${chunkName}>`,
+        //     replaceAll( THREE.ShaderChunk[chunkName], 'vUv', 'vUvParallax')
+        //   );
+        // }
 
-        shader.fragmentShader = shader.fragmentShader.replace( 
-          `#include <bumpmap_pars_fragment>`,
-          `
-          #ifdef USE_BUMPMAP
-            uniform sampler2D bumpMap;
-          #endif
-          `);
+        // shader.fragmentShader = shader.fragmentShader.replace( 
+        //   `#include <bumpmap_pars_fragment>`,
+        //   `
+        //   #ifdef USE_BUMPMAP
+        //     uniform sampler2D bumpMap;
+        //   #endif
+        //   `);
 
-        const normalFragmentMaps = THREE.ShaderChunk.normal_fragment_maps.replace(`USE_BUMPMAP`, `USE_BUMPMAPOLD`);
-        shader.fragmentShader = shader.fragmentShader.replace(`#include <normal_fragment_maps>`, normalFragmentMaps);
+        // const normalFragmentMaps = THREE.ShaderChunk.normal_fragment_maps.replace(`USE_BUMPMAP`, `USE_BUMPMAPOLD`);
+        // shader.fragmentShader = shader.fragmentShader.replace(`#include <normal_fragment_maps>`, normalFragmentMaps);
 
-        shader.fragmentShader = shader.fragmentShader.replace(
-          `#include <clipping_planes_pars_fragment>`,
-          `
-          #include <clipping_planes_pars_fragment>
-          uniform float parallaxScale;
-          uniform float parallaxMinLayers;
-          uniform float parallaxMaxLayers;
+        // shader.fragmentShader = shader.fragmentShader.replace(
+        //   `#include <clipping_planes_pars_fragment>`,
+        //   `
+        //   #include <clipping_planes_pars_fragment>
+        //   uniform float parallaxScale;
+        //   uniform float parallaxMinLayers;
+        //   uniform float parallaxMaxLayers;
 
-          #if defined(USE_BUMPMAP) && defined(STANDARD)
+        //   #if defined(USE_BUMPMAP) && defined(STANDARD)
           
-          #ifdef USE_BASIC_PARALLAX
+        //   #ifdef USE_BASIC_PARALLAX
           
-            vec2 parallaxMap( in vec3 V ) {
+        //     vec2 parallaxMap( in vec3 V ) {
           
-              float initialHeight = texture2D( bumpMap, vUv ).r;
+        //       float initialHeight = texture2D( bumpMap, vUv ).r;
           
-              // No Offset Limitting: messy, floating output at grazing angles.
-              //vec2 texCoordOffset = parallaxScale * V.xy / V.z * initialHeight;
+        //       // No Offset Limitting: messy, floating output at grazing angles.
+        //       //vec2 texCoordOffset = parallaxScale * V.xy / V.z * initialHeight;
           
-              // Offset Limiting
-              vec2 texCoordOffset = parallaxScale * V.xy * initialHeight;
-              return vUv - texCoordOffset;
+        //       // Offset Limiting
+        //       vec2 texCoordOffset = parallaxScale * V.xy * initialHeight;
+        //       return vUv - texCoordOffset;
           
-            }
+        //     }
           
-          #else
+        //   #else
           
-            vec2 parallaxMap( in vec3 V ) {
+        //     vec2 parallaxMap( in vec3 V ) {
           
-              // Determine number of layers from angle between V and N
-              float numLayers = mix( parallaxMaxLayers, parallaxMinLayers, abs( dot( vec3( 0.0, 0.0, 1.0 ), V ) ) );
+        //       // Determine number of layers from angle between V and N
+        //       float numLayers = mix( parallaxMaxLayers, parallaxMinLayers, abs( dot( vec3( 0.0, 0.0, 1.0 ), V ) ) );
           
-              float layerHeight = 1.0 / numLayers;
-              float currentLayerHeight = 0.0;
-              // Shift of texture coordinates for each iteration
-              vec2 dtex = parallaxScale * V.xy / V.z / numLayers;
+        //       float layerHeight = 1.0 / numLayers;
+        //       float currentLayerHeight = 0.0;
+        //       // Shift of texture coordinates for each iteration
+        //       vec2 dtex = parallaxScale * V.xy / V.z / numLayers;
           
-              vec2 currentTextureCoords = vUv;
+        //       vec2 currentTextureCoords = vUv;
           
-              float heightFromTexture = texture2D( bumpMap, currentTextureCoords ).r;
+        //       float heightFromTexture = texture2D( bumpMap, currentTextureCoords ).r;
           
-              // while ( heightFromTexture > currentLayerHeight )
-              // Infinite loops are not well supported. Do a large finite
-              // loop, but not too large, as it slows down some compilers.
-              for ( int i = 0; i < 30; i += 1 ) {
-                if ( heightFromTexture <= currentLayerHeight ) {
-                  break;
-                }
-                currentLayerHeight += layerHeight;
-                // Shift texture coordinates along vector V
-                currentTextureCoords -= dtex;
-                heightFromTexture = texture2D( bumpMap, currentTextureCoords ).r;
-              }
+        //       // while ( heightFromTexture > currentLayerHeight )
+        //       // Infinite loops are not well supported. Do a large finite
+        //       // loop, but not too large, as it slows down some compilers.
+        //       for ( int i = 0; i < 30; i += 1 ) {
+        //         if ( heightFromTexture <= currentLayerHeight ) {
+        //           break;
+        //         }
+        //         currentLayerHeight += layerHeight;
+        //         // Shift texture coordinates along vector V
+        //         currentTextureCoords -= dtex;
+        //         heightFromTexture = texture2D( bumpMap, currentTextureCoords ).r;
+        //       }
           
-              #ifdef USE_STEEP_PARALLAX
+        //       #ifdef USE_STEEP_PARALLAX
           
-                return currentTextureCoords;
+        //         return currentTextureCoords;
           
-              #elif defined( USE_RELIEF_PARALLAX )
+        //       #elif defined( USE_RELIEF_PARALLAX )
           
-                vec2 deltaTexCoord = dtex / 2.0;
-                float deltaHeight = layerHeight / 2.0;
+        //         vec2 deltaTexCoord = dtex / 2.0;
+        //         float deltaHeight = layerHeight / 2.0;
           
-                // Return to the mid point of previous layer
-                currentTextureCoords += deltaTexCoord;
-                currentLayerHeight -= deltaHeight;
+        //         // Return to the mid point of previous layer
+        //         currentTextureCoords += deltaTexCoord;
+        //         currentLayerHeight -= deltaHeight;
           
-                // Binary search to increase precision of Steep Parallax Mapping
-                const int numSearches = 5;
-                for ( int i = 0; i < numSearches; i += 1 ) {
+        //         // Binary search to increase precision of Steep Parallax Mapping
+        //         const int numSearches = 5;
+        //         for ( int i = 0; i < numSearches; i += 1 ) {
           
-                  deltaTexCoord /= 2.0;
-                  deltaHeight /= 2.0;
-                  heightFromTexture = texture2D( bumpMap, currentTextureCoords ).r;
-                  // Shift along or against vector V
-                  if( heightFromTexture > currentLayerHeight ) { // Below the surface
+        //           deltaTexCoord /= 2.0;
+        //           deltaHeight /= 2.0;
+        //           heightFromTexture = texture2D( bumpMap, currentTextureCoords ).r;
+        //           // Shift along or against vector V
+        //           if( heightFromTexture > currentLayerHeight ) { // Below the surface
           
-                    currentTextureCoords -= deltaTexCoord;
-                    currentLayerHeight += deltaHeight;
+        //             currentTextureCoords -= deltaTexCoord;
+        //             currentLayerHeight += deltaHeight;
           
-                  } else { // above the surface
+        //           } else { // above the surface
           
-                    currentTextureCoords += deltaTexCoord;
-                    currentLayerHeight -= deltaHeight;
+        //             currentTextureCoords += deltaTexCoord;
+        //             currentLayerHeight -= deltaHeight;
           
-                  }
+        //           }
           
-                }
-                return currentTextureCoords;
+        //         }
+        //         return currentTextureCoords;
           
-              #elif defined( USE_OCLUSION_PARALLAX )
+        //       #elif defined( USE_OCLUSION_PARALLAX )
           
-                vec2 prevTCoords = currentTextureCoords + dtex;
+        //         vec2 prevTCoords = currentTextureCoords + dtex;
           
-                // Heights for linear interpolation
-                float nextH = heightFromTexture - currentLayerHeight;
-                float prevH = texture2D( bumpMap, prevTCoords ).r - currentLayerHeight + layerHeight;
+        //         // Heights for linear interpolation
+        //         float nextH = heightFromTexture - currentLayerHeight;
+        //         float prevH = texture2D( bumpMap, prevTCoords ).r - currentLayerHeight + layerHeight;
           
-                // Proportions for linear interpolation
-                float weight = nextH / ( nextH - prevH );
+        //         // Proportions for linear interpolation
+        //         float weight = nextH / ( nextH - prevH );
           
-                // Interpolation of texture coordinates
-                return prevTCoords * weight + currentTextureCoords * ( 1.0 - weight );
+        //         // Interpolation of texture coordinates
+        //         return prevTCoords * weight + currentTextureCoords * ( 1.0 - weight );
           
-              #else // NO_PARALLAX
+        //       #else // NO_PARALLAX
           
-                return vUv;
+        //         return vUv;
           
-              #endif
+        //       #endif
           
-            }
-          #endif
+        //     }
+        //   #endif
           
-          vec2 perturbUv( vec3 surfPosition, vec3 surfNormal, vec3 viewPosition ) {
+        //   vec2 perturbUv( vec3 surfPosition, vec3 surfNormal, vec3 viewPosition ) {
           
-            vec2 texDx = dFdx( vUv );
-            vec2 texDy = dFdy( vUv );
+        //     vec2 texDx = dFdx( vUv );
+        //     vec2 texDy = dFdy( vUv );
           
-            vec3 vSigmaX = dFdx( surfPosition );
-            vec3 vSigmaY = dFdy( surfPosition );
-            vec3 vR1 = cross( vSigmaY, surfNormal );
-            vec3 vR2 = cross( surfNormal, vSigmaX );
-            float fDet = dot( vSigmaX, vR1 );
+        //     vec3 vSigmaX = dFdx( surfPosition );
+        //     vec3 vSigmaY = dFdy( surfPosition );
+        //     vec3 vR1 = cross( vSigmaY, surfNormal );
+        //     vec3 vR2 = cross( surfNormal, vSigmaX );
+        //     float fDet = dot( vSigmaX, vR1 );
           
-            vec2 vProjVscr = ( 1.0 / fDet ) * vec2( dot( vR1, viewPosition ), dot( vR2, viewPosition ) );
-            vec3 vProjVtex;
-            vProjVtex.xy = texDx * vProjVscr.x + texDy * vProjVscr.y;
-            vProjVtex.z = dot( surfNormal, viewPosition );
+        //     vec2 vProjVscr = ( 1.0 / fDet ) * vec2( dot( vR1, viewPosition ), dot( vR2, viewPosition ) );
+        //     vec3 vProjVtex;
+        //     vProjVtex.xy = texDx * vProjVscr.x + texDy * vProjVscr.y;
+        //     vProjVtex.z = dot( surfNormal, viewPosition );
           
-            return parallaxMap( vProjVtex );
-          }
-          #endif
+        //     return parallaxMap( vProjVtex );
+        //   }
+        //   #endif
           
-        `);
+        // `);
 
-        shader.fragmentShader = shader.fragmentShader.replace(
-          `#include <clipping_planes_fragment>`,
-          `
-          #include <clipping_planes_fragment>
-          #if defined(USE_BUMPMAP) && defined(STANDARD)
-            vUvParallax = perturbUv( -vViewPosition, normalize( vNormal ), normalize( vViewPosition ) );
-          #endif
-          `
-        );
+        // shader.fragmentShader = shader.fragmentShader.replace(
+        //   `#include <clipping_planes_fragment>`,
+        //   `
+        //   #include <clipping_planes_fragment>
+        //   #if defined(USE_BUMPMAP) && defined(STANDARD)
+        //     vUvParallax = perturbUv( -vViewPosition, normalize( vNormal ), normalize( vViewPosition ) );
+        //   #endif
+        //   `
+        // );
       };
-      
 
       // custom depth material - required for instanced shadows
       var customDepthMaterial = new THREE.MeshDepthMaterial();
@@ -499,6 +499,9 @@ module.exports = class PbrTest extends SketchScene {
 
       mesh = new THREE.Mesh( this.geometry, ironMaterial );
       mesh.name = 'instanced mesh';
+
+      parallaxOclusionModifier.modifyMeshMaterial( mesh );
+
       mesh.customDepthMaterial = customDepthMaterial;
       mesh.onBeforeRender = (renderer, scene, camera, geometry, material) => {
         material.onBeforeCompile = ironMaterial.onBeforeCompile;
@@ -533,7 +536,7 @@ module.exports = class PbrTest extends SketchScene {
 
     let f = gui.addFolder({title: 'Parallax'});
 
-    f.addInput( this.shaderUniforms.parallaxScale, 'value', {
+    f.addInput( mesh.material.userData.parallaxOclusion.shaderUniforms.parallaxScale, 'value', {
       min: -0.01,
       max: 0.01,
       step: 0.001,
@@ -542,7 +545,7 @@ module.exports = class PbrTest extends SketchScene {
       // this.adjustEnvIntensity();
     });
 
-    f.addInput( this.shaderUniforms.parallaxMinLayers, 'value', {
+    f.addInput( mesh.material.userData.parallaxOclusion.shaderUniforms.parallaxMinLayers, 'value', {
       min: 1,
       max: 30,
       step: 1,
@@ -551,7 +554,7 @@ module.exports = class PbrTest extends SketchScene {
       // this.adjustEnvIntensity();
     });
 
-    f.addInput( this.shaderUniforms.parallaxMaxLayers, 'value', {
+    f.addInput( mesh.material.userData.parallaxOclusion.shaderUniforms.parallaxMaxLayers, 'value', {
       min: 1,
       max: 30,
       step: 1,
@@ -560,20 +563,13 @@ module.exports = class PbrTest extends SketchScene {
       // this.adjustEnvIntensity();
     });
 
-    f.addInput(this.pars, 'parallaxMode', {
-      options: {
-        none: 'NO_PARALLAX',
-        basic: 'USE_BASIC_PARALLAX',
-        steep: 'USE_STEEP_PARALLAX',
-        occlusion: 'USE_OCLUSION_PARALLAX', // a.k.a. POM
-        relief: 'USE_RELIEF_PARALLAX'
-      }
+    f.addInput(mesh.material.userData.parallaxOclusion, 'parallaxMode', {
+      options: parallaxOclusionModifier.modes
     }).on( 'change', value => {
       // this.adjustEnvIntensity();
       ironMaterial.defines = {STANDARD: ''};
       ironMaterial.defines[ value ] = '';
       ironMaterial.needsUpdate = true;
-
     });
 
     this.adjustEnvIntensity();
