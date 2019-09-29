@@ -227,4 +227,7 @@ module.exports = class ParallaxOclusionMaterialModifier {
       );
     };
   }
+
+  addGui( material, gui ){
+  }
 };

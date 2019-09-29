@@ -70,24 +70,24 @@ module.exports = class PbrTest extends SketchScene {
 
     postProcessSetup( false );
 
-    let ironMaterial;
+    let instanceMaterial;
 
     assets.get('iron2').scene.traverse(child => {
       if (child.isMesh && child.material) {
-        ironMaterial = child.material;
+        instanceMaterial = child.material;
       }
     });
 
-    ironMaterial = createMaterial(env.target.texture);
+    instanceMaterial = createMaterial(env.target.texture);
 
     const object = new THREE.Object3D();
     this.object = object;
     let mesh;
 
-    ironMaterial.envMap = env.target.texture;
-    ironMaterial.needsUpdate = true;
+    instanceMaterial.envMap = env.target.texture;
+    instanceMaterial.needsUpdate = true;
 
-    global.mat = ironMaterial;
+    global.mat = instanceMaterial;
 
     // ground
 
@@ -133,11 +133,11 @@ module.exports = class PbrTest extends SketchScene {
     // this.lightHelper = new THREE.SpotLightHelper( spotlight );
     // this.add( this.lightHelper );
 
-    // let testMat = ironMaterial.clone();
+    // let testMat = instanceMaterial.clone();
 
     const testBox = new THREE.Mesh(
       new THREE.BoxBufferGeometry( 2, 2, 2),
-      ironMaterial
+      instanceMaterial
     );
     testBox.position.set( 3.0, 2.0, -2.0 );
     testBox.receiveShadow = true;
@@ -149,11 +149,11 @@ module.exports = class PbrTest extends SketchScene {
     if ( smooth ) {
       // bufferGeometry = new THREE.BoxBufferGeometry(2, 2, 2, 9, 9, 9);
       bufferGeometry = new THREE.SphereBufferGeometry(1, 15, 15);
-      ironMaterial.flatShading = false;
+      instanceMaterial.flatShading = false;
     } else {
       bufferGeometry = new THREE.SphereBufferGeometry(1, 4, 4);
       // bufferGeometry = new THREE.BoxBufferGeometry(2, 2, 2, 9, 9, 9);
-      ironMaterial.flatShading = true;
+      instanceMaterial.flatShading = true;
     }
 
     const positions = [];
@@ -188,7 +188,7 @@ module.exports = class PbrTest extends SketchScene {
         // smooth radius
         radius.push(Math.min(x, Math.min(y, z)));
       } else {
-        mesh = new THREE.Mesh(bufferGeometry, ironMaterial);
+        mesh = new THREE.Mesh(bufferGeometry, instanceMaterial);
         mesh.position.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
         mesh.position.multiplyScalar(Math.random() * 10);
         mesh.rotation.set(Math.random() * 2, Math.random() * 2, Math.random() * 2);
@@ -214,7 +214,7 @@ module.exports = class PbrTest extends SketchScene {
         // radius: {value: 1},
       };
 
-      ironMaterial.onBeforeCompile = shader => {
+      instanceMaterial.onBeforeCompile = shader => {
         shader.uniforms.time = this.shaderUniforms.time;
         shader.uniforms.speed = this.shaderUniforms.speed;
 
@@ -281,18 +281,18 @@ module.exports = class PbrTest extends SketchScene {
 
       // custom depth material - required for instanced shadows
       var customDepthMaterial = new THREE.MeshDepthMaterial();
-      customDepthMaterial.onBeforeCompile = ironMaterial.onBeforeCompile;
+      customDepthMaterial.onBeforeCompile = instanceMaterial.onBeforeCompile;
       customDepthMaterial.depthPacking = THREE.RGBADepthPacking;
 
-      mesh = new THREE.Mesh( this.geometry, ironMaterial );
+      mesh = new THREE.Mesh( this.geometry, instanceMaterial );
       mesh.name = 'instanced mesh';
 
       parallaxOclusionModifier.modifyMeshMaterial( mesh );
 
       mesh.customDepthMaterial = customDepthMaterial;
       mesh.onBeforeRender = (renderer, scene, camera, geometry, material) => {
-        material.onBeforeCompile = ironMaterial.onBeforeCompile;
-        material.side = ironMaterial.side;
+        material.onBeforeCompile = instanceMaterial.onBeforeCompile;
+        material.side = instanceMaterial.side;
       };
       mesh.castShadow = true;
       mesh.receiveShadow = true;
@@ -348,9 +348,9 @@ module.exports = class PbrTest extends SketchScene {
       options: parallaxOclusionModifier.modes
     }).on( 'change', value => {
       // this.adjustEnvIntensity();
-      ironMaterial.defines = {STANDARD: ''};
-      ironMaterial.defines[ value ] = '';
-      ironMaterial.needsUpdate = true;
+      instanceMaterial.defines = {STANDARD: ''};
+      instanceMaterial.defines[ value ] = '';
+      instanceMaterial.needsUpdate = true;
     });
 
     this.adjustEnvIntensity();
