@@ -8,7 +8,7 @@ const { assets } = require('../../context');
 //   assets.queue( materialAssets[i] );
 // }
 
-const folder = 'asphalt8';
+const folder = 'Marble02';
 
 const materialAssets = [
   {
@@ -30,7 +30,7 @@ const materialAssets = [
   //   url: `assets/textures/${folder}/mask.jpg`,
   //   key: 'mask',
   //   texture: true
-  // }
+  // },
   {
     url: `assets/textures/${folder}/height.jpg`,
     key: 'h',
@@ -48,6 +48,8 @@ const createMaterial = ( envMap ) => {
     normalMap: assets.get('n'),
     aoMap: assets.get('aorm'),
     map: assets.get('c'),
+    // alphaMap: assets.get('mask'),
+    transparent: true,
     // displacementMap: assets.get('h'),
     // normalScale: new THREE.Vector2(-1, -1),
     bumpMap: assets.get('h'),

@@ -314,12 +314,13 @@ module.exports = class ParallaxOclusionMaterialModifier {
     };
   }
 
-  addGui( material, gui ) {
-    let f = gui.addFolder({title: `${material.name}: Parallax`});
+  addGui( mesh, gui ) {
+    const material = mesh.material;
+    let f = gui.addFolder({title: `${mesh.name} - ${material.name}: Parallax`, expanded: false});
 
     f.addInput( material, 'parallaxScale', {
-      min: -0.03,
-      max: 0.03,
+      min: -0.05,
+      max: 0.05,
       step: 0.001,
       label: 'scale'
     });

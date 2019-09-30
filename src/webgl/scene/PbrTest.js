@@ -146,6 +146,7 @@ module.exports = class PbrTest extends SketchScene {
     testBox.position.set( 3.0, 2.0, -2.0 );
     testBox.receiveShadow = true;
     testBox.castShadow = true;
+    testBox.name = 'testBox';
     global.box = testBox;
     this.add( testBox );
 
@@ -188,7 +189,7 @@ module.exports = class PbrTest extends SketchScene {
         );
 
         // scale
-        x = y = z = Math.random();
+        x = y = z = Math.random() * 2;
         scales.push( x, y, z );
 
         // smooth radius
@@ -283,7 +284,7 @@ module.exports = class PbrTest extends SketchScene {
           vNormal = normalize( transformedNormal );
         #endif
         
-        //transformed *= scale.x;
+        transformed *= scale.x;
         transformed = ( r * vec4(transformed, 1.0)).xyz;
         transformed = transformed + offset; 
         `);
@@ -333,11 +334,11 @@ module.exports = class PbrTest extends SketchScene {
       this.adjustEnvIntensity();
     });
 
-    parallaxOclusionModifier.addGui( instanceMaterial, gui );
+    parallaxOclusionModifier.addGui( mesh, gui );
 
     if ( defined( testBoxMat ) ) {
       parallaxOclusionModifier.modifyMeshMaterial( testBox );
-      parallaxOclusionModifier.addGui( testBoxMat, gui );
+      parallaxOclusionModifier.addGui( testBox, gui );
     }
 
     this.adjustEnvIntensity();
