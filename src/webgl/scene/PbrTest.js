@@ -6,6 +6,7 @@ const defined = require('defined');
 const { createMaterial, materialAssets } = require('../materials/createPbrMaterial');
 const ParallaxOclusionMaterialModifier = require('../materialModifiers/ParallaxOclusionMaterialModifier');
 const IceMaterial = require('../materials/IceMaterial');
+const { SpotLight, PointLight } = require('../objects/lights');
 
 const name = 'pbrtest';
 
@@ -131,7 +132,7 @@ module.exports = class PbrTest extends SketchScene {
     this.plane = plane;
 
     // spotlight
-    const spotlight = new THREE.SpotLight( 0xffffff, 100, 0, Math.PI / 5, 0.3 );
+    const spotlight = new SpotLight( 0xffffff, 100, 0, Math.PI / 5, 0.3 );
     spotlight.position.set( 5, 12, 5 );
     spotlight.target.position.set( 0, 0, 0 );
     spotlight.castShadow = true;
@@ -149,7 +150,12 @@ module.exports = class PbrTest extends SketchScene {
 
     // let testBoxMat = instanceMaterial.clone();
 
-    let pointLight = new THREE.PointLight();
+    let testPoint = new PointLight( 0xff0000, 1, 100 );
+    testPoint.position.set( -1, 1, -3);
+    global.testPoint = testPoint;
+    this.add( testPoint );
+
+    let pointLight = new PointLight();
     pointLight.castShadow = true;
     pointLight.position.set( 2, 2, -0.5 );
 

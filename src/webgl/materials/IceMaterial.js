@@ -50,6 +50,15 @@ class IceMaterial extends THREE.MeshStandardMaterial {
     // console.log('set hex', value );
     this.uniforms.thicknessColor.value.setStyle( value );
   }
+
+  get thicknessMap() {
+    return this.uniforms.thicknessMap.value;
+  }
+
+  set thicknessMap( value ) {
+    this.uniforms.thicknessMap.value = value;
+    this.needsUpdate = true;
+  }
 }
 
 function setFlags (material) {
