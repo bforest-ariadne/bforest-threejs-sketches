@@ -8,6 +8,13 @@ module.exports = class ParallaxOclusionMaterialModifier {
       occlusion: 'USE_OCLUSION_PARALLAX', // a.k.a. POM
       relief: 'USE_RELIEF_PARALLAX'
     };
+    this.guiModes = {
+      none: 'none',
+      basic: 'basic',
+      steep: 'steep',
+      occlusion: 'occlusion', // a.k.a. POM
+      relief: 'relief'
+    };
     this.parallaxOclusionFunctions = `
     #include <clipping_planes_pars_fragment>
     uniform float parallaxScale;
@@ -151,11 +158,57 @@ module.exports = class ParallaxOclusionMaterialModifier {
       parallaxMinLayers: {value: 1},
       parallaxMaxLayers: {value: 30}
     };
-    material.userData.parallaxOclusion.parallaxMode = 'USE_OCLUSION_PARALLAX';
+    material.userData.parallaxOclusion.parallaxMode = 'occlusion';
+    material.userData.parallaxOclusion.modes = this.modes;
 
     const previousOnBeforeCompile = material.onBeforeCompile;
 
     material.defines[ this.modes.occlusion ] = '';
+
+    // add parallax properties to material object for easier access
+    Object.defineProperty(material, 'parallaxScale', {
+      get() {
+        return this.userData.parallaxOclusion.shaderUniforms.parallaxScale.value;
+      },
+      set( value ) {
+        this.userData.parallaxOclusion.shaderUniforms.parallaxScale.value = value;
+      }
+    });
+
+    Object.defineProperty(material, 'parallaxMinLayers', {
+      get() {
+        return this.userData.parallaxOclusion.shaderUniforms.parallaxMinLayers.value;
+      },
+      set( value ) {
+        this.userData.parallaxOclusion.shaderUniforms.parallaxMinLayers.value = value;
+      }
+    });
+
+    Object.defineProperty(material, 'parallaxMaxLayers', {
+      get() {
+        return this.userData.parallaxOclusion.shaderUniforms.parallaxMaxLayers.value;
+      },
+      set( value ) {
+        this.userData.parallaxOclusion.shaderUniforms.parallaxMaxLayers.value = value;
+      }
+    });
+
+    Object.defineProperty(material, 'parallaxMode', {
+      get() {
+        // return this.userData.parallaxOclusion.parallaxMode;
+        return this.userData.parallaxOclusion.parallaxMode;
+      },
+      set( value ) {
+        const defines = {};
+        for ( let [ key, value ] of Object.entries(this.defines) ) {
+          if ( !key.includes( 'PARALLAX' ) ) defines[ key ] = value;
+        }
+        this.userData.parallaxOclusion.parallaxMode = value;
+        defines[ this.userData.parallaxOclusion.modes[ value ] ] = '';
+        this.defines = defines;
+        this.needsUpdate = true;
+      }
+    });
 
     material.onBeforeCompile = (shader, renderer) => {
       // call previous onBefore Compile if one existed
@@ -228,6 +281,32 @@ module.exports = class ParallaxOclusionMaterialModifier {
     };
   }
 
-  addGui( material, gui ){
+  addGui( material, gui ) {
+    let f = gui.addFolder({title: `${material.name}: Parallax`});
+
+    f.addInput( material, 'parallaxScale', {
+      min: -0.03,
+      max: 0.03,
+      step: 0.001,
+      label: 'scale'
+    });
+
+    f.addInput( material, 'parallaxMinLayers', {
+      min: 1,
+      max: 30,
+      step: 1,
+      label: 'min layers'
+    });
+
+    f.addInput( material, 'parallaxMaxLayers', {
+      min: 1,
+      max: 30,
+      step: 1,
+      label: 'max layers'
+    });
+
+    f.addInput(material, 'parallaxMode', {
+      options: this.guiModes
+    });
   }
 };

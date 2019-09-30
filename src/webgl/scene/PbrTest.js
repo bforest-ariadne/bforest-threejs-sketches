@@ -321,37 +321,34 @@ module.exports = class PbrTest extends SketchScene {
       this.adjustEnvIntensity();
     });
 
-    let f = gui.addFolder({title: 'Parallax'});
+    parallaxOclusionModifier.addGui( instanceMaterial, gui );
 
-    f.addInput( mesh.material.userData.parallaxOclusion.shaderUniforms.parallaxScale, 'value', {
-      min: -0.03,
-      max: 0.03,
-      step: 0.001,
-      label: 'scale'
-    });
+    // let f = gui.addFolder({title: 'Parallax'});
 
-    f.addInput( mesh.material.userData.parallaxOclusion.shaderUniforms.parallaxMinLayers, 'value', {
-      min: 1,
-      max: 30,
-      step: 1,
-      label: 'min layers'
-    });
+    // f.addInput( mesh.material, 'parallaxScale', {
+    //   min: -0.03,
+    //   max: 0.03,
+    //   step: 0.001,
+    //   label: 'scale'
+    // });
 
-    f.addInput( mesh.material.userData.parallaxOclusion.shaderUniforms.parallaxMaxLayers, 'value', {
-      min: 1,
-      max: 30,
-      step: 1,
-      label: 'max layers'
-    });
+    // f.addInput( mesh.material, 'parallaxMinLayers', {
+    //   min: 1,
+    //   max: 30,
+    //   step: 1,
+    //   label: 'min layers'
+    // });
 
-    f.addInput(mesh.material.userData.parallaxOclusion, 'parallaxMode', {
-      options: parallaxOclusionModifier.modes
-    }).on( 'change', value => {
-      // this.adjustEnvIntensity();
-      instanceMaterial.defines = {STANDARD: ''};
-      instanceMaterial.defines[ value ] = '';
-      instanceMaterial.needsUpdate = true;
-    });
+    // f.addInput( mesh.material, 'parallaxMaxLayers', {
+    //   min: 1,
+    //   max: 30,
+    //   step: 1,
+    //   label: 'max layers'
+    // });
+
+    // f.addInput(mesh.material, 'parallaxMode', {
+    //   options: parallaxOclusionModifier.guiModes
+    // });
 
     this.adjustEnvIntensity();
   }
