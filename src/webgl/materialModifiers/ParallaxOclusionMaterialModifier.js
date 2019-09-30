@@ -149,7 +149,10 @@ module.exports = class ParallaxOclusionMaterialModifier {
 
   modifyMeshMaterial( mesh ) {
     const material = mesh.material;
-    if ( !material.isMeshStandardMaterial ) console.warn( 'this method has only been tested with THREE.MeshStandardMaterial');
+    if ( !material.isMeshStandardMaterial && !material.isMeshPhysicalMaterial ) {
+      console.warn( 'this method has only been tested with THREE.MeshStandardMaterial and THREE.MeshPhysicalMaterial');
+      return;
+    }
 
     // temporary place for shaderUniforms object
     material.userData.parallaxOclusion = {};

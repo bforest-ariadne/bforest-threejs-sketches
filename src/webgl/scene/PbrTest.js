@@ -106,6 +106,7 @@ module.exports = class PbrTest extends SketchScene {
       new THREE.PlaneBufferGeometry( 40, 40, 40, 40 ),
       marble1Mat
     );
+    plane.geometry.addAttribute( 'uv2', plane.geometry.attributes.uv.clone() );
     plane.rotation.x = -Math.PI / 2;
     plane.position.y = -4;
     plane.receiveShadow = true;
@@ -139,6 +140,7 @@ module.exports = class PbrTest extends SketchScene {
       new THREE.BoxBufferGeometry( 2, 2, 2),
       instanceMaterial
     );
+    testBox.geometry.addAttribute( 'uv2', testBox.geometry.attributes.uv.clone() );
     testBox.position.set( 3.0, 2.0, -2.0 );
     testBox.receiveShadow = true;
     testBox.castShadow = true;
@@ -155,6 +157,8 @@ module.exports = class PbrTest extends SketchScene {
       // bufferGeometry = new THREE.BoxBufferGeometry(2, 2, 2, 9, 9, 9);
       instanceMaterial.flatShading = true;
     }
+
+    bufferGeometry.addAttribute( 'uv2', bufferGeometry.attributes.uv.clone() );
 
     const positions = [];
     const scales = [];
@@ -210,11 +214,15 @@ module.exports = class PbrTest extends SketchScene {
 
       this.shaderUniforms = {
         time: {value: 0},
-        speed: {value: 1},
+        speed: {value: 1}
         // radius: {value: 1},
       };
 
-      instanceMaterial.onBeforeCompile = shader => {
+      const previousOnBeforeCompile = instanceMaterial.onBeforeCompile;
+
+      instanceMaterial.onBeforeCompile = ( shader, renderer ) => {
+        previousOnBeforeCompile( shader, renderer );
+
         shader.uniforms.time = this.shaderUniforms.time;
         shader.uniforms.speed = this.shaderUniforms.speed;
 

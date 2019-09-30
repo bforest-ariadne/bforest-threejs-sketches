@@ -39,7 +39,7 @@ const materialAssets = [
 ];
 
 const createMaterial = ( envMap ) => {
-  const material = new THREE.MeshStandardMaterial({
+  const material = new THREE.MeshPhysicalMaterial({
     // color: 0xffffff,
     roughness: 1,
     metalness: 1,
