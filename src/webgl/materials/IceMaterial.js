@@ -20,13 +20,14 @@ function IceMaterial (parameters) {
     THREE.ShaderLib.standard.uniforms,
     {
       // your custom uniforms or overrides to built-ins
-      time: { type: 'f', value: 0 },
       thicknessMap: { type: 't', value: parameters.thicknessMap || new THREE.Texture() },
       thicknessRepeat: { type: 'v3', value: parameters.thicknessRepeat || new THREE.Vector2() },
       thicknessPower: { type: 'f', value: 20 },
       thicknessScale: { type: 'f', value: 4 },
       thicknessDistortion: { type: 'f', value: 0.185 },
       thicknessAmbient: { type: 'f', value: 0.0 },
+      thicknessAttenuation: { type: 'f', value: 0.8 },
+      thicknessColor: { type: 'v3', value: parameters.thicknessColor || new THREE.Color('white') }
     }
   );
   setFlags(this);

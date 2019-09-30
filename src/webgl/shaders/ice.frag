@@ -6,27 +6,23 @@
   uniform float thicknessScale;
   uniform float thicknessDistortion;
   uniform float thicknessAmbient;
+  uniform float thicknessAttenuation;
+  uniform vec3 thicknessColor;
   uniform vec2 thicknessRepeat;
 #endif
 
 #define PHYSICAL
-
-uniform vec3 diffuse;
-uniform vec3 emissive;
-uniform float roughness;
-uniform float metalness;
-uniform float opacity;
 
 #ifdef PHYSICAL
 	#define REFLECTIVITY
 	#define CLEARCOAT
 	#define TRANSPARENCY
 #endif
-
-// uniform float envMapIntensity; // temporary
-
-// varying vec3 vViewPosition;
-
+uniform vec3 diffuse;
+uniform vec3 emissive;
+uniform float roughness;
+uniform float metalness;
+uniform float opacity;
 #ifdef TRANSPARENCY
 	uniform float transparency;
 #endif
@@ -103,7 +99,7 @@ void main() {
   #include <lights_fragment_begin>
 
   #ifdef USE_TRANSLUCENCY
-    vec3 thicknessColor = vec3(1.0, 1.0, 1.0);
+    // vec3 thicknessColor = vec3(1.0, 1.0, 1.0);
     vec3 thickness = thicknessColor * texture2D(thicknessMap, vUv * thicknessRepeat).r;
     vec3 N = geometry.normal;
     vec3 V = normalize(geometry.viewDir);
@@ -125,7 +121,7 @@ void main() {
         vec3 LTLight = normalize(L + (N * thicknessDistortion));
         float LTDot = pow(saturate(dot(V, -LTLight)), thicknessPower) * thicknessScale;
         vec3 LT = lightAtten * (LTDot + thicknessAmbient) * thickness;
-        reflectedLight.directDiffuse += material.diffuseColor * pointLight.color * LT;
+        reflectedLight.directDiffuse += material.diffuseColor * pointLight.color * LT * thicknessAttenuation;
 
       }
 
@@ -147,21 +143,26 @@ void main() {
         vec3 LTLight = normalize(L + (N * thicknessDistortion));
         float LTDot = pow(saturate(dot(V, -LTLight)), thicknessPower) * thicknessScale;
         vec3 LT = lightAtten * (LTDot + thicknessAmbient) * thickness;
-        reflectedLight.directDiffuse += material.diffuseColor * rectAreaLight.color * LT;
+        reflectedLight.directDiffuse += material.diffuseColor * rectAreaLight.color * LT * thicknessAttenuation;
       }
     #endif
 
   #endif
 
-  // modulation
+  // accumulation continue
   #include <lights_fragment_maps>
 	#include <lights_fragment_end>
+
+  // modulation
   #include <aomap_fragment>
 
-  vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveRadiance;
+	vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveRadiance;
 
-  gl_FragColor = vec4( outgoingLight, diffuseColor.a );
-
+	// this is a stub for the transparency model
+	#ifdef TRANSPARENCY
+		diffuseColor.a *= saturate( 1. - transparency + linearToRelativeLuminance( reflectedLight.directSpecular + reflectedLight.indirectSpecular ) );
+	#endif
+	gl_FragColor = vec4( outgoingLight, diffuseColor.a );
 	#include <tonemapping_fragment>
 	#include <encodings_fragment>
 	#include <fog_fragment>

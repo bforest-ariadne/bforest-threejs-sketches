@@ -148,14 +148,13 @@ module.exports = class PbrTest extends SketchScene {
     // this.add( this.lightHelper );
 
     // let testBoxMat = instanceMaterial.clone();
-    
+
     let pointLight = new THREE.PointLight();
     pointLight.castShadow = true;
-    pointLight.position.set( 1.5, 3, -1 );
+    pointLight.position.set( 2, 2, -0.5 );
 
     this.add( pointLight );
     global.pointLight = pointLight;
-
 
     let iceMaterial = new IceMaterial({
       // roughnessMap: assets.get('lava'),
@@ -404,6 +403,19 @@ module.exports = class PbrTest extends SketchScene {
     }).on( 'change', () => {
     });
 
+    f.addInput( iceMaterial.uniforms.thicknessAttenuation, 'value', {
+      min: 0.0,
+      max: 1,
+      step: 0.01,
+      label: 'thicknessAttenuation'
+    });
+
+    // f.addInput( iceMaterial.uniforms.thicknessColor.value, 'getHex', {
+    //   label: 'thicknessColor'
+    // }).on( 'change', value => {
+    //   iceMaterial.uniforms.thicknessColor.value.setHex( value );
+    // });
+
     parallaxOclusionModifier.addGui( mesh, gui );
 
     // if ( defined( testBoxMat, false ) ) {
@@ -421,7 +433,7 @@ module.exports = class PbrTest extends SketchScene {
 
     if ( !this.animate ) return;
 
-    this.iceMaterial.uniforms.time.value = now;
+    // this.iceMaterial.uniforms.time.value = now;
 
     this.object.rotation.x += delta * 0.2;
     this.object.rotation.y += delta * 0.3;
