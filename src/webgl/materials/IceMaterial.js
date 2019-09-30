@@ -16,7 +16,6 @@ class IceMaterial extends THREE.MeshStandardMaterial {
   constructor (parameters) {
     parameters = assign({}, parameters);
     super();
-    // THREE.MeshStandardMaterial.call(this);
     this.uniforms = assign({},
       THREE.ShaderLib.standard.uniforms,
       {
@@ -41,6 +40,15 @@ class IceMaterial extends THREE.MeshStandardMaterial {
     this.uniforms = THREE.UniformsUtils.clone(source.uniforms);
     setFlags(this);
     return this;
+  }
+
+  get thicknessColorStyle() {
+    return this.uniforms.thicknessColor.value.getHexString();
+  }
+
+  set thicknessColorStyle( value ) {
+    // console.log('set hex', value );
+    this.uniforms.thicknessColor.value.setStyle( value );
   }
 }
 

@@ -410,11 +410,12 @@ module.exports = class PbrTest extends SketchScene {
       label: 'thicknessAttenuation'
     });
 
-    // f.addInput( iceMaterial.uniforms.thicknessColor.value, 'getHex', {
-    //   label: 'thicknessColor'
-    // }).on( 'change', value => {
-    //   iceMaterial.uniforms.thicknessColor.value.setHex( value );
-    // });
+    f.addInput( iceMaterial, 'thicknessColorStyle', {
+      label: 'thicknessColor'
+    }).on( 'change', value => {
+      // console.log('color val', value );
+      // iceMaterial.uniforms.thicknessColor.value.fromArray( value.getComponents() );
+    });
 
     parallaxOclusionModifier.addGui( mesh, gui );
 
