@@ -37,6 +37,11 @@ module.exports = class WebGLApp extends EventEmitter {
 
     this.mobile = isMobile;
 
+    this.stoppedDiv = document.createElement('div');
+    this.stoppedDiv.id = 'stopped';
+    this.stoppedDiv.style.cssText = 'position: fixed; width: 100%; height: 100%; z-index: 2147483647; background-color: black; opacity: 0.5; display: none; top: 0px;';
+    document.body.appendChild( this.stoppedDiv );
+
     // really basic touch handler that propagates through the scene
     this.touchHandler = createTouches(this.viewport, {
       // filtered: false
@@ -201,6 +206,7 @@ module.exports = class WebGLApp extends EventEmitter {
     if ( this.dev && this.frameCount === 0 ) {
       this.debug();
     }
+    this.stoppedDiv.style.display = 'none';
 
     if (this._rafID !== null) return;
     this._rafID = window.requestAnimationFrame(this.animate);
@@ -213,6 +219,7 @@ module.exports = class WebGLApp extends EventEmitter {
     window.cancelAnimationFrame(this._rafID);
     this._rafID = null;
     this._running = false;
+    this.stoppedDiv.style.display = '';
     return this;
   }
 
@@ -307,7 +314,7 @@ module.exports = class WebGLApp extends EventEmitter {
     // dev key commands
     if ( this.dev ) {
       // toggle app run with space
-      if ( ev.keyCode === 32 && !ev.shiftKey ) {
+      if ( ev.keyCode === 32 && ev.shiftKey ) {
         ev.preventDefault();
         this.togglePause();
       }

@@ -5,6 +5,7 @@ const query = require('../../util/query');
 const defined = require('defined');
 const { createMaterial, materialAssets } = require('../materials/createPbrMaterial');
 const ParallaxOclusionMaterialModifier = require('../materialModifiers/ParallaxOclusionMaterialModifier');
+const IceMaterial = require('../materials/IceMaterial');
 
 const name = 'pbrtest';
 
@@ -27,6 +28,18 @@ if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
   assets.queue({
     url: 'assets/materials/iron1.glb',
     key: 'iron2'
+  });
+
+  assets.queue({
+    url: 'assets/textures/lavatile.jpg',
+    key: 'lava',
+    texture: true
+  });
+
+  assets.queue({
+    url: 'assets/textures/cracked_z.png',
+    key: 'cracked',
+    texture: true
   });
 
   for ( let i in materialAssets ) {
@@ -134,15 +147,38 @@ module.exports = class PbrTest extends SketchScene {
     // this.lightHelper = new THREE.SpotLightHelper( spotlight );
     // this.add( this.lightHelper );
 
-    let testBoxMat = instanceMaterial.clone();
+    // let testBoxMat = instanceMaterial.clone();
+    
+    let pointLight = new THREE.PointLight();
+    pointLight.castShadow = true;
+    pointLight.position.set( 1.5, 3, -1 );
+
+    this.add( pointLight );
+    global.pointLight = pointLight;
+
+
+    let iceMaterial = new IceMaterial({
+      // roughnessMap: assets.get('lava'),
+      thicknessMap: assets.get('cracked'),
+      roughnessMap: assets.get('aorm'),
+      metalnessMap: assets.get('aorm'),
+      normalMap: assets.get('n'),
+      aoMap: assets.get('aorm'),
+      map: assets.get('c'),
+      roughness: 1,
+      metalness: 1,
+      envMap: env.target.texture
+    });
+    global.iceMat = iceMaterial;
+    this.iceMaterial = iceMaterial;
 
     const testBox = new THREE.Mesh(
       new THREE.BoxBufferGeometry( 2, 2, 2),
-      testBoxMat
+      iceMaterial
       // instanceMaterial
     );
     testBox.geometry.addAttribute( 'uv2', testBox.geometry.attributes.uv.clone() );
-    // testBox.material.flatShading = false;
+    testBox.material.flatShading = false;
     testBox.position.set( 3.0, 2.0, -2.0 );
     testBox.receiveShadow = true;
     testBox.castShadow = true;
@@ -334,12 +370,46 @@ module.exports = class PbrTest extends SketchScene {
       this.adjustEnvIntensity();
     });
 
+    f = gui.addFolder({title: `iceMat`});
+
+    f.addInput( iceMaterial.uniforms.thicknessAmbient, 'value', {
+      min: 0.0,
+      max: 1,
+      step: 0.01,
+      label: 'thicknessAmbient'
+    }).on( 'change', () => {
+    });
+
+    f.addInput( iceMaterial.uniforms.thicknessDistortion, 'value', {
+      min: 0.0,
+      max: 1,
+      step: 0.01,
+      label: 'thicknessDistortion'
+    }).on( 'change', () => {
+    });
+
+    f.addInput( iceMaterial.uniforms.thicknessPower, 'value', {
+      min: 0.0,
+      max: 100,
+      step: 1,
+      label: 'thicknessPower'
+    }).on( 'change', () => {
+    });
+
+    f.addInput( iceMaterial.uniforms.thicknessScale, 'value', {
+      min: 0.0,
+      max: 10,
+      step: 0.01,
+      label: 'thicknessScale'
+    }).on( 'change', () => {
+    });
+
     parallaxOclusionModifier.addGui( mesh, gui );
 
-    if ( defined( testBoxMat ) ) {
-      parallaxOclusionModifier.modifyMeshMaterial( testBox );
-      parallaxOclusionModifier.addGui( testBox, gui );
-    }
+    // if ( defined( testBoxMat, false ) ) {
+    //   parallaxOclusionModifier.modifyMeshMaterial( testBox );
+    //   parallaxOclusionModifier.addGui( testBox, gui );
+    // }
 
     this.adjustEnvIntensity();
   }
@@ -350,6 +420,8 @@ module.exports = class PbrTest extends SketchScene {
     if ( defined( this.shadowCameraHelper ) ) this.shadowCameraHelper.update();
 
     if ( !this.animate ) return;
+
+    this.iceMaterial.uniforms.time.value = now;
 
     this.object.rotation.x += delta * 0.2;
     this.object.rotation.y += delta * 0.3;
@@ -371,7 +443,7 @@ module.exports = class PbrTest extends SketchScene {
   }
 
   onKeydown(ev) {
-    if ( ev.keyCode === 32 && ev.shiftKey ) {
+    if ( ev.keyCode === 32 && !ev.shiftKey ) {
       this.animate = !this.animate;
     }
   }
