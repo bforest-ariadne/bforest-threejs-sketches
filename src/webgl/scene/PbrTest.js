@@ -134,11 +134,12 @@ module.exports = class PbrTest extends SketchScene {
     // this.lightHelper = new THREE.SpotLightHelper( spotlight );
     // this.add( this.lightHelper );
 
-    // let testMat = instanceMaterial.clone();
+    let testBoxMat = instanceMaterial.clone();
 
     const testBox = new THREE.Mesh(
       new THREE.BoxBufferGeometry( 2, 2, 2),
-      instanceMaterial
+      testBoxMat
+      // instanceMaterial
     );
     testBox.geometry.addAttribute( 'uv2', testBox.geometry.attributes.uv.clone() );
     testBox.position.set( 3.0, 2.0, -2.0 );
@@ -311,7 +312,9 @@ module.exports = class PbrTest extends SketchScene {
     this.add(object);
     object.scale.multiplyScalar(0.36);
 
-    gui.addInput( this.pars, 'spotlightIntensity', {
+    let f = gui.addFolder({title: `Scene: ${this.name}`});
+
+    f.addInput( this.pars, 'spotlightIntensity', {
       min: 0.0,
       max: 200,
       step: 1,
@@ -320,7 +323,7 @@ module.exports = class PbrTest extends SketchScene {
       this.spotlight.intensity = this.pars.spotlightIntensity;
     });
 
-    gui.addInput( this.pars, 'envMapIntensity', {
+    f.addInput( this.pars, 'envMapIntensity', {
       min: 0.0,
       max: 1.0,
       step: 0.01,
@@ -331,32 +334,10 @@ module.exports = class PbrTest extends SketchScene {
 
     parallaxOclusionModifier.addGui( instanceMaterial, gui );
 
-    // let f = gui.addFolder({title: 'Parallax'});
-
-    // f.addInput( mesh.material, 'parallaxScale', {
-    //   min: -0.03,
-    //   max: 0.03,
-    //   step: 0.001,
-    //   label: 'scale'
-    // });
-
-    // f.addInput( mesh.material, 'parallaxMinLayers', {
-    //   min: 1,
-    //   max: 30,
-    //   step: 1,
-    //   label: 'min layers'
-    // });
-
-    // f.addInput( mesh.material, 'parallaxMaxLayers', {
-    //   min: 1,
-    //   max: 30,
-    //   step: 1,
-    //   label: 'max layers'
-    // });
-
-    // f.addInput(mesh.material, 'parallaxMode', {
-    //   options: parallaxOclusionModifier.guiModes
-    // });
+    if ( defined( testBoxMat ) ) {
+      parallaxOclusionModifier.modifyMeshMaterial( testBox );
+      parallaxOclusionModifier.addGui( testBoxMat, gui );
+    }
 
     this.adjustEnvIntensity();
   }
