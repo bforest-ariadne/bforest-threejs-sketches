@@ -142,6 +142,7 @@ module.exports = class PbrTest extends SketchScene {
       // instanceMaterial
     );
     testBox.geometry.addAttribute( 'uv2', testBox.geometry.attributes.uv.clone() );
+    // testBox.material.flatShading = false;
     testBox.position.set( 3.0, 2.0, -2.0 );
     testBox.receiveShadow = true;
     testBox.castShadow = true;

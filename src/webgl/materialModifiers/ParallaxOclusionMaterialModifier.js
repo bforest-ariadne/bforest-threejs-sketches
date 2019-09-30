@@ -265,6 +265,25 @@ module.exports = class ParallaxOclusionMaterialModifier {
       const normalFragmentMaps = THREE.ShaderChunk.normal_fragment_maps.replace(`USE_BUMPMAP`, `USE_BUMPMAPOLD`);
       shader.fragmentShader = shader.fragmentShader.replace(`#include <normal_fragment_maps>`, normalFragmentMaps);
 
+      // workaround for flat shading - calculating normal early
+      let normalFragmentBeginReplace = THREE.ShaderChunk['normal_fragment_begin'].replace(
+        `vec3 fdx = vec3( dFdx( vViewPosition.x ), dFdx( vViewPosition.y ), dFdx( vViewPosition.z ) );`,
+        ``
+      );
+      normalFragmentBeginReplace = normalFragmentBeginReplace.replace(
+        `vec3 fdy = vec3( dFdy( vViewPosition.x ), dFdy( vViewPosition.y ), dFdy( vViewPosition.z ) );`,
+        ``
+      );
+      normalFragmentBeginReplace = normalFragmentBeginReplace.replace(
+        `vec3 normal = normalize( cross( fdx, fdy ) );`,
+        ``
+      );
+
+      shader.fragmentShader = shader.fragmentShader.replace(
+        `#include <normal_fragment_begin>`,
+        normalFragmentBeginReplace
+      );
+
       // add parallax oclusion functions to shader. Code taken from three.js/examples/shaders/ParallaxShader.js
       shader.fragmentShader = shader.fragmentShader.replace(
         `#include <clipping_planes_pars_fragment>`,
@@ -276,6 +295,17 @@ module.exports = class ParallaxOclusionMaterialModifier {
         `#include <clipping_planes_fragment>`,
         `
         #include <clipping_planes_fragment>
+
+        #ifdef FLAT_SHADED
+          // Workaround for Adreno/Nexus5 not able able to do dFdx( vViewPosition ) ...
+          vec3 fdx = vec3( dFdx( vViewPosition.x ), dFdx( vViewPosition.y ), dFdx( vViewPosition.z ) );
+          vec3 fdy = vec3( dFdy( vViewPosition.x ), dFdy( vViewPosition.y ), dFdy( vViewPosition.z ) );
+          vec3 normal = normalize( cross( fdx, fdy ) );
+          #if defined(USE_BUMPMAP) && defined(STANDARD)
+            vec3 vNormal = vec3( normal );
+          #endif
+        #endif
+
         #if defined(USE_BUMPMAP) && defined(STANDARD)
           vUvParallax = perturbUv( -vViewPosition, normalize( vNormal ), normalize( vViewPosition ) );
         #endif
