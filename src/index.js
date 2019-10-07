@@ -4,6 +4,7 @@ global.THREE = require('three');
 require('three/examples/js/loaders/GLTFLoader.js');
 // require('./vendor/GLTFLoader');
 // require('./vendor/BasisTextureLoader');
+require( 'three/examples/js/misc/GPUComputationRenderer' );
 require('three/examples/js/loaders/BasisTextureLoader');
 require('three/examples/js/loaders/HDRCubeTextureLoader.js');
 require('three/examples/js/loaders/RGBELoader.js');

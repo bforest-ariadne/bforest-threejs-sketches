@@ -3,6 +3,7 @@ const { webgl, assets, gui } = require('../../context');
 const postProcessSetup = require('../postProcessing/basicSSAO');
 const query = require('../../util/query');
 const defined = require('defined');
+const BoidSim = require('../objects/BoidSim');
 
 const name = 'boidtest';
 
@@ -19,11 +20,27 @@ module.exports = class BoidTest extends SketchScene {
   }
   init() {
     this.pars = {
-      envMapIntensity: 0.12,
-      spotlightIntensity: 100
-      // parallaxMode: 'USE_OCLUSION_PARALLAX'
-      // envMapIntensity: 0.2
+      boids: {
+        width: 32,
+        bounds: 800,
+        separation: 20.0,
+        alignment: 20.0,
+        cohesion: 20.0,
+        freedom: 0.75,
+        predatorPosition: new THREE.Vector3( 200, 200, 0 )
+      }
     };
+
+    this.boidSim = new BoidSim( webgl.renderer, {
+      width: this.pars.boids.width,
+      bounds: this.pars.boids.bounds,
+      centerStrength: 5
+    } );
+    this.boidSim.birdMesh.matrixAutoUpdate = true;
+    this.boidSim.birdMesh.scale.multiplyScalar( 0.01 );
+
+    this.add( this.boidSim.birdMesh );
+
     this.controlsInit();
     this.controls.distance = 10;
     this.controls.position = [ 8, 2, -7.4 ];
@@ -44,6 +61,16 @@ module.exports = class BoidTest extends SketchScene {
 
   update (delta = 0, now = 0, frame = 0) {
     super.update();
+    if ( defined( this.boidSim ) ) {
+      // this.godGroup.getWorldPosition( this.godGroupWorldPos );
+      this.boidSim.predatorPosition.copy( this.pars.boids.predatorPosition );
+      // this.boidSim.centerPosition.set(
+      //   this.godGroupWorldPos.x * 100,
+      //   this.godGroupWorldPos.y * 100,
+      //   this.godGroupWorldPos.z * 100
+      // );
+      this.boidSim.update( delta, now, frame );
+    }
   }
 
   onKeydown(ev) {
