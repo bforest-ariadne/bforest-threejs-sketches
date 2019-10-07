@@ -27,16 +27,18 @@ function createBirdInstanceGeometry( width ) {
 
   const colors = [];
   for ( let i = 0; i < 9; i++ ) {
-    var c = new THREE.Color( 0x444444 + ~~( i / 9 ) / 1024 * 0x666666);
+    let c = new THREE.Color( 0x444444 + ~~( i / 9 ) / BIRDS * 0x666666);
     colors.push( c.r, c.g, c.b );
     // colors.push( 1,1,1 );
   };
 
+  var birdVirtices = [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ];
+
   birdGeo.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-  birdGeo.addAttribute( 'birdColor', new THREE.BufferAttribute( new Float32Array( colors ), 3 ) );
+  // birdGeo.addAttribute( 'birdColor', new THREE.BufferAttribute( new Float32Array( colors ), 3 ) );
+  birdGeo.addAttribute( 'birdVertex', new THREE.BufferAttribute( new Float32Array( birdVirtices ), 1 ) );
   // birdGeo.computeFaceNormals();
   // birdGeo.computeVertexNormals();
-  
 
 
   var geometry = new THREE.InstancedBufferGeometry();
@@ -44,6 +46,7 @@ function createBirdInstanceGeometry( width ) {
 
   var references = new Float32Array( points * 2 );
   var birdVertex = new Float32Array( points );
+  var birdColors = new Float32Array( points * 3 );
 
   for ( let v = 0; v < triangles * 3; v++ ) {
     // That ~~ is a double NOT bitwise operator.
@@ -51,6 +54,15 @@ function createBirdInstanceGeometry( width ) {
     let i = ~~( v / 3 );
     var x = ( i % WIDTH ) / WIDTH;
     var y = ~~( i / WIDTH ) / WIDTH;
+
+    let c = new THREE.Color(
+      0x444444 +
+        ~~( v / 9 ) / BIRDS * 0x666666
+    );
+
+    birdColors[ v * 3 + 0 ] = c.r;
+    birdColors[ v * 3 + 1 ] = c.g;
+    birdColors[ v * 3 + 2 ] = c.b;
 
     references[ v * 2 ] = x;
     references[ v * 2 + 1 ] = y;
@@ -60,7 +72,8 @@ function createBirdInstanceGeometry( width ) {
   console.log('references array', references);
 
   geometry.addAttribute( 'reference', new THREE.InstancedBufferAttribute( references, 2 ));
-  geometry.addAttribute( 'birdVertex', new THREE.InstancedBufferAttribute( birdVertex, 1 ));
+  geometry.addAttribute( 'birdColor', new THREE.InstancedBufferAttribute( birdColors, 2 ));
+  // geometry.addAttribute( 'birdVertex', new THREE.InstancedBufferAttribute( birdVertex, 1 ));
 
   geometry.scale( 0.2, 0.2, 0.2 );
 

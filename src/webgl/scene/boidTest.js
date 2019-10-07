@@ -4,6 +4,7 @@ const postProcessSetup = require('../postProcessing/basicSSAO');
 const query = require('../../util/query');
 const defined = require('defined');
 const BoidSim = require('../objects/BoidSim');
+const { createBirdInstanceGeometry } = require('../geos/Bird');
 
 const name = 'boidtest';
 
@@ -54,11 +55,20 @@ module.exports = class BoidTest extends SketchScene {
       bounds: this.pars.boids.bounds,
       centerStrength: 1
     } );
-    this.boidSim.birdMesh.matrixAutoUpdate = true;
+    // this.boidSim.birdMesh.matrixAutoUpdate = true;
     // this.boidSim.birdMesh.scale.multiplyScalar( 0.01 );
 
     this.add( this.boidSim.birdMesh );
     this.boidUniformUpdate();
+
+    // this.testBird = new THREE.Mesh(
+    //   createBirdInstanceGeometry( this.pars.boids.width ),
+    //   new THREE.MeshNormalMaterial()
+    // );
+    // this.testBird.name = 'testBird';
+    // this.add( this.testBird );
+
+
   }
 
   update (delta = 0, now = 0, frame = 0) {

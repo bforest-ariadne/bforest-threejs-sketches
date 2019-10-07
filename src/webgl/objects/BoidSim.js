@@ -1,4 +1,4 @@
-const { BirdGeometry } = require( '../geos/Bird.js' );
+const { BirdGeometry, createBirdInstanceGeometry } = require( '../geos/Bird.js' );
 const glslify = require('glslify');
 const path = require('path');
 
@@ -90,7 +90,8 @@ module.exports = class BoidSim {
     };
 
     const initBirds = () => {
-      var geometry = new BirdGeometry( WIDTH );
+      // var geometry = new BirdGeometry( WIDTH );
+      var geometry = createBirdInstanceGeometry( WIDTH );
 
       // For Vertex and Fragment
       this.birdUniforms = {
@@ -159,11 +160,11 @@ module.exports = class BoidSim {
   }
 
   update( delta, now, frameCount ) {
-    this.positionUniforms[ 'time' ].value = now;
+    this.positionUniforms[ 'time' ].value = now * 1000;
     this.positionUniforms[ 'delta' ].value = delta;
-    this.velocityUniforms[ 'time' ].value = now;
+    this.velocityUniforms[ 'time' ].value = now * 1000;
     this.velocityUniforms[ 'delta' ].value = delta;
-    this.birdUniforms[ 'time' ].value = now;
+    this.birdUniforms[ 'time' ].value = now * 1000;
     this.birdUniforms[ 'delta' ].value = delta;
 
     // this.velocityUniforms[ "predator" ].value.set( 0.5 * mouseX / windowHalfX, - 0.5 * mouseY / windowHalfY, 0 );
