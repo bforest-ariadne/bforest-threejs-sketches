@@ -1,5 +1,4 @@
 const noop = () => {};
-const basisLoader = new THREE.BasisTextureLoader();
 
 const webgl = require('../context');
 const isImage = (ext) => /\.(jpe?g|png|gif|bmp|tga|tif)$/i.test(ext);
@@ -26,13 +25,6 @@ class AssetManager {
     this._asyncLimit = 10;
     this._onProgressListeners = [];
     this._finishDelay = 0;
-
-    basisLoader.setTranscoderPath( 'assets/js/basis/' );
-    basisLoader.useAlpha = false;
-    basisLoader.detectSupport( this._renderer );
-    THREE.Loader.Handlers.add( /\.basis$/, basisLoader );
-    basisLoader.workerLimit = 10;
-    global.basisLoader = basisLoader;
   }
 
   addProgressListener (fn) {
