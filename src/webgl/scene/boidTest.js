@@ -32,19 +32,14 @@ module.exports = class BoidTest extends SketchScene {
   }
   init() {
     this.controlsInit();
-    this.controls.distance = 1000;
+    this.controls.distance = 350;
     // this.controls.position = [-387.5724404469007, 639.4741434068955, -686.0763950300969];
+    this.controls.position = [ 0, 0, 350 ];
 
-    // webgl.scene.fog = new THREE.FogExp2(0x000000, 0.00025);
-    // webgl.scene.background = env.cubeMap;
-    // webgl.renderer.setClearColor( webgl.scene.fog.color, 1);
+    webgl.scene.fog = new THREE.Fog( 0xffffff, 100, 1000 );
+    webgl.scene.background = new THREE.Color( 0xffffff );
 
-    // webgl.renderer.gammaInput = true;
-    // webgl.renderer.gammaOutput = true;
-    // webgl.renderer.gammaFactor = 2.2;
-    // webgl.renderer.shadowMap.enabled = true;
-    // webgl.renderer.autoClear = false;
-    // webgl.renderer.physicallyCorrectLights = true;
+    webgl.camera.fov = 75;
     webgl.camera.far = 5000;
     webgl.camera.updateProjectionMatrix();
 
@@ -55,11 +50,18 @@ module.exports = class BoidTest extends SketchScene {
       bounds: this.pars.boids.bounds,
       centerStrength: 1
     } );
-    // this.boidSim.birdMesh.matrixAutoUpdate = true;
-    // this.boidSim.birdMesh.scale.multiplyScalar( 0.01 );
 
     this.add( this.boidSim.birdMesh );
     this.boidUniformUpdate();
+
+    const testSphere = new THREE.Mesh(
+      new THREE.SphereBufferGeometry( 20 ),
+      new THREE.MeshNormalMaterial()
+    );
+
+    testSphere.name = 'testSphere';
+    this.add( testSphere );
+    window.testSphere = testSphere;
 
     // this.testBird = new THREE.Mesh(
     //   createBirdInstanceGeometry( this.pars.boids.width ),

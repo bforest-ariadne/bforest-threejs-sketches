@@ -80,17 +80,10 @@ function createBirdInstanceGeometry( width ) {
   return geometry;
 }
 
-
-
-
-
-
-
-
-var BirdGeometry = function (width) {
-  const WIDTH = width;
-  const BIRDS = WIDTH * WIDTH;
-  var triangles = BIRDS * 3;
+// Custom Geometry - using 3 triangles each. No UVs, no normals currently.
+var BirdGeometry = function (birds) {
+  var WIDTH = Math.sqrt( birds );
+  var triangles = birds * 3;
   var points = triangles * 3;
 
   THREE.BufferGeometry.call( this );
@@ -110,14 +103,14 @@ var BirdGeometry = function (width) {
   var v = 0;
 
   function vertsPush() {
-    for ( let i = 0; i < arguments.length; i++ ) {
+    for ( var i = 0; i < arguments.length; i++ ) {
       vertices.array[ v++ ] = arguments[ i ];
     }
   }
 
   var wingsSpan = 20;
 
-  for ( var f = 0; f < BIRDS; f++ ) {
+  for ( var f = 0; f < birds; f++ ) {
     // Body
     vertsPush(
       0, -0, -20,
@@ -140,16 +133,14 @@ var BirdGeometry = function (width) {
     );
   }
 
-  for ( let v = 0; v < triangles * 3; v++ ) {
-    // ~~ is a double NOT bitwise operator.
-    // It is used as a faster substitute for Math.floor().
-    let i = ~~( v / 3 );
+  for ( var v = 0; v < triangles * 3; v++ ) {
+    var i = ~~( v / 3 );
     var x = ( i % WIDTH ) / WIDTH;
     var y = ~~( i / WIDTH ) / WIDTH;
 
     var c = new THREE.Color(
       0x444444 +
-        ~~( v / 9 ) / BIRDS * 0x666666
+        ~~( v / 9 ) / birds * 0x666666
     );
 
     birdColors.array[ v * 3 + 0 ] = c.r;
