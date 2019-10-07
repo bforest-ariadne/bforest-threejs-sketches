@@ -25,24 +25,24 @@ function createBirdInstanceGeometry( width ) {
     0, 0, -15
   ] );
 
-  const colors = [];
-  for ( let i = 0; i < 9; i++ ) {
-    let c = new THREE.Color( 0x444444 + ~~( i / 9 ) / BIRDS * 0x666666);
-    colors.push( c.r, c.g, c.b );
-    // colors.push( 1,1,1 );
-  };
+  // const colors = [];
+  // for ( let i = 0; i < 9; i++ ) {
+  //   let c = new THREE.Color( 0x444444 + ~~( i / 9 ) / BIRDS * 0x666666);
+  //   colors.push( c.r, c.g, c.b );
+  //   // colors.push( 1,1,1 );
+  // }
 
   var birdVirtices = [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ];
 
   birdGeo.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
   // birdGeo.addAttribute( 'birdColor', new THREE.BufferAttribute( new Float32Array( colors ), 3 ) );
   birdGeo.addAttribute( 'birdVertex', new THREE.BufferAttribute( new Float32Array( birdVirtices ), 1 ) );
-  // birdGeo.computeFaceNormals();
-  // birdGeo.computeVertexNormals();
-
+  birdGeo.computeFaceNormals();
+  birdGeo.computeVertexNormals();
 
   var geometry = new THREE.InstancedBufferGeometry();
-  geometry.copy( birdGeo );
+  // geometry.copy( birdGeo );
+  geometry.attributes = birdGeo.attributes;
 
   var references = new Float32Array( points * 2 );
   var birdVertex = new Float32Array( points );
@@ -56,8 +56,8 @@ function createBirdInstanceGeometry( width ) {
     var y = ~~( i / WIDTH ) / WIDTH;
 
     let c = new THREE.Color(
-      0x444444 +
-        ~~( v / 9 ) / BIRDS * 0x666666
+      0x000000 +
+        ~~( v / 9 ) / BIRDS * 0xffffff
     );
 
     birdColors[ v * 3 + 0 ] = c.r;
@@ -72,7 +72,7 @@ function createBirdInstanceGeometry( width ) {
   console.log('references array', references);
 
   geometry.addAttribute( 'reference', new THREE.InstancedBufferAttribute( references, 2 ));
-  geometry.addAttribute( 'birdColor', new THREE.InstancedBufferAttribute( birdColors, 2 ));
+  geometry.addAttribute( 'birdColor', new THREE.InstancedBufferAttribute( birdColors, 3 ));
   // geometry.addAttribute( 'birdVertex', new THREE.InstancedBufferAttribute( birdVertex, 1 ));
 
   geometry.scale( 0.2, 0.2, 0.2 );

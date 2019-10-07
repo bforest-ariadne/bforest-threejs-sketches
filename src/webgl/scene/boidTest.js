@@ -33,18 +33,18 @@ module.exports = class BoidTest extends SketchScene {
   init() {
     this.controlsInit();
     this.controls.distance = 1000;
-    this.controls.position = [-387.5724404469007, 639.4741434068955, -686.0763950300969];
+    // this.controls.position = [-387.5724404469007, 639.4741434068955, -686.0763950300969];
 
     // webgl.scene.fog = new THREE.FogExp2(0x000000, 0.00025);
     // webgl.scene.background = env.cubeMap;
     // webgl.renderer.setClearColor( webgl.scene.fog.color, 1);
 
-    webgl.renderer.gammaInput = true;
-    webgl.renderer.gammaOutput = true;
-    webgl.renderer.gammaFactor = 2.2;
-    webgl.renderer.shadowMap.enabled = true;
-    webgl.renderer.autoClear = false;
-    webgl.renderer.physicallyCorrectLights = true;
+    // webgl.renderer.gammaInput = true;
+    // webgl.renderer.gammaOutput = true;
+    // webgl.renderer.gammaFactor = 2.2;
+    // webgl.renderer.shadowMap.enabled = true;
+    // webgl.renderer.autoClear = false;
+    // webgl.renderer.physicallyCorrectLights = true;
     webgl.camera.far = 5000;
     webgl.camera.updateProjectionMatrix();
 
