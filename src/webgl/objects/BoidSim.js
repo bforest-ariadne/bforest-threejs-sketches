@@ -67,7 +67,8 @@ module.exports = class BoidSim {
     };
 
     const initBirds = () => {
-      var geometry = new BirdGeometry( BIRDS );
+      // var geometry = new BirdGeometry( BIRDS );
+      var geometry = createBirdInstanceGeometry( BIRDS );
 
       // For Vertex and Fragment
       this.birdUniforms = {

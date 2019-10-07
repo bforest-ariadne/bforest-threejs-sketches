@@ -1,81 +1,27 @@
 // Custom Geometry - using 3 triangles each. No UVs, no normals currently.
-function createBirdInstanceGeometry( width ) {
-  const WIDTH = width;
-  const BIRDS = WIDTH * WIDTH;
-  var triangles = BIRDS * 3;
-  var points = triangles * 3;
+function createBirdInstanceGeometry( birds ) {
+  let WIDTH = Math.sqrt( birds );
+  let triangles = birds * 3;
+  let points = triangles * 3;
 
-  var birdGeo = new THREE.BufferGeometry();
-  var wingsSpan = 20;
+  let birdGeo = new BirdGeometry(1);
 
-  var vertices = new Float32Array( [
-    // body
-    0, -0, -20,
-    0, 4, -20,
-    0, 0, 30,
-
-    // left wing
-    0, 0, -15,
-    -wingsSpan, 0, 0,
-    0, 0, 15,
-
-    // right wing
-    0, 0, 15,
-    wingsSpan, 0, 0,
-    0, 0, -15
-  ] );
-
-  // const colors = [];
-  // for ( let i = 0; i < 9; i++ ) {
-  //   let c = new THREE.Color( 0x444444 + ~~( i / 9 ) / BIRDS * 0x666666);
-  //   colors.push( c.r, c.g, c.b );
-  //   // colors.push( 1,1,1 );
-  // }
-
-  var birdVirtices = [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ];
-
-  birdGeo.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-  // birdGeo.addAttribute( 'birdColor', new THREE.BufferAttribute( new Float32Array( colors ), 3 ) );
-  birdGeo.addAttribute( 'birdVertex', new THREE.BufferAttribute( new Float32Array( birdVirtices ), 1 ) );
-  birdGeo.computeFaceNormals();
-  birdGeo.computeVertexNormals();
-
-  var geometry = new THREE.InstancedBufferGeometry();
+  let geometry = new THREE.InstancedBufferGeometry();
   // geometry.copy( birdGeo );
   geometry.attributes = birdGeo.attributes;
 
-  var references = new Float32Array( points * 2 );
-  var birdVertex = new Float32Array( points );
-  var birdColors = new Float32Array( points * 3 );
+  let referenceBirdGeo = new BirdGeometry( birds );
 
-  for ( let v = 0; v < triangles * 3; v++ ) {
-    // That ~~ is a double NOT bitwise operator.
-    // It is used as a faster substitute for Math.floor().
-    let i = ~~( v / 3 );
-    var x = ( i % WIDTH ) / WIDTH;
-    var y = ~~( i / WIDTH ) / WIDTH;
-
-    let c = new THREE.Color(
-      0x000000 +
-        ~~( v / 9 ) / BIRDS * 0xffffff
-    );
-
-    birdColors[ v * 3 + 0 ] = c.r;
-    birdColors[ v * 3 + 1 ] = c.g;
-    birdColors[ v * 3 + 2 ] = c.b;
-
-    references[ v * 2 ] = x;
-    references[ v * 2 + 1 ] = y;
-
-    birdVertex[ v ] = v % 9;
-  }
-  console.log('references array', references);
-
+  let references = referenceBirdGeo.attributes.reference.array;
   geometry.addAttribute( 'reference', new THREE.InstancedBufferAttribute( references, 2 ));
-  geometry.addAttribute( 'birdColor', new THREE.InstancedBufferAttribute( birdColors, 3 ));
-  // geometry.addAttribute( 'birdVertex', new THREE.InstancedBufferAttribute( birdVertex, 1 ));
 
-  geometry.scale( 0.2, 0.2, 0.2 );
+  // var birdColor = referenceBirdGeo.attributes.birdColor.array;
+  // geometry.addAttribute( 'birdColor', new THREE.InstancedBufferAttribute( birdColor, 3 ));
+
+  // geometry.attributes.birdColor = referenceBirdGeo.attributes.birdColor;
+
+  // var birdVertex = referenceBirdGeo.attributes.birdVertex.array;
+  // geometry.addAttribute( 'birdVertex', new THREE.InstancedBufferAttribute( birdVertex, 1 ));
 
   return geometry;
 }
@@ -88,10 +34,10 @@ var BirdGeometry = function (birds) {
 
   THREE.BufferGeometry.call( this );
 
-  var vertices = new THREE.BufferAttribute( new Float32Array( points * 3 ), 3 );
-  var birdColors = new THREE.BufferAttribute( new Float32Array( points * 3 ), 3 );
-  var references = new THREE.BufferAttribute( new Float32Array( points * 2 ), 2 );
-  var birdVertex = new THREE.BufferAttribute( new Float32Array( points ), 1 );
+  var vertices = new THREE.Float32BufferAttribute( new Float32Array( points * 3 ), 3 );
+  var birdColors = new THREE.Float32BufferAttribute( new Float32Array( points * 3 ), 3 );
+  var references = new THREE.Float32BufferAttribute( new Float32Array( points * 2 ), 2 );
+  var birdVertex = new THREE.Float32BufferAttribute( new Float32Array( points ), 1 );
 
   this.addAttribute( 'position', vertices );
   this.addAttribute( 'birdColor', birdColors );
@@ -133,19 +79,32 @@ var BirdGeometry = function (birds) {
     );
   }
 
-  for ( var v = 0; v < triangles * 3; v++ ) {
+  // let c = new THREE.Color();
+
+  for ( let v = 0; v < triangles * 3; v++ ) {
     var i = ~~( v / 3 );
     var x = ( i % WIDTH ) / WIDTH;
     var y = ~~( i / WIDTH ) / WIDTH;
 
-    var c = new THREE.Color(
-      0x444444 +
-        ~~( v / 9 ) / birds * 0x666666
-    );
+    // var c = new THREE.Color(
+    //   0x444444 +
+    //   ~ ~ ( v / 9 ) / birds * 0x666666
+    // );
+    // let condition = ~~(v/9);
+    // let col = condition === 0 ? 0.2 : 0.4;
+    // col = condition === 2 ? 0.8 : col;
+    let col = 0.8;
 
-    birdColors.array[ v * 3 + 0 ] = c.r;
-    birdColors.array[ v * 3 + 1 ] = c.g;
-    birdColors.array[ v * 3 + 2 ] = c.b;
+    if ( v <= 3 ) {
+      col = 0.4;
+    } else if ( v <= 6 ) {
+      col = 0.6;
+    }
+    if ( birds === 1 ) console.log('v', v );
+
+    birdColors.array[ v * 3 + 0 ] = col;
+    birdColors.array[ v * 3 + 1 ] = col;
+    birdColors.array[ v * 3 + 2 ] = col;
 
     references.array[ v * 2 ] = x;
     references.array[ v * 2 + 1 ] = y;

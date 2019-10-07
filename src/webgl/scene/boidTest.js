@@ -76,6 +76,7 @@ module.exports = class BoidTest extends SketchScene {
   update (delta = 0, now = 0, frame = 0) {
     super.update();
     if ( defined( this.boidSim ) ) {
+      if ( !this.animate ) return;
       // this.godGroup.getWorldPosition( this.godGroupWorldPos );
       this.boidSim.predatorPosition.copy( this.pars.boids.predatorPosition );
       // this.boidSim.centerPosition.set(
