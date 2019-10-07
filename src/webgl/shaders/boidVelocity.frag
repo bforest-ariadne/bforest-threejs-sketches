@@ -120,9 +120,9 @@ void main() {
   // if ( rand( uv + time ) < freedomFactor ) {}
 
   // apply wind, if any
-  if (length(wind) > 0.) {
-    velocity += normalize(wind) * delta;
-  }
+  // if (length(wind) > 0.) {
+  //   velocity += normalize(wind) * delta;
+  // }
 
   // Attract flocks to the center
   // vec3 central = vec3( 0., 0., 0. );
@@ -182,7 +182,7 @@ void main() {
 
   }
 
-  velocity += bound_position(selfPosition, groundHeight + heightFromGroundMin) * delta;
+  // velocity += bound_position(selfPosition, groundHeight + heightFromGroundMin) * delta;
 
   // this make tends to fly around than down or up
   // if (velocity.y > 0.) velocity.y *= (1. - 0.2 * delta);

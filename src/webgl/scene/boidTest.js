@@ -17,8 +17,6 @@ module.exports = class BoidTest extends SketchScene {
   constructor () {
     super(name);
     this.animate = true;
-  }
-  init() {
     this.pars = {
       boids: {
         width: 32,
@@ -30,24 +28,15 @@ module.exports = class BoidTest extends SketchScene {
         predatorPosition: new THREE.Vector3( 200, 200, 0 )
       }
     };
-
-    this.boidSim = new BoidSim( webgl.renderer, {
-      width: this.pars.boids.width,
-      bounds: this.pars.boids.bounds,
-      centerStrength: 5
-    } );
-    this.boidSim.birdMesh.matrixAutoUpdate = true;
-    this.boidSim.birdMesh.scale.multiplyScalar( 0.01 );
-
-    this.add( this.boidSim.birdMesh );
-
+  }
+  init() {
     this.controlsInit();
-    this.controls.distance = 10;
-    this.controls.position = [ 8, 2, -7.4 ];
+    this.controls.distance = 1000;
+    this.controls.position = [-387.5724404469007, 639.4741434068955, -686.0763950300969];
 
-    webgl.scene.fog = new THREE.FogExp2(0x000000, 0.00025);
+    // webgl.scene.fog = new THREE.FogExp2(0x000000, 0.00025);
     // webgl.scene.background = env.cubeMap;
-    webgl.renderer.setClearColor( webgl.scene.fog.color, 1);
+    // webgl.renderer.setClearColor( webgl.scene.fog.color, 1);
 
     webgl.renderer.gammaInput = true;
     webgl.renderer.gammaOutput = true;
@@ -55,8 +44,21 @@ module.exports = class BoidTest extends SketchScene {
     webgl.renderer.shadowMap.enabled = true;
     webgl.renderer.autoClear = false;
     webgl.renderer.physicallyCorrectLights = true;
+    webgl.camera.far = 5000;
+    webgl.camera.updateProjectionMatrix();
 
     postProcessSetup( false );
+
+    this.boidSim = new BoidSim( webgl.renderer, {
+      width: this.pars.boids.width,
+      bounds: this.pars.boids.bounds,
+      centerStrength: 1
+    } );
+    this.boidSim.birdMesh.matrixAutoUpdate = true;
+    // this.boidSim.birdMesh.scale.multiplyScalar( 0.01 );
+
+    this.add( this.boidSim.birdMesh );
+    this.boidUniformUpdate();
   }
 
   update (delta = 0, now = 0, frame = 0) {
@@ -71,6 +73,13 @@ module.exports = class BoidTest extends SketchScene {
       // );
       this.boidSim.update( delta, now, frame );
     }
+  }
+
+  boidUniformUpdate() {
+    this.boidSim.velocityUniforms[ 'separationDistance' ].value = this.pars.boids.separation;
+    this.boidSim.velocityUniforms[ 'alignmentDistance' ].value = this.pars.boids.alignment;
+    this.boidSim.velocityUniforms[ 'cohesionDistance' ].value = this.pars.boids.cohesion;
+    this.boidSim.velocityUniforms[ 'freedomFactor' ].value = this.pars.boids.freedom;
   }
 
   onKeydown(ev) {

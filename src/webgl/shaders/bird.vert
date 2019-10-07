@@ -16,8 +16,8 @@
 				vec4 tmpPos = texture2D( texturePosition, reference );
 				vec3 pos = tmpPos.xyz;
 				vec3 velocity = normalize(texture2D( textureVelocity, reference ).xyz);
-				velocity *= 0.01;
-				velocity *= 0.01;
+				// velocity *= 0.01;
+				// velocity *= 0.01;
 
 				vec3 newPosition = position;
 
@@ -54,7 +54,8 @@
 				);
 
 				newPosition =  maty * matz * newPosition;
-				newPosition += ( pos * 0.01 );
+				// newPosition += ( pos * 0.01 );
+				newPosition += pos;
 
 				z = newPosition.z;
 

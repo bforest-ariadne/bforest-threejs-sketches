@@ -1,4 +1,4 @@
-const BirdGeometry = require( '../geos/Bird.js' );
+const { BirdGeometry } = require( '../geos/Bird.js' );
 const glslify = require('glslify');
 const path = require('path');
 
@@ -70,7 +70,7 @@ module.exports = class BoidSim {
       this.velocityUniforms[ 'alignmentDistance' ] = { value: 1.0 };
       this.velocityUniforms[ 'cohesionDistance' ] = { value: 1.0 };
       this.velocityUniforms[ 'freedomFactor' ] = { value: 1.0 };
-      this.velocityUniforms[ 'wind' ] = { type: 'v3v', value: new THREE.Vector3(1, 0, 0) };
+      this.velocityUniforms[ 'wind' ] = { type: 'v3v', value: new THREE.Vector3(0, 0, 0) };
       this.velocityUniforms[ 'predator' ] = { value: new THREE.Vector3() };
       this.velocityUniforms[ 'center' ] = { value: new THREE.Vector3() };
       this.velocityUniforms[ 'centerStrength' ] = { type: 'f', value: 1.0 };
