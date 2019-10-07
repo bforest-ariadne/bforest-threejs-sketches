@@ -36,14 +36,18 @@ module.exports = class BoidTest extends SketchScene {
     // this.controls.position = [-387.5724404469007, 639.4741434068955, -686.0763950300969];
     this.controls.position = [ 0, 0, 350 ];
 
-    webgl.scene.fog = new THREE.Fog( 0xffffff, 100, 1000 );
-    webgl.scene.background = new THREE.Color( 0xffffff );
+    webgl.scene.fog = new THREE.Fog( 0x000000, 1, 1000 );
+    webgl.scene.background = new THREE.Color( 0x000000 );
 
     webgl.camera.fov = 75;
     webgl.camera.far = 5000;
     webgl.camera.updateProjectionMatrix();
 
     postProcessSetup( false );
+
+    this.pointLight = new THREE.PointLight( 0xffffff, 1, 0, 2 );
+    this.pointLight.name = 'pointLight';
+    this.add( this.pointLight );
 
     this.boidSim = new BoidSim( webgl.renderer, {
       width: this.pars.boids.width,

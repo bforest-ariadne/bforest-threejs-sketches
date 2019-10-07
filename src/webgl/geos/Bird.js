@@ -100,7 +100,7 @@ var BirdGeometry = function (birds) {
     } else if ( v <= 6 ) {
       col = 0.6;
     }
-    if ( birds === 1 ) console.log('v', v );
+    // if ( birds === 1 ) console.log('v', v );
 
     birdColors.array[ v * 3 + 0 ] = col;
     birdColors.array[ v * 3 + 1 ] = col;

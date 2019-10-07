@@ -92,9 +92,30 @@ module.exports = class BoidSim {
 
       } );
 
-      var birdMesh = new THREE.Mesh( geometry, material );
+      var birdMat = new THREE.MeshStandardMaterial({
+        side: THREE.DoubleSide,
+        flatShading: true,
+        metalness: 0,
+        roughness: 1
+      });
+
+      const previousOnBeforeCompile = birdMat.onBeforeCompile;
+
+      birdMat.onBeforeCompile = ( shader, renderer ) => {
+        previousOnBeforeCompile( shader, renderer );
+
+        Object.assign( shader.uniforms, this.birdUniforms );
+        shader.vertexShader = glslify(
+          path.resolve(__dirname, '../shaders/birdChunkPars.vert')) + shader.vertexShader;
+
+        shader.vertexShader = shader.vertexShader.replace(
+          `#include <begin_vertex>`,
+          glslify( path.resolve(__dirname, '../shaders/birdChunkBegin.vert')));
+      };
+
+      var birdMesh = new THREE.Mesh( geometry, birdMat );
       birdMesh.rotation.y = Math.PI / 2;
-      birdMesh.matrixAutoUpdate = false;
+      birdMesh.matrixAutoUpdate = true;
       birdMesh.updateMatrix();
 
       // scene.add( birdMesh );
