@@ -11,6 +11,8 @@ const scenes = [
   require('./webgl/scene/PhysicsTest'),
   require('./webgl/scene/FeedbackTest'),
   require('./webgl/scene/PbrTest'),
+  require('./webgl/scene/TranslucentTest'),
+  require('./webgl/scene/boidTest')
 ];
 
 const DefaultScene = scenes[0];
