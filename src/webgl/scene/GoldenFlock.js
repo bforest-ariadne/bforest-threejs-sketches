@@ -184,5 +184,6 @@ class GoldenFlock extends SketchScene {
 
 GoldenFlock.title = title;
 GoldenFlock.publish = true;
+GoldenFlock.sceneName = name;
 
 module.exports = GoldenFlock;

@@ -132,7 +132,9 @@ class SketchScene extends THREE.Object3D {
     a.title = title || `sketch${index}`;
 
     // Set the href property.
-    let href = document.location.href.slice( 0, document.location.href.lastIndexOf( 'scene=' ) );
+    let href = document.location.origin + document.location.pathname + document.location.search;
+    if ( document.location.search.includes( 'scene=') ) href = href.slice( 0, href.lastIndexOf( 'scene=' ) );
+    if ( !document.location.search.includes('?') ) href += '?';
     href += `scene=${name}`;
     a.href = href;
 

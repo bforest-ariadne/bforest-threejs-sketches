@@ -53,7 +53,9 @@ module.exports = function () {
     for ( let i in scenes ) {
       let sceneName = scenes[i].name.toLowerCase();
       let queryName = defined( query.scene, '' ).toLowerCase();
-      if ( sceneName === queryName ) {
+      let staticSceneName = scenes[i].sceneName;
+      sceneName = defined(staticSceneName) ? staticSceneName : sceneName;
+      if ( sceneName === queryName || staticSceneName === queryName ) {
         webgl.scene.add( new scenes[i]() );
         titleElement.textContent = scenes[i].title;
         found = true;
@@ -64,6 +66,7 @@ module.exports = function () {
           sceneLinks.appendChild( document.createTextNode( ' - ' ) );
         }
         count++;
+        console.log('scene publish', count, sceneName, scenes[i].title, scenes[i].sceneName );
         sceneLinks.appendChild( scenes[i].getSceneLink(
           count,
           sceneName,
