@@ -31,9 +31,9 @@ module.exports = class WebGLApp extends EventEmitter {
     this.physicsReady = true;
     this.onReady = noop;
     this.ready = false;
-    this.shown = false;
+    this.shown = false; 
     this.stats = new Stats();
-    this.aside.appendChild( this.stats.dom );
+    if ( this.dev ) this.aside.appendChild( this.stats.dom );
 
     this.mobile = isMobile;
 
@@ -41,6 +41,8 @@ module.exports = class WebGLApp extends EventEmitter {
     this.stoppedDiv.id = 'stopped';
     this.stoppedDiv.style.cssText = 'position: fixed; width: 100%; height: 100%; z-index: 2147483647; background-color: black; opacity: 0.5; display: none; top: 0px;';
     document.body.appendChild( this.stoppedDiv );
+    const hide = document.getElementById('hide');
+    if ( this.mobile ) hide.textContent = 'Two finger tap to hid the overlay';
 
     // really basic touch handler that propagates through the scene
     this.touchHandler = createTouches(this.viewport, {
@@ -293,8 +295,9 @@ module.exports = class WebGLApp extends EventEmitter {
   }
 
   onTouchStart( ev, pos ) {
-    if ( this.dev && defined( ev.touches, false ) && ev.touches.length ) {
-      if ( ev.touches.length === 4 ) this.togglePause();
+    if ( defined( ev.touches, false ) && ev.touches.length ) {
+      if ( ev.touches.length === 2 ) this.hideOverlay();
+      if ( ev.touches.length === 4 && this.dev ) this.togglePause();     
     }
 
     this._traverse('onTouchStart', ev, pos);
@@ -311,7 +314,7 @@ module.exports = class WebGLApp extends EventEmitter {
   onKeydown( ev ) {
     if ( ev.altKey && this.aside !== null ) {
       ev.preventDefault();
-      this.aside.style.visibility = (this.aside.style.visibility === 'hidden') ? 'visible' : 'hidden';
+      this.hideOverlay();
     }
     // dev key commands
     if ( this.dev ) {
@@ -323,6 +326,10 @@ module.exports = class WebGLApp extends EventEmitter {
     }
 
     this._traverse('onKeydown', ev);
+  }
+
+  hideOverlay() {
+    this.aside.style.visibility = (this.aside.style.visibility === 'hidden') ? 'visible' : 'hidden';
   }
 
   _traverse = (fn, ...args) => {

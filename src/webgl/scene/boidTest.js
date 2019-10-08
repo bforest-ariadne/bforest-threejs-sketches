@@ -188,6 +188,6 @@ class BoidTest extends SketchScene {
 }
 
 BoidTest.title = title;
-BoidTest.publish = true;
+BoidTest.publish = false;
 
 module.exports = BoidTest;

@@ -16,43 +16,47 @@ const aside = document.getElementById('aside');
 //   resizable: true,
 //   scrollable: true
 // });
-const gui = new Tweakpane({
-  container: document.getElementById('aside'),
-  title: 'parameters'
-});
+let gui;
 
-// tweaksphere -> dat.gui mixins
-if ( defined( gui.document ) ) {
-  let guiDatMixin = {
-    add( object, key, min, max, step ) {
-      let opt = {};
-      if ( typeof min !== 'undefined' ) opt.min = min;
-      if ( typeof max !== 'undefined' ) opt.max = max;
-      if ( typeof step !== 'undefined' ) opt.step = step;
-      console.log('opt', opt, min, max);
-      return this.addInput( object, key, opt );
-    }
-  };
+if ( defined(query.dev) ) {
+  gui = new Tweakpane({
+    container: document.getElementById('aside'),
+    title: 'parameters'
+  });
 
-  let inputBindingMixin = {
-    onChange( cb ) {
-      return this.on( 'change', cb );
-    }
-  };
-  // apply Tweakpanel -> dat.gui mixin
-  Object.assign( gui.__proto__, guiDatMixin );
+  // tweaksphere -> dat.gui mixins
+  if ( defined( gui.document ) ) {
+    let guiDatMixin = {
+      add( object, key, min, max, step ) {
+        let opt = {};
+        if ( typeof min !== 'undefined' ) opt.min = min;
+        if ( typeof max !== 'undefined' ) opt.max = max;
+        if ( typeof step !== 'undefined' ) opt.step = step;
+        console.log('opt', opt, min, max);
+        return this.addInput( object, key, opt );
+      }
+    };
 
-  // apply Tweakpanel.inputAPI -> dat.gui.inputController mixin
-  let testParams = {'test': 'test'};
-  let input = gui.addInput( testParams, 'test' );
-  Object.assign( input.__proto__, inputBindingMixin );
-  input.dispose();
+    let inputBindingMixin = {
+      onChange( cb ) {
+        return this.on( 'change', cb );
+      }
+    };
+    // apply Tweakpanel -> dat.gui mixin
+    Object.assign( gui.__proto__, guiDatMixin );
 
-  let folder = gui.addFolder({title:'test'});
-  Object.assign( folder.__proto__, guiDatMixin );
-  folder.dispose();
+    // apply Tweakpanel.inputAPI -> dat.gui.inputController mixin
+    let testParams = {'test': 'test'};
+    let input = gui.addInput( testParams, 'test' );
+    Object.assign( input.__proto__, inputBindingMixin );
+    input.dispose();
 
-  gui.element.style.backgroundColor = '#2f3137a1';
+    let folder = gui.addFolder({title: 'test'});
+    Object.assign( folder.__proto__, guiDatMixin );
+    folder.dispose();
+
+    gui.element.style.backgroundColor = '#2f3137a1';
+  }
 }
 
 // aside.appendChild(gui.domElement);
