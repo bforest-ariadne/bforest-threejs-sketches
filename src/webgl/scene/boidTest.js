@@ -54,29 +54,6 @@ module.exports = class BoidTest extends SketchScene {
 
     postProcessSetup( false );
 
-    this.spotLight = new SpotLight({
-      intensity: 50,
-      distance: 500,
-      angle: 1,
-      shadowCameraFar: 200,
-      meshSize: 20,
-      position: new THREE.Vector3( 0, 100, 0 )
-    });
-    this.add( this.spotLight );
-
-    this.ground = new THREE.Mesh(
-      new THREE.PlaneBufferGeometry( 500, 500, 2, 2 ),
-      new THREE.MeshStandardMaterial({
-        metalness: 0,
-        roughness: 1
-      })
-    );
-    this.ground.rotation.x = -Math.PI / 2;
-    this.ground.position.y = -50;
-    this.ground.castShadow = false;
-    this.ground.receiveShadow = true;
-    this.add( this.ground );
-
     this.boidSim = new BoidSim( webgl.renderer, {
       width: this.pars.boids.width,
       bounds: this.pars.boids.bounds,
@@ -88,14 +65,39 @@ module.exports = class BoidTest extends SketchScene {
     this.add( this.boidSim.birdMesh );
     this.boidUniformUpdate();
 
-    const testSphere = new THREE.Mesh(
-      new THREE.SphereBufferGeometry( 20 ),
-      new THREE.MeshNormalMaterial()
-    );
-    testSphere.name = 'testSphere';
-    testSphere.castShadow = true;
-    this.add( testSphere );
-    window.testSphere = testSphere;
+    if ( this.pars.scene.testShadow ) {
+      this.spotLight = new SpotLight({
+        intensity: 50,
+        distance: 500,
+        angle: 1,
+        shadowCameraFar: 200,
+        meshSize: 20,
+        position: new THREE.Vector3( 0, 100, 0 )
+      });
+      this.add( this.spotLight );
+
+      this.ground = new THREE.Mesh(
+        new THREE.PlaneBufferGeometry( 500, 500, 2, 2 ),
+        new THREE.MeshStandardMaterial({
+          metalness: 0,
+          roughness: 1
+        })
+      );
+      this.ground.rotation.x = -Math.PI / 2;
+      this.ground.position.y = -50;
+      this.ground.castShadow = false;
+      this.ground.receiveShadow = true;
+      this.add( this.ground );
+
+      const testSphere = new THREE.Mesh(
+        new THREE.SphereBufferGeometry( 20 ),
+        new THREE.MeshNormalMaterial()
+      );
+      testSphere.name = 'testSphere';
+      testSphere.castShadow = true;
+      this.add( testSphere );
+      window.testSphere = testSphere;
+    }
   }
 
   update (delta = 0, now = 0, frame = 0) {
