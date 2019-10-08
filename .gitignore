@@ -2,7 +2,6 @@ bower_components
 node_modules
 *.log
 .DS_Store
-bundle.js
 /sslcert2
 /ssl3
 /ssl4
