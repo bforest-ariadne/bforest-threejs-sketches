@@ -5,6 +5,7 @@ const query = require('../../util/query');
 const defined = require('defined');
 const BoidSim = require('../objects/BoidSim');
 const { SpotLight, PointLight } = require('../objects/lights');
+const Ground = require('../objects/ground');
 
 const name = 'boidtest';
 
@@ -76,17 +77,11 @@ module.exports = class BoidTest extends SketchScene {
       });
       this.add( this.spotLight );
 
-      this.ground = new THREE.Mesh(
-        new THREE.PlaneBufferGeometry( 500, 500, 2, 2 ),
-        new THREE.MeshStandardMaterial({
-          metalness: 0,
-          roughness: 1
-        })
-      );
-      this.ground.rotation.x = -Math.PI / 2;
-      this.ground.position.y = -50;
-      this.ground.castShadow = false;
-      this.ground.receiveShadow = true;
+      this.ground = new Ground({
+        size: 500,
+        height: -50
+      });
+
       this.add( this.ground );
 
       const testSphere = new THREE.Mesh(
