@@ -14,7 +14,7 @@ const gltfKey = query.scene === name ? assets.queue({
   url: 'assets/models/honeycomb.gltf'
 }) : {};
 
-module.exports = class Honeycomb extends SketchScene {
+class Honeycomb extends SketchScene {
   constructor () {
     super(name);
   }
@@ -93,4 +93,8 @@ module.exports = class Honeycomb extends SketchScene {
   debug() {
     super.debug();
   }
-};
+}
+
+Honeycomb.sceneName = name;
+
+module.exports = Honeycomb;

@@ -4,7 +4,7 @@ const basicSMAA = require('../postProcessing/basicSMAA');
 
 const name = 'physicstest';
 
-module.exports = class PhysicsTest extends SketchScene {
+class PhysicsTest extends SketchScene {
   constructor () {
     super( name );
   }
@@ -54,4 +54,8 @@ module.exports = class PhysicsTest extends SketchScene {
     webgl.composer.passes[2].effects[0].feedbackMaterial.iTime = now;
     // this.rotation.x += dt * 0.1;
   }
-};
+}
+
+PhysicsTest.sceneName = name;
+
+module.exports = PhysicsTest;

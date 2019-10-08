@@ -13,7 +13,7 @@ if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
     assets.queue( bPoseObjAssets[i] );
   }
 }
-module.exports = class Bpose extends SketchScene {
+class Bpose extends SketchScene {
   constructor () {
     super(name);
   }
@@ -39,4 +39,8 @@ module.exports = class Bpose extends SketchScene {
   update (dt = 0, time = 0) {
     super.update();
   }
-};
+}
+
+Bpose.sceneName = name;
+
+module.exports = Bpose;

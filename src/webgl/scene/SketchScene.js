@@ -4,8 +4,8 @@ const defined = require('defined');
 const basicSMAA = require('../postProcessing/basicSMAA');
 
 let name = 'sketchScene';
-
 const title = 'No Title';
+let sketchCounter = 0;
 
 const tmpTarget = new THREE.Vector3();
 
@@ -119,6 +119,7 @@ class SketchScene extends THREE.Object3D {
   }
 
   static getSceneLink( index, name, title ) {
+    sketchCounter++;
     // Create anchor element.
     var a = document.createElement('a');
 
@@ -144,5 +145,6 @@ class SketchScene extends THREE.Object3D {
 
 SketchScene.publish = false;
 SketchScene.title = title;
+SketchScene.sceneName = name;
 
 module.exports = SketchScene;

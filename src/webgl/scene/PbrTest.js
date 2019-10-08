@@ -48,7 +48,7 @@ if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
   }
 }
 
-module.exports = class PbrTest extends SketchScene {
+class PbrTest extends SketchScene {
   constructor () {
     super(name);
     this.animate = true;
@@ -466,4 +466,8 @@ module.exports = class PbrTest extends SketchScene {
       this.animate = !this.animate;
     }
   }
-};
+}
+
+PbrTest.sceneName = name;
+
+module.exports = PbrTest;

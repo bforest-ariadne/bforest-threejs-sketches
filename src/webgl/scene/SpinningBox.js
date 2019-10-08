@@ -1,7 +1,7 @@
 const SketchScene = require('./SketchScene');
 const name = 'spinningbox';
 
-module.exports = class SpinningBox extends SketchScene {
+class SpinningBox extends SketchScene {
   constructor () {
     super(name);
   }
@@ -19,4 +19,8 @@ module.exports = class SpinningBox extends SketchScene {
     super.update();
     this.rotation.x += dt * 0.1;
   }
-};
+}
+
+SpinningBox.sceneName = name;
+
+module.exports = SpinningBox;

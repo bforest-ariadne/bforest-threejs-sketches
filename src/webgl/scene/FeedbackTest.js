@@ -22,10 +22,9 @@ if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
     url: 'assets/materials/iron2.glb',
     key: 'iron2'
   });
-
 }
 
-module.exports = class FeedbackTest extends SketchScene {
+class FeedbackTest extends SketchScene {
   constructor () {
     super(name);
   }
@@ -58,10 +57,7 @@ module.exports = class FeedbackTest extends SketchScene {
     material.envMap = env.target.texture;
     material.needsUpdate = true;
 
-
     const geometry = new THREE.SphereBufferGeometry(1, 4, 4);
-
-
 
     for (let i = 0; i < 100; ++i) {
       mesh = new THREE.Mesh(geometry, material);
@@ -78,4 +74,8 @@ module.exports = class FeedbackTest extends SketchScene {
     super.update();
     this.object.rotation.x += dt * 0.1;
   }
-};
+}
+
+FeedbackTest.sceneName = name;
+
+module.exports = FeedbackTest;
