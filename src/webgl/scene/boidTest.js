@@ -4,11 +4,9 @@ const postProcessSetup = require('../postProcessing/basicSSAO');
 const query = require('../../util/query');
 const defined = require('defined');
 const BoidSim = require('../objects/BoidSim');
-const { createBirdInstanceGeometry } = require('../geos/Bird');
 const { SpotLight, PointLight } = require('../objects/lights');
 
 const name = 'boidtest';
-
 
 if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
 
@@ -19,6 +17,9 @@ module.exports = class BoidTest extends SketchScene {
     super(name);
     this.animate = true;
     this.pars = {
+      scene: {
+        testShadow: true
+      },
       boids: {
         width: 32,
         bounds: 800,
@@ -53,13 +54,14 @@ module.exports = class BoidTest extends SketchScene {
 
     postProcessSetup( false );
 
-    this.spotLight = new SpotLight();
-    this.spotLight.shadow.camera.far = 200;
-    this.spotLight.distance = 500;
-    this.spotLight.intensity = 50;
-    // this.spotlight.mesh.material.blending = THREE.AdditiveBlending;
-    this.spotLight.position.set( 0, 100, 0 );
-    this.spotLight.mesh.material.size = 20;
+    this.spotLight = new SpotLight({
+      intensity: 50,
+      distance: 500,
+      angle: 1,
+      shadowCameraFar: 200,
+      meshSize: 20,
+      position: new THREE.Vector3( 0, 100, 0 )
+    });
     this.add( this.spotLight );
 
     this.ground = new THREE.Mesh(
@@ -94,7 +96,6 @@ module.exports = class BoidTest extends SketchScene {
     testSphere.castShadow = true;
     this.add( testSphere );
     window.testSphere = testSphere;
-
   }
 
   update (delta = 0, now = 0, frame = 0) {

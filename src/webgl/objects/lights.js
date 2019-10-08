@@ -11,24 +11,37 @@ assets.queue({
 });
 
 class SpotLight extends THREE.SpotLight {
-  constructor ( parameters, {
+  constructor ({
+    color = 0xffffff,
+    intensity = 10,
+    distance = 0,
+    angle = Math.PI / 2,
+    penumbra = 0,
+    decay = 1,
     createMesh = true,
     castShadow = true,
-    name = `pointlight${spotlightCount++}`
+    shadowMapSize = 2048,
+    shadowCameraNear = 1,
+    shadowCameraFar = 30,
+    meshSize = 2,
+    position = new THREE.Vector3(),
+    name = `spotLight${spotlightCount++}`
   } = {} ) {
-    super( parameters );
+    super( color, intensity, distance, angle, penumbra, decay );
     this.name = name;
     if ( castShadow ) {
       this.castShadow = castShadow;
-      this.shadow.mapSize.width = 2048;
-      this.shadow.mapSize.height = 2048;
-      this.shadow.camera.near = 1;
-      this.shadow.camera.far = 30;
-      this.distance = 30;
+      this.shadow.mapSize.width = shadowMapSize;
+      this.shadow.mapSize.height = shadowMapSize;
+      this.shadow.camera.near = shadowCameraNear;
+      this.shadow.camera.far = shadowCameraFar;
+      this.position.copy( position );
     }
     if ( createMesh ) {
       this.mesh = createLightMesh();
       this.mesh.material.color = this.color;
+      // TODO: make material.size scale with some paramater of the light like distance?
+      this.mesh.material.size = meshSize;
       this.mesh.name = `${this.name}Mesh`;
       this.add( this.mesh );
     }
