@@ -58,11 +58,15 @@ module.exports = class BoidTest extends SketchScene {
     this.boidSim = new BoidSim( webgl.renderer, {
       width: this.pars.boids.width,
       bounds: this.pars.boids.bounds,
-      centerStrength: 1
-    } );
-
+      centerStrength: 1,
+      material: new THREE.MeshStandardMaterial({
+        side: THREE.DoubleSide,
+        flatShading: true,
+        metalness: 0,
+        roughness: 1
+      })
+    });
     this.boidSim.birdMesh.castShadow = true;
-
     this.add( this.boidSim.birdMesh );
     this.boidUniformUpdate();
 

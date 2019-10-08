@@ -11,7 +11,9 @@ module.exports = class BoidSim {
     predatorPosition = new THREE.Vector3(),
     centerPosition = new THREE.Vector3(),
     width = 32,
-    bounds = 0.001
+    bounds = 0.001,
+    geometry = null,
+    material = null
   } = {} ) {
     this.predatorPosition = predatorPosition;
     this.centerPosition = centerPosition;
@@ -68,7 +70,7 @@ module.exports = class BoidSim {
 
     const initBirds = () => {
       // var geometry = new BirdGeometry( BIRDS );
-      var geometry = createBirdInstanceGeometry( BIRDS );
+      geometry = geometry === null ? createBirdInstanceGeometry( BIRDS ) : geometry;
 
       // For Vertex and Fragment
       this.birdUniforms = {
@@ -80,7 +82,7 @@ module.exports = class BoidSim {
       };
 
       // THREE.ShaderMaterial
-      var material = new THREE.ShaderMaterial( {
+      var birdMat = new THREE.ShaderMaterial( {
         uniforms: this.birdUniforms,
         vertexShader: glslify(
           path.resolve(__dirname, '../shaders/bird.vert')
@@ -92,42 +94,44 @@ module.exports = class BoidSim {
 
       } );
 
-      var birdMat = new THREE.MeshStandardMaterial({
-        side: THREE.DoubleSide,
-        flatShading: true,
-        metalness: 0,
-        roughness: 1
-      });
-
-      const previousOnBeforeCompile = birdMat.onBeforeCompile;
-
-      birdMat.onBeforeCompile = ( shader, renderer ) => {
-        previousOnBeforeCompile( shader, renderer );
-
-        Object.assign( shader.uniforms, this.birdUniforms );
-        shader.vertexShader = glslify(
-          path.resolve(__dirname, '../shaders/birdChunkPars.vert')) + shader.vertexShader;
-
-        shader.vertexShader = shader.vertexShader.replace(
-          `#include <begin_vertex>`,
-          glslify( path.resolve(__dirname, '../shaders/birdChunkBegin.vert')));
-      };
-
       var birdMesh = new THREE.Mesh( geometry, birdMat );
       birdMesh.rotation.y = Math.PI / 2;
       birdMesh.matrixAutoUpdate = true;
       birdMesh.updateMatrix();
 
-      // custom depth material - required for instanced shadows
-      var customDepthMaterial = new THREE.MeshDepthMaterial();
-      customDepthMaterial.onBeforeCompile = birdMat.onBeforeCompile;
-      customDepthMaterial.depthPacking = THREE.RGBADepthPacking;
+      if ( material !== null ) {
+        birdMat = material;
 
-      birdMesh.customDepthMaterial = customDepthMaterial;
-      birdMesh.onBeforeRender = (renderer, scene, camera, geometry, material) => {
-        material.onBeforeCompile = birdMat.onBeforeCompile;
-        material.side = birdMat.side;
-      };
+        const previousOnBeforeCompile = birdMat.onBeforeCompile;
+
+        birdMat.onBeforeCompile = ( shader, renderer ) => {
+          previousOnBeforeCompile( shader, renderer );
+
+          Object.assign( shader.uniforms, this.birdUniforms );
+          shader.vertexShader = glslify(
+            path.resolve(__dirname, '../shaders/birdChunkPars.vert')) + shader.vertexShader;
+
+          shader.vertexShader = shader.vertexShader.replace(
+            `#include <begin_vertex>`,
+            glslify( path.resolve(__dirname, '../shaders/birdChunkBegin.vert')));
+        };
+
+        birdMesh = new THREE.Mesh( geometry, birdMat );
+        birdMesh.rotation.y = Math.PI / 2;
+        birdMesh.matrixAutoUpdate = true;
+        birdMesh.updateMatrix();
+
+        // custom depth material - required for instanced shadows
+        var customDepthMaterial = new THREE.MeshDepthMaterial();
+        customDepthMaterial.onBeforeCompile = birdMat.onBeforeCompile;
+        customDepthMaterial.depthPacking = THREE.RGBADepthPacking;
+
+        birdMesh.customDepthMaterial = customDepthMaterial;
+        birdMesh.onBeforeRender = (renderer, scene, camera, geometry, material) => {
+          material.onBeforeCompile = birdMat.onBeforeCompile;
+          material.side = birdMat.side;
+        };
+      }
 
       // scene.add( birdMesh );
       this.birdMesh = birdMesh;
