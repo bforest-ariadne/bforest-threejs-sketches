@@ -49,8 +49,8 @@ module.exports.dev = function () {
 // create a file for production
 module.exports.bundle = function () {
   const bundler = browserify(entry, {
-    // fullPaths: process.env.DISC === '1'
-    fullPaths: true
+    fullPaths: process.env.DISC === '1'
+    // fullPaths: true
   });
 
   // add common transforms
