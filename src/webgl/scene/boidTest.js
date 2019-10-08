@@ -7,10 +7,8 @@ const BoidSim = require('../objects/BoidSim');
 const { createBirdInstanceGeometry } = require('../geos/Bird');
 const { SpotLight, PointLight } = require('../objects/lights');
 
-
 const name = 'boidtest';
 
-// const textureCompression = webgl.mobile ? 'PVRTC' : 'DXT1';
 
 if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
 
@@ -97,27 +95,14 @@ module.exports = class BoidTest extends SketchScene {
     this.add( testSphere );
     window.testSphere = testSphere;
 
-    // this.testBird = new THREE.Mesh(
-    //   createBirdInstanceGeometry( this.pars.boids.width ),
-    //   new THREE.MeshNormalMaterial()
-    // );
-    // this.testBird.name = 'testBird';
-    // this.add( this.testBird );
-
-
   }
 
   update (delta = 0, now = 0, frame = 0) {
     super.update();
     if ( defined( this.boidSim ) ) {
       if ( !this.animate ) return;
-      // this.godGroup.getWorldPosition( this.godGroupWorldPos );
       this.boidSim.predatorPosition.copy( this.pars.boids.predatorPosition );
-      // this.boidSim.centerPosition.set(
-      //   this.godGroupWorldPos.x * 100,
-      //   this.godGroupWorldPos.y * 100,
-      //   this.godGroupWorldPos.z * 100
-      // );
+
       this.boidSim.update( delta, now, frame );
     }
   }
