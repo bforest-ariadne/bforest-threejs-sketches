@@ -100,7 +100,7 @@ div[role="complementary"] {
 }
 #loadingText {
   position: relative;
-  margin-top: 70%;
+  top: 40%;
   text-align: center;
 }
 #loading {

@@ -12,6 +12,8 @@ const { createMaterial, materialAssets } = require('../materials/createPbrMateri
 
 const name = 'boidtest';
 
+const title = 'Boid Sim Test';
+
 if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
   assets.queue({
     url: 'assets/textures/blueLagoonNight_1024/',
@@ -30,7 +32,7 @@ if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
   }
 }
 
-module.exports = class BoidTest extends SketchScene {
+class BoidTest extends SketchScene {
   constructor () {
     super(name);
     this.animate = true;
@@ -183,4 +185,9 @@ module.exports = class BoidTest extends SketchScene {
       this.animate = !this.animate;
     }
   }
-};
+}
+
+BoidTest.title = title;
+BoidTest.publish = true;
+
+module.exports = BoidTest;

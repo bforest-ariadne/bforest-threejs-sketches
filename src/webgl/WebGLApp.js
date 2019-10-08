@@ -293,7 +293,9 @@ module.exports = class WebGLApp extends EventEmitter {
   }
 
   onTouchStart( ev, pos ) {
-    if ( this.dev && defined( ev.touches, false ) && ev.touches.length ) this.togglePause();
+    if ( this.dev && defined( ev.touches, false ) && ev.touches.length ) {
+      if ( ev.touches.length === 4 ) this.togglePause();
+    }
 
     this._traverse('onTouchStart', ev, pos);
   }
