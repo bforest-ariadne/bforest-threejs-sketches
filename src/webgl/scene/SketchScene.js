@@ -5,7 +5,7 @@ const basicSMAA = require('../postProcessing/basicSMAA');
 
 let name = 'sketchScene';
 
-const title = 'Basis Sketch Scene';
+const title = 'No Title';
 
 const tmpTarget = new THREE.Vector3();
 
@@ -129,7 +129,7 @@ class SketchScene extends THREE.Object3D {
     a.appendChild(link);
 
     // Set the title.
-    a.title = title;
+    a.title = title || `sketch${index}`;
 
     // Set the href property.
     let href = document.location.href.slice( 0, document.location.href.lastIndexOf( 'scene=' ) );

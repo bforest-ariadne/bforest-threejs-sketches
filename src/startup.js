@@ -13,8 +13,7 @@ const scenes = [
   require('./webgl/scene/PbrTest'),
   require('./webgl/scene/TranslucentTest'),
   require('./webgl/scene/boidTest'),
-  require('./webgl/scene/GoldenFlock'),
-  require('./webgl/scene/GoldenFlock2')
+  require('./webgl/scene/GoldenFlock')
 ];
 
 const DefaultScene = scenes[0];
@@ -43,6 +42,10 @@ module.exports = function () {
     webgl.canvas.addEventListener('touchstart', ev => ev.preventDefault());
 
     const sceneLinks = document.getElementById('sceneLinks');
+    const devLinks = sceneLinks.cloneNode();
+    devLinks.id = 'devLinks';
+    devLinks.textContent = 'Dev: ';
+    if ( webgl.dev ) sceneLinks.after( devLinks );
     const titleElement = document.getElementById('title');
     let count = 0;
 
@@ -55,6 +58,7 @@ module.exports = function () {
         titleElement.textContent = scenes[i].title;
         found = true;
       }
+      
       if ( scenes[i].publish ) {
         if ( count > 0) {
           sceneLinks.appendChild( document.createTextNode( ' - ' ) );
@@ -65,7 +69,15 @@ module.exports = function () {
           sceneName,
           scenes[i].title
         ) );
+      } else if ( webgl.dev ) {
+        devLinks.appendChild( document.createTextNode( ' - ' ) );
+        devLinks.appendChild( scenes[i].getSceneLink(
+          i,
+          sceneName,
+          scenes[i].title
+        ) );
       }
+
     }
     if ( !found ) webgl.scene.add( new DefaultScene() );
 
