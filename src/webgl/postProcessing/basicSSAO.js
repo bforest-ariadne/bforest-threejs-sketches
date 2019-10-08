@@ -82,7 +82,7 @@ module.exports = function basicBloom( useGui = true ) {
     global.modes = BlendFunction;
 
     let fold = gui.addFolder({title: 'SSAO'});
-    f.expanded = false;
+    fold.expanded = false;
 
     fold.addInput(params, 'render mode', {
       options: {

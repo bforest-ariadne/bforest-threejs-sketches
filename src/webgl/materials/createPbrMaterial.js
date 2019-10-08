@@ -8,7 +8,7 @@ const { assets } = require('../../context');
 //   assets.queue( materialAssets[i] );
 // }
 
-const folder = 'Ice04';
+const folder = 'gold1';
 
 const materialAssets = [
   {
@@ -52,7 +52,7 @@ const createMaterial = ( envMap ) => {
     // transparent: true,
     // displacementMap: assets.get('h'),
     // normalScale: new THREE.Vector2(-1, -1),
-    bumpMap: assets.get('h'),
+    // bumpMap: assets.get('h'),
     envMap: envMap,
     flatShading: true,
     name: folder
@@ -68,10 +68,10 @@ const createMaterial = ( envMap ) => {
   }
 
   for ( let i in textures ) {
-    textures[i].anisotropy = 8;
+    textures[i].anisotropy = 1;
     // textures[i].wrapS = THREE.RepeatWrapping;
     // textures[i].wrapT = THREE.RepeatWrapping;
-    // textures[i].repeat = new THREE.Vector2( 1, 1 );
+    // textures[i].repeat = new THREE.Vector2( 0.5, 0.5 );
   }
 
   // material.needsUpdate = true

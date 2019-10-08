@@ -9,15 +9,16 @@ module.exports = function basicBloom() {
 
   const bloomEffect = new BloomEffect({
     blendFunction: BlendFunction.SCREEN,
-    kernelSize: KernelSize.MEDIUM,
-    luminanceThreshold: 0.5,
-    luminanceSmoothing: 0.00,
+    kernelSize: KernelSize.Huge,
+    luminanceThreshold: 0.05,
+    luminanceSmoothing: 0.89,
     height: 480});
 
   bloomEffect.inverted = true;
-  bloomEffect.blendMode.opacity.value = 2.3;
+  bloomEffect.blendMode.opacity.value = 0.8;
 
   const brightContrastEffect = new BrightnessContrastEffect();
+  brightContrastEffect.uniforms.get('contrast').value = 0.1;
 
   const effectPass = new EffectPass(webgl.camera, smaaEffect, brightContrastEffect, bloomEffect );
   effectPass.renderToScreen = true;

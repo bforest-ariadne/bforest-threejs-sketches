@@ -1,18 +1,33 @@
 const SketchScene = require('./SketchScene');
 const { webgl, assets, gui } = require('../../context');
-const postProcessSetup = require('../postProcessing/basicSSAO');
+const postProcessSetup = require('../postProcessing/basicBloom');
 const query = require('../../util/query');
 const defined = require('defined');
 const BoidSim = require('../objects/BoidSim');
 const { SpotLight, PointLight } = require('../objects/lights');
 const Ground = require('../objects/ground');
-// const { BirdGeometry, createBirdInstanceGeometry } = require( '../geos/Bird.js' );
+const { createMaterial, materialAssets } = require('../materials/createPbrMaterial');
 
+// const { BirdGeometry, createBirdInstanceGeometry } = require( '../geos/Bird.js' );
 
 const name = 'boidtest';
 
 if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
+  assets.queue({
+    url: 'assets/textures/blueLagoonNight_1024/',
+    key: 'env',
+    envMap: true,
+    hdr: true,
+    pbr: true
+  });
+  assets.queue({
+    url: 'assets/materials/gold1.glb',
+    key: 'gold'
+  });
 
+  for ( let i in materialAssets ) {
+    assets.queue( materialAssets[i] );
+  }
 }
 
 module.exports = class BoidTest extends SketchScene {
@@ -21,7 +36,8 @@ module.exports = class BoidTest extends SketchScene {
     this.animate = true;
     this.pars = {
       scene: {
-        testShadow: true
+        testShadow: false,
+        envMapIntensity: 1
       },
       boids: {
         width: 32,
@@ -39,10 +55,13 @@ module.exports = class BoidTest extends SketchScene {
     this.controls.distance = 350;
     // this.controls.position = [-387.5724404469007, 639.4741434068955, -686.0763950300969];
     this.controls.position = [ 0, 0, 350 ];
+    let env = assets.get('env');
 
-    webgl.scene.fog = new THREE.Fog( 0x000000, 1, 1000 );
-    webgl.scene.background = new THREE.Color( 0x808080 );
-    webgl.renderer.setClearColor( webgl.scene.fog.color, 1);
+    // webgl.scene.fog = new THREE.Fog( 0x000000, 1, 1000 );
+    webgl.scene.background = new THREE.Color( 0x000000 );
+    // webgl.scene.background = env.cubeMap;
+
+    webgl.renderer.setClearColor( 0x000000, 1);
 
     webgl.renderer.gammaInput = true;
     webgl.renderer.gammaOutput = true;
@@ -50,14 +69,25 @@ module.exports = class BoidTest extends SketchScene {
     webgl.renderer.shadowMap.enabled = true;
     webgl.renderer.autoClear = false;
     webgl.renderer.physicallyCorrectLights = true;
+    webgl.renderer.toneMapping = THREE.Uncharted2ToneMapping;
+    webgl.renderer.toneMappingExposure = 1;
 
     webgl.camera.fov = 75;
     webgl.camera.far = 5000;
     webgl.camera.updateProjectionMatrix();
 
-    postProcessSetup( false );
+    postProcessSetup( true );
 
     // boidGeo = geometry: new THREE.BoxBufferGeometry( 10, 10, 20 )
+    let boidMat;
+    // assets.get('gold').scene.traverse(child => {
+    //   if (child.isMesh && child.material) {
+    //     boidMat = child.material;
+    //   }
+    // });
+    boidMat = createMaterial(env.target.texture);
+    boidMat.metalness = boidMat.roughness = 1;
+    boidMat.envMap = env.target.texture;
 
     this.boidSim = new BoidSim( webgl.renderer, {
       width: this.pars.boids.width,
@@ -65,12 +95,14 @@ module.exports = class BoidTest extends SketchScene {
       centerStrength: 1,
       // geometry: createBirdInstanceGeometry( this.pars.boids.width * this.pars.boids.width ),
       geometry: new THREE.BoxBufferGeometry( 10, 10, 20, 1, 1, 1 ),
-      material: new THREE.MeshStandardMaterial({
-        side: THREE.DoubleSide,
-        flatShading: true,
-        metalness: 0,
-        roughness: 1
-      })
+      material: boidMat
+      // material: new THREE.MeshStandardMaterial({
+      //   side: THREE.DoubleSide,
+      //   flatShading: true,
+      //   metalness: 1,
+      //   roughness: 0.5,
+      //   envMap: env.target.texture
+      // })
     });
     this.boidSim.birdMesh.castShadow = true;
     this.add( this.boidSim.birdMesh );
@@ -103,6 +135,8 @@ module.exports = class BoidTest extends SketchScene {
       this.add( testSphere );
       window.testSphere = testSphere;
     }
+    this.adjustEnvIntensity();
+    this.setupGui();
   }
 
   update (delta = 0, now = 0, frame = 0) {
@@ -120,6 +154,28 @@ module.exports = class BoidTest extends SketchScene {
     this.boidSim.velocityUniforms[ 'alignmentDistance' ].value = this.pars.boids.alignment;
     this.boidSim.velocityUniforms[ 'cohesionDistance' ].value = this.pars.boids.cohesion;
     this.boidSim.velocityUniforms[ 'freedomFactor' ].value = this.pars.boids.freedom;
+  }
+
+  setupGui() {
+    let f = gui.addFolder({title: `Scene: ${this.name}`});
+
+    f.addInput( this.pars.scene, 'envMapIntensity', {
+      min: 0.0,
+      max: 1.0,
+      step: 0.01,
+      label: 'env level'
+    }).on( 'change', () => {
+      this.adjustEnvIntensity();
+    });
+  }
+
+  adjustEnvIntensity( value ) {
+    if ( defined( value, false ) ) this.pars.scene.envMapIntensity = value;
+    this.traverse( child => {
+      if ( defined( child.material, false) && defined( child.material.envMap, false ) ) {
+        child.material.envMapIntensity = this.pars.scene.envMapIntensity;
+      }
+    });
   }
 
   onKeydown(ev) {
