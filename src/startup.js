@@ -58,7 +58,7 @@ module.exports = function () {
         titleElement.textContent = scenes[i].title;
         found = true;
       }
-      
+
       if ( scenes[i].publish ) {
         if ( count > 0) {
           sceneLinks.appendChild( document.createTextNode( ' - ' ) );
@@ -77,7 +77,6 @@ module.exports = function () {
           scenes[i].title
         ) );
       }
-
     }
     if ( !found ) webgl.scene.add( new DefaultScene() );
 

@@ -51,7 +51,7 @@ module.exports = class Honeycomb extends SketchScene {
 
     for ( let child in gltfChildren ) this.add( gltfChildren[child] );
 
-    if (gui) { // assume it can be falsey, e.g. if we strip dat-gui out of bundle
+    if (gui && false) { // assume it can be falsey, e.g. if we strip dat-gui out of bundle
       // attach dat.gui stuff here as usual
       const folder = gui.addFolder('honeycomb');
       const settings = {
