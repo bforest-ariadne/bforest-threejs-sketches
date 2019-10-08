@@ -29,13 +29,13 @@ class SpotLight extends THREE.SpotLight {
   } = {} ) {
     super( color, intensity, distance, angle, penumbra, decay );
     this.name = name;
+    this.position.copy( position );
     if ( castShadow ) {
       this.castShadow = castShadow;
       this.shadow.mapSize.width = shadowMapSize;
       this.shadow.mapSize.height = shadowMapSize;
       this.shadow.camera.near = shadowCameraNear;
       this.shadow.camera.far = shadowCameraFar;
-      this.position.copy( position );
     }
     if ( createMesh ) {
       this.mesh = createLightMesh();
