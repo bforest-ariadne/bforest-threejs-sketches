@@ -1,4 +1,11 @@
 // Custom Geometry - using 3 triangles each. No UVs, no normals currently.
+function createReferencesAttribute( birds ) {
+  let referenceBirdGeo = new BirdGeometry( birds );
+
+  let references = referenceBirdGeo.attributes.reference.array;
+  return new THREE.InstancedBufferAttribute( references, 2 );
+}
+
 function createBirdInstanceGeometry( birds ) {
   let WIDTH = Math.sqrt( birds );
   let triangles = birds * 3;
@@ -102,4 +109,4 @@ var BirdGeometry = function (birds) {
 BirdGeometry.prototype = Object.create( THREE.BufferGeometry.prototype );
 BirdGeometry.prototype.constructor = BirdGeometry;
 
-module.exports = { BirdGeometry, createBirdInstanceGeometry };
+module.exports = { BirdGeometry, createBirdInstanceGeometry, createReferencesAttribute };

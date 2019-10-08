@@ -57,12 +57,14 @@ module.exports = class BoidTest extends SketchScene {
 
     postProcessSetup( false );
 
+    // boidGeo = geometry: new THREE.BoxBufferGeometry( 10, 10, 20 )
 
     this.boidSim = new BoidSim( webgl.renderer, {
       width: this.pars.boids.width,
       bounds: this.pars.boids.bounds,
       centerStrength: 1,
       // geometry: createBirdInstanceGeometry( this.pars.boids.width * this.pars.boids.width ),
+      geometry: new THREE.BoxBufferGeometry( 10, 10, 20, 1, 1, 1 ),
       material: new THREE.MeshStandardMaterial({
         side: THREE.DoubleSide,
         flatShading: true,

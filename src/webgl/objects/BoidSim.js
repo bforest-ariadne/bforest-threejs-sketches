@@ -1,6 +1,7 @@
-const { BirdGeometry, createBirdInstanceGeometry } = require( '../geos/Bird.js' );
+const { BirdGeometry, createBirdInstanceGeometry, createReferencesAttribute } = require( '../geos/Bird.js' );
 const glslify = require('glslify');
 const path = require('path');
+const defined = require('defined');
 
 module.exports = class BoidSim {
   constructor( renderer, {
@@ -22,6 +23,14 @@ module.exports = class BoidSim {
     const BOUNDS = bounds;
     const BOUNDS_HALF = BOUNDS / 2;
     this.bounds = bounds;
+
+    // load shader chunks
+    const birdShaderPars = glslify(path.resolve(__dirname, `../shaders/birdChunkPars.vert`));
+    const birdShaderBegin = glslify(path.resolve(__dirname, `../shaders/birdChunkBegin.vert`));
+    const boidShaderPars = glslify(path.resolve(__dirname, `../shaders/boidChunkPars.vert`));
+    const boidShaderBegin = glslify(path.resolve(__dirname, `../shaders/boidChunkBegin.vert`));
+    const shaderPars = geometry === null ? birdShaderPars : boidShaderPars;
+    const shaderBegin = geometry === null ? birdShaderBegin : boidShaderBegin;
 
     const initComputeRenderer = () => {
       this.gpuCompute = new THREE.GPUComputationRenderer( WIDTH, WIDTH, renderer );
@@ -72,6 +81,16 @@ module.exports = class BoidSim {
       // var geometry = new BirdGeometry( BIRDS );
       geometry = geometry === null ? createBirdInstanceGeometry( BIRDS ) : geometry;
 
+      if ( !defined( geometry.isInstancedBufferGeometry, false ) ) {
+        const referencesAttribute = createReferencesAttribute( BIRDS );
+
+        let instanceGeo = new THREE.InstancedBufferGeometry();
+        if ( geometry.index) instanceGeo.index = geometry.index;
+        instanceGeo.attributes = geometry.attributes;
+        geometry.addAttribute( 'reference', referencesAttribute );
+        geometry = instanceGeo;
+      }
+
       // For Vertex and Fragment
       this.birdUniforms = {
         'color': { value: new THREE.Color( 0xff2200 ) },
@@ -108,12 +127,10 @@ module.exports = class BoidSim {
           previousOnBeforeCompile( shader, renderer );
 
           Object.assign( shader.uniforms, this.birdUniforms );
-          shader.vertexShader = glslify(
-            path.resolve(__dirname, '../shaders/birdChunkPars.vert')) + shader.vertexShader;
+          shader.vertexShader = shaderPars + shader.vertexShader;
 
           shader.vertexShader = shader.vertexShader.replace(
-            `#include <begin_vertex>`,
-            glslify( path.resolve(__dirname, '../shaders/birdChunkBegin.vert')));
+            `#include <begin_vertex>`, shaderBegin );
         };
 
         birdMesh = new THREE.Mesh( geometry, birdMat );
