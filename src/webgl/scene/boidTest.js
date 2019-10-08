@@ -5,6 +5,8 @@ const query = require('../../util/query');
 const defined = require('defined');
 const BoidSim = require('../objects/BoidSim');
 const { createBirdInstanceGeometry } = require('../geos/Bird');
+const { SpotLight, PointLight } = require('../objects/lights');
+
 
 const name = 'boidtest';
 
@@ -37,7 +39,15 @@ module.exports = class BoidTest extends SketchScene {
     this.controls.position = [ 0, 0, 350 ];
 
     webgl.scene.fog = new THREE.Fog( 0x000000, 1, 1000 );
-    webgl.scene.background = new THREE.Color( 0x000000 );
+    webgl.scene.background = new THREE.Color( 0x808080 );
+    webgl.renderer.setClearColor( webgl.scene.fog.color, 1);
+
+    webgl.renderer.gammaInput = true;
+    webgl.renderer.gammaOutput = true;
+    webgl.renderer.gammaFactor = 2.2;
+    webgl.renderer.shadowMap.enabled = true;
+    webgl.renderer.autoClear = false;
+    webgl.renderer.physicallyCorrectLights = true;
 
     webgl.camera.fov = 75;
     webgl.camera.far = 5000;
@@ -45,15 +55,35 @@ module.exports = class BoidTest extends SketchScene {
 
     postProcessSetup( false );
 
-    this.pointLight = new THREE.PointLight( 0xffffff, 1, 0, 2 );
-    this.pointLight.name = 'pointLight';
-    this.add( this.pointLight );
+    this.spotLight = new SpotLight();
+    this.spotLight.shadow.camera.far = 200;
+    this.spotLight.distance = 500;
+    this.spotLight.intensity = 50;
+    // this.spotlight.mesh.material.blending = THREE.AdditiveBlending;
+    this.spotLight.position.set( 0, 100, 0 );
+    this.spotLight.mesh.material.size = 20;
+    this.add( this.spotLight );
+
+    this.ground = new THREE.Mesh(
+      new THREE.PlaneBufferGeometry( 500, 500, 2, 2 ),
+      new THREE.MeshStandardMaterial({
+        metalness: 0,
+        roughness: 1
+      })
+    );
+    this.ground.rotation.x = -Math.PI / 2;
+    this.ground.position.y = -50;
+    this.ground.castShadow = false;
+    this.ground.receiveShadow = true;
+    this.add( this.ground );
 
     this.boidSim = new BoidSim( webgl.renderer, {
       width: this.pars.boids.width,
       bounds: this.pars.boids.bounds,
       centerStrength: 1
     } );
+
+    this.boidSim.birdMesh.castShadow = true;
 
     this.add( this.boidSim.birdMesh );
     this.boidUniformUpdate();
@@ -62,8 +92,8 @@ module.exports = class BoidTest extends SketchScene {
       new THREE.SphereBufferGeometry( 20 ),
       new THREE.MeshNormalMaterial()
     );
-
     testSphere.name = 'testSphere';
+    testSphere.castShadow = true;
     this.add( testSphere );
     window.testSphere = testSphere;
 

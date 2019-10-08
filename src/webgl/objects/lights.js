@@ -76,7 +76,8 @@ function createLightMesh() {
       map: assets.get('lightSprite'),
       sizeAttenuation: true,
       alphaTest: 0.0,
-      transparent: true
+      transparent: true,
+      blending: THREE.AdditiveBlending
     })
   );
   pointMesh.material.onBeforeCompile = ( shader, renderer ) => {
