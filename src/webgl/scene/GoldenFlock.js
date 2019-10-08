@@ -6,11 +6,10 @@ const defined = require('defined');
 const BoidSim = require('../objects/BoidSim');
 const { SpotLight, PointLight } = require('../objects/lights');
 const Ground = require('../objects/ground');
-const { createMaterial, materialAssets } = require('../materials/createPbrMaterial');
 
-// const { BirdGeometry, createBirdInstanceGeometry } = require( '../geos/Bird.js' );
+const name = 'goldenflock';
 
-const name = 'boidtest';
+const title = 'Golden Flocking';
 
 if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
   assets.queue({
@@ -24,15 +23,12 @@ if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
     url: 'assets/materials/gold1.glb',
     key: 'gold'
   });
-
-  for ( let i in materialAssets ) {
-    assets.queue( materialAssets[i] );
-  }
 }
 
-module.exports = class BoidTest extends SketchScene {
+class GoldenFlock extends SketchScene {
   constructor () {
     super(name);
+    this.public = true;
     this.animate = true;
     this.pars = {
       scene: {
@@ -157,6 +153,7 @@ module.exports = class BoidTest extends SketchScene {
   }
 
   setupGui() {
+    if ( !webgl.dev ) return;
     let f = gui.addFolder({title: `Scene: ${this.name}`});
 
     f.addInput( this.pars.scene, 'envMapIntensity', {
@@ -184,3 +181,8 @@ module.exports = class BoidTest extends SketchScene {
     }
   }
 };
+
+GoldenFlock.title = title;
+GoldenFlock.publish = true;
+
+module.exports = GoldenFlock;

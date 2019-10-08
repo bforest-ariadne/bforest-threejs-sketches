@@ -5,9 +5,11 @@ const basicSMAA = require('../postProcessing/basicSMAA');
 
 let name = 'sketchScene';
 
+const title = 'Basis Sketch Scene';
+
 const tmpTarget = new THREE.Vector3();
 
-module.exports = class SketchScene extends THREE.Object3D {
+class SketchScene extends THREE.Object3D {
   constructor ( sceneName ) {
     super();
     this.name = defined( sceneName, name );
@@ -115,4 +117,30 @@ module.exports = class SketchScene extends THREE.Object3D {
       console.log.apply(this, final);
     }
   }
-};
+
+  static getSceneLink( index, name, title ) {
+    // Create anchor element.
+    var a = document.createElement('a');
+
+    // Create the text node for anchor element.
+    var link = document.createTextNode(index);
+
+    // Append the text node to anchor element.
+    a.appendChild(link);
+
+    // Set the title.
+    a.title = title;
+
+    // Set the href property.
+    let href = document.location.href.slice( 0, document.location.href.lastIndexOf( 'scene=' ) );
+    href += `scene=${name}`;
+    a.href = href;
+
+    return a;
+  }
+}
+
+SketchScene.publish = false;
+SketchScene.title = title;
+
+module.exports = SketchScene;
