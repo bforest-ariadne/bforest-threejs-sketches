@@ -6,6 +6,8 @@ const defined = require('defined');
 const BoidSim = require('../objects/BoidSim');
 const { SpotLight, PointLight } = require('../objects/lights');
 const Ground = require('../objects/ground');
+// const { BirdGeometry, createBirdInstanceGeometry } = require( '../geos/Bird.js' );
+
 
 const name = 'boidtest';
 
@@ -55,10 +57,12 @@ module.exports = class BoidTest extends SketchScene {
 
     postProcessSetup( false );
 
+
     this.boidSim = new BoidSim( webgl.renderer, {
       width: this.pars.boids.width,
       bounds: this.pars.boids.bounds,
       centerStrength: 1,
+      // geometry: createBirdInstanceGeometry( this.pars.boids.width * this.pars.boids.width ),
       material: new THREE.MeshStandardMaterial({
         side: THREE.DoubleSide,
         flatShading: true,
