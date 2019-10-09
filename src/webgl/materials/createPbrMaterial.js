@@ -8,7 +8,7 @@ const { assets } = require('../../context');
 //   assets.queue( materialAssets[i] );
 // }
 
-const folder = 'gold1';
+const folder = 'gold1_512';
 
 const materialAssets = [
   {

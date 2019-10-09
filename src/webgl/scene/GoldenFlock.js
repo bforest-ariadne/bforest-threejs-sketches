@@ -6,6 +6,7 @@ const defined = require('defined');
 const BoidSim = require('../objects/BoidSim');
 const { SpotLight, PointLight } = require('../objects/lights');
 const Ground = require('../objects/ground');
+const { createMaterial, materialAssets } = require('../materials/createPbrMaterial');
 
 const name = 'goldenflock';
 
@@ -13,16 +14,19 @@ const title = 'Golden Flocking';
 
 if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
   assets.queue({
-    url: 'assets/textures/blueLagoonNight_1024/',
+    url: 'assets/textures/blueLagoonNight_256/',
     key: 'env',
     envMap: true,
     hdr: true,
     pbr: true
   });
-  assets.queue({
-    url: 'assets/materials/gold1.glb',
-    key: 'gold'
-  });
+  // assets.queue({
+  //   url: 'assets/materials/gold1.glb',
+  //   key: 'gold'
+  // });
+  for ( let i in materialAssets ) {
+    assets.queue( materialAssets[i] );
+  }
 }
 
 class GoldenFlock extends SketchScene {
@@ -76,12 +80,12 @@ class GoldenFlock extends SketchScene {
 
     // boidGeo = geometry: new THREE.BoxBufferGeometry( 10, 10, 20 )
     let boidMat;
-    assets.get('gold').scene.traverse(child => {
-      if (child.isMesh && child.material) {
-        boidMat = child.material;
-      }
-    });
-    // boidMat = createMaterial(env.target.texture);
+    // assets.get('gold').scene.traverse(child => {
+    //   if (child.isMesh && child.material) {
+    //     boidMat = child.material;
+    //   }
+    // });
+    boidMat = createMaterial(env.target.texture);
     boidMat.metalness = boidMat.roughness = 1;
     boidMat.envMap = env.target.texture;
 
