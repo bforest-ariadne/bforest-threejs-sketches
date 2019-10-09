@@ -4,9 +4,6 @@ const postProcessSetup = require('../postProcessing/basicBloom');
 const query = require('../../util/query');
 const defined = require('defined');
 const BoidSim = require('../objects/BoidSim');
-// const { SpotLight, PointLight } = require('../objects/lights');
-// const Ground = require('../objects/ground');
-// const { createMaterial, materialAssets } = require('../materials/createPbrMaterial');
 
 const name = 'goldenflock';
 
@@ -144,7 +141,7 @@ class GoldenFlock extends SketchScene {
   }
 }
 
-GoldenFlock.queueAssets = () => { queueAssets(); };
+GoldenFlock.queueAssets = queueAssets;
 
 GoldenFlock.title = title;
 GoldenFlock.publish = true;
