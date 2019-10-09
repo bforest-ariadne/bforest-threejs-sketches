@@ -1,4 +1,4 @@
-const { gui, webgl } = require('../../context');
+const { gui, webgl, assets } = require('../../context');
 const createOrbitControls = require('orbit-controls');
 const defined = require('defined');
 const basicSMAA = require('../postProcessing/basicSMAA');
@@ -65,6 +65,16 @@ class SketchScene extends THREE.Object3D {
     webgl.camera.position.fromArray(this.controls.position);
     tmpTarget.fromArray(this.controls.target);
     webgl.camera.lookAt(tmpTarget);
+  }
+
+  glbToMaterial( key ) {
+    let material;
+    assets.get('gold').scene.traverse(child => {
+      if (child.isMesh && child.material) {
+        material = child.material;
+      }
+    });
+    return material;
   }
 
   onTouchStart (ev, pos) {

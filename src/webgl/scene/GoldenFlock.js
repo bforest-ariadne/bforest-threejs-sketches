@@ -20,13 +20,13 @@ if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
     hdr: true,
     pbr: true
   });
-  // assets.queue({
-  //   url: 'assets/materials/gold1.glb',
-  //   key: 'gold'
-  // });
-  for ( let i in materialAssets ) {
-    assets.queue( materialAssets[i] );
-  }
+  assets.queue({
+    url: 'assets/materials/gold1_512.glb',
+    key: 'gold'
+  });
+  // for ( let i in materialAssets ) {
+  //   assets.queue( materialAssets[i] );
+  // }
 }
 
 class GoldenFlock extends SketchScene {
@@ -85,7 +85,8 @@ class GoldenFlock extends SketchScene {
     //     boidMat = child.material;
     //   }
     // });
-    boidMat = createMaterial(env.target.texture);
+    boidMat = this.glbToMaterial( 'gold' );
+    // boidMat = createMaterial(env.target.texture);
     boidMat.metalness = boidMat.roughness = 1;
     boidMat.envMap = env.target.texture;
 
@@ -96,13 +97,6 @@ class GoldenFlock extends SketchScene {
       // geometry: createBirdInstanceGeometry( this.pars.boids.width * this.pars.boids.width ),
       geometry: new THREE.BoxBufferGeometry( 10, 10, 20, 1, 1, 1 ),
       material: boidMat
-      // material: new THREE.MeshStandardMaterial({
-      //   side: THREE.DoubleSide,
-      //   flatShading: true,
-      //   metalness: 1,
-      //   roughness: 0.5,
-      //   envMap: env.target.texture
-      // })
     });
     this.boidSim.birdMesh.castShadow = true;
     this.add( this.boidSim.birdMesh );
