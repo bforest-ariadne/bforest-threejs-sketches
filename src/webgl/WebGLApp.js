@@ -19,8 +19,7 @@ module.exports = class WebGLApp extends EventEmitter {
     this.opt = opt;
     this.dev = defined( query.dev, false );
     this.canvas = opt.canvas;
-    this.cargo = document.location.host.includes('cargo') ||
-      document.location.host.includes('ben-forest.com');
+    this.cargo = opt.cargo;
     this.viewport = opt.viewport;
     this.aside = opt.aside;
     this.query = query;
@@ -34,7 +33,7 @@ module.exports = class WebGLApp extends EventEmitter {
     this.physicsReady = true;
     this.onReady = noop;
     this.ready = false;
-    this.shown = false; 
+    this.shown = false;
     this.stats = new Stats();
     this.stats.domElement.style.display = this.dev ? '' : 'none';
     this.aside.appendChild( this.stats.dom );
@@ -326,7 +325,7 @@ module.exports = class WebGLApp extends EventEmitter {
     }
     if ( ev.keyCode === 83 ) this.toggleStats();
     // dev key commands
-    if ( this.dev ) {
+    if ( this.dev || this.cargo ) {
       // toggle app run with space
       if ( ev.keyCode === 32 && ev.shiftKey ) {
         ev.preventDefault();

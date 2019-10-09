@@ -25,6 +25,7 @@ class AssetManager {
     this._asyncLimit = 10;
     this._onProgressListeners = [];
     this._finishDelay = 0;
+    this.opt = opt;
   }
 
   addProgressListener (fn) {
@@ -95,7 +96,10 @@ class AssetManager {
   // cache if it exists otherwise adding it to the cache
   // after loading.
   load (item, cb = noop) {
-    const url = item.url;
+    const url = this.opt.cargo && defined( item.cargoUrl, false) ? item.cargoUrl : item.url;
+    if ( this.opt.cargo && defined( item.cargoUrls ) ) {
+      item.urls = item.cargoUrls;
+    }
     const ext = path.extname(url);
     const key = item.key || url;
     const cache = this._cache;

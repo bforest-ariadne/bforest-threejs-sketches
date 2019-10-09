@@ -6,6 +6,7 @@ const { assets } = require('../../context');
 
 assets.queue({
   url: 'assets/textures/sprites/nova.png',
+  cargoUrl: 'https://files.cargocollective.com/c521688/nova.png',
   key: 'lightSprite',
   texture: true
 });

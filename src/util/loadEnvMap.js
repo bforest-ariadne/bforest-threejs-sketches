@@ -2,6 +2,7 @@ const noop = () => {};
 const EquiToCube = require('./EquiToCube');
 const loadTexture = require('./loadTexture');
 const clamp = require('clamp');
+const defined = require('defined');
 
 module.exports = function loadEnvMap (opt = {}, cb = noop) {
   const renderer = opt.renderer;
@@ -21,8 +22,13 @@ module.exports = function loadEnvMap (opt = {}, cb = noop) {
   } else {
     const isHDR = opt.hdr;
     const extension = isHDR ? '.hdr' : '.png';
-    const urls = genCubeUrls(basePath.replace(/\/$/, '') + '/', extension);
-
+    let urls;
+    if ( defined( opt.urls, false ) ) {
+      urls = opt.urls;
+    } else {
+      urls = genCubeUrls(basePath.replace(/\/$/, '') + '/', extension);
+    }
+    // const urls = genCubeUrls(basePath.replace(/\/$/, '') + '/', extension);
     if (isHDR) {
       // load a float HDR texture
       return new THREE.HDRCubeTextureLoader()

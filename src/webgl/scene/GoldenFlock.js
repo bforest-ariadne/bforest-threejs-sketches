@@ -10,8 +10,18 @@ const name = 'goldenflock';
 const title = 'Golden Flocking';
 
 const queueAssets = () => {
+  const cubePath = 'assets/textures/blueLagoonNight_256/';
+  const cargoPath = 'https://files.cargocollective.com/c521688/';
   assets.queue({
-    url: 'assets/textures/blueLagoonNight_256/',
+    url: cubePath,
+    cargoUrls: [
+      `${cargoPath}px.hdr`,
+      `${cargoPath}nx.hdr`,
+      `${cargoPath}py.hdr`,
+      `${cargoPath}ny.hdr`,
+      `${cargoPath}pz.hdr`,
+      `${cargoPath}nz.hdr`
+    ],
     key: 'env',
     envMap: true,
     hdr: true,
@@ -19,6 +29,7 @@ const queueAssets = () => {
   });
   assets.queue({
     url: 'assets/materials/gold1_512.glb',
+    cargoUrl: `${cargoPath}gold1_512.glb`,
     key: 'gold'
   });
 }

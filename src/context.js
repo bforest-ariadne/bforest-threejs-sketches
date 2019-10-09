@@ -8,6 +8,11 @@ const Tweakpane = require('tweakpane');
 const viewport = document.getElementById('viewport');
 const aside = document.getElementById('aside');
 
+const cargo = document.location.host.includes('cargo') ||
+document.location.host.includes('ben-forest.com');
+
+if ( cargo ) console.log('cargo site detected!');
+
 // Setup dat.gui
 // const gui = new dat.GUI({
 //   autoPlace: false,
@@ -68,7 +73,8 @@ const canvas = document.querySelector('.main-canvas');
 const webgl = new WebGLApp({
   canvas,
   viewport,
-  aside
+  aside,
+  cargo
 });
 
 // setup dev mode
@@ -83,7 +89,8 @@ if ( !defined(query.gui, false) ) {
 
 // Setup an asset manager
 const assets = new AssetManager({
-  renderer: webgl.renderer
+  renderer: webgl.renderer,
+  cargo: cargo
 });
 
 webgl.assetManager = assets;
