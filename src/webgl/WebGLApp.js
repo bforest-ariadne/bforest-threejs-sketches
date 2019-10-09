@@ -17,6 +17,7 @@ module.exports = class WebGLApp extends EventEmitter {
   constructor (opt = {}) {
     super();
     this.opt = opt;
+    this.dev = defined( query.dev, false );
     this.canvas = opt.canvas;
     this.cargo = document.location.host.includes('cargo') ||
       document.location.host.includes('ben-forest.com');
@@ -35,7 +36,8 @@ module.exports = class WebGLApp extends EventEmitter {
     this.ready = false;
     this.shown = false; 
     this.stats = new Stats();
-    if ( this.dev ) this.aside.appendChild( this.stats.dom );
+    this.stats.domElement.style.display = this.dev ? '' : 'none';
+    this.aside.appendChild( this.stats.dom );
 
     this.mobile = isMobile;
 
@@ -99,7 +101,6 @@ module.exports = class WebGLApp extends EventEmitter {
     this._running = false;
     this._lastTime = rightNow();
     this._rafID = null;
-    this.dev = defined( query.dev ) ? query.dev : false;
 
     this.scene = new THREE.Scene();
 
@@ -298,8 +299,13 @@ module.exports = class WebGLApp extends EventEmitter {
 
   onTouchStart( ev, pos ) {
     if ( defined( ev.touches, false ) && ev.touches.length ) {
-      if ( ev.touches.length === 2 ) this.hideOverlay();
-      if ( ev.touches.length === 4 && this.dev ) this.togglePause();     
+      if ( ev.touches.length === 2 ) {
+        this.hideOverlay();
+      } else if ( ev.touches.length === 3 ) {
+        this.toggleStats();
+      } else if ( ev.touches.length === 4 && this.dev ) {
+        this.togglePause();
+      }
     }
 
     this._traverse('onTouchStart', ev, pos);
@@ -318,6 +324,7 @@ module.exports = class WebGLApp extends EventEmitter {
       ev.preventDefault();
       this.hideOverlay();
     }
+    if ( ev.keyCode === 83 ) this.toggleStats();
     // dev key commands
     if ( this.dev ) {
       // toggle app run with space
@@ -328,6 +335,11 @@ module.exports = class WebGLApp extends EventEmitter {
     }
 
     this._traverse('onKeydown', ev);
+  }
+  toggleStats() {
+    const statsEl = this.stats.domElement;
+    const statsVisible = statsEl.style.display === '';
+    statsEl.style.display = statsVisible ? 'none' : '';
   }
 
   hideOverlay() {
