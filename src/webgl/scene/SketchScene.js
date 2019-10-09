@@ -156,5 +156,6 @@ class SketchScene extends THREE.Object3D {
 SketchScene.publish = false;
 SketchScene.title = title;
 SketchScene.sceneName = name;
+SketchScene.queueAssets = () => {};
 
 module.exports = SketchScene;

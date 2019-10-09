@@ -4,15 +4,15 @@ const postProcessSetup = require('../postProcessing/basicBloom');
 const query = require('../../util/query');
 const defined = require('defined');
 const BoidSim = require('../objects/BoidSim');
-const { SpotLight, PointLight } = require('../objects/lights');
-const Ground = require('../objects/ground');
-const { createMaterial, materialAssets } = require('../materials/createPbrMaterial');
+// const { SpotLight, PointLight } = require('../objects/lights');
+// const Ground = require('../objects/ground');
+// const { createMaterial, materialAssets } = require('../materials/createPbrMaterial');
 
 const name = 'goldenflock';
 
 const title = 'Golden Flocking';
 
-if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
+const queueAssets = () => {
   assets.queue({
     url: 'assets/textures/blueLagoonNight_256/',
     key: 'env',
@@ -24,9 +24,10 @@ if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
     url: 'assets/materials/gold1_512.glb',
     key: 'gold'
   });
-  // for ( let i in materialAssets ) {
-  //   assets.queue( materialAssets[i] );
-  // }
+}
+
+if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
+  queueAssets();
 }
 
 class GoldenFlock extends SketchScene {
@@ -53,13 +54,10 @@ class GoldenFlock extends SketchScene {
   init() {
     this.controlsInit();
     this.controls.distance = 350;
-    // this.controls.position = [-387.5724404469007, 639.4741434068955, -686.0763950300969];
     this.controls.position = [ 0, 0, 350 ];
     let env = assets.get('env');
 
-    // webgl.scene.fog = new THREE.Fog( 0x000000, 1, 1000 );
     webgl.scene.background = new THREE.Color( 0x000000 );
-    // webgl.scene.background = env.cubeMap;
 
     webgl.renderer.setClearColor( 0x000000, 1);
 
@@ -78,13 +76,7 @@ class GoldenFlock extends SketchScene {
 
     postProcessSetup( true );
 
-    // boidGeo = geometry: new THREE.BoxBufferGeometry( 10, 10, 20 )
     let boidMat;
-    // assets.get('gold').scene.traverse(child => {
-    //   if (child.isMesh && child.material) {
-    //     boidMat = child.material;
-    //   }
-    // });
     boidMat = this.glbToMaterial( 'gold' );
     // boidMat = createMaterial(env.target.texture);
     boidMat.metalness = boidMat.roughness = 1;
@@ -94,7 +86,6 @@ class GoldenFlock extends SketchScene {
       width: this.pars.boids.width,
       bounds: this.pars.boids.bounds,
       centerStrength: 1,
-      // geometry: createBirdInstanceGeometry( this.pars.boids.width * this.pars.boids.width ),
       geometry: new THREE.BoxBufferGeometry( 10, 10, 20, 1, 1, 1 ),
       material: boidMat
     });
@@ -102,33 +93,6 @@ class GoldenFlock extends SketchScene {
     this.add( this.boidSim.birdMesh );
     this.boidUniformUpdate();
 
-    if ( this.pars.scene.testShadow ) {
-      this.spotLight = new SpotLight({
-        intensity: 50,
-        distance: 500,
-        angle: 1,
-        shadowCameraFar: 200,
-        meshSize: 20,
-        position: new THREE.Vector3( 0, 100, 0 )
-      });
-      this.add( this.spotLight );
-
-      this.ground = new Ground({
-        size: 500,
-        height: -50
-      });
-
-      this.add( this.ground );
-
-      const testSphere = new THREE.Mesh(
-        new THREE.SphereBufferGeometry( 20 ),
-        new THREE.MeshNormalMaterial()
-      );
-      testSphere.name = 'testSphere';
-      testSphere.castShadow = true;
-      this.add( testSphere );
-      window.testSphere = testSphere;
-    }
     this.adjustEnvIntensity();
     this.setupGui();
   }
@@ -178,7 +142,9 @@ class GoldenFlock extends SketchScene {
       this.animate = !this.animate;
     }
   }
-};
+}
+
+GoldenFlock.queueAssets = () => { queueAssets(); };
 
 GoldenFlock.title = title;
 GoldenFlock.publish = true;

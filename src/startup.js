@@ -27,6 +27,48 @@ module.exports = function () {
   // Hide canvas
   webgl.canvas.style.visibility = 'hidden';
 
+  let Scene = DefaultScene;
+  const sceneLinks = document.getElementById('sceneLinks');
+  const devLinks = sceneLinks.cloneNode();
+  devLinks.id = 'devLinks';
+  devLinks.textContent = 'Dev: ';
+  if ( webgl.dev ) sceneLinks.after( devLinks );
+  const titleElement = document.getElementById('title');
+  let count = 0;
+
+  let found = false;
+  for ( let i in scenes ) {
+    let sceneName = scenes[i].sceneName.toLowerCase();
+    let queryName = defined( query.scene, '' ).toLowerCase();
+    if ( sceneName === queryName ) {
+      Scene = scenes[i];
+      // webgl.scene.add( new scenes[i]() );
+      titleElement.textContent = scenes[i].title;
+      found = true;
+    }
+
+    if ( scenes[i].publish ) {
+      Scene = scenes[i];
+      if ( count > 0) {
+        sceneLinks.appendChild( document.createTextNode( ' - ' ) );
+      }
+      count++;
+      sceneLinks.appendChild( scenes[i].getSceneLink(
+        count,
+        sceneName,
+        scenes[i].title
+      ) );
+    } else if ( webgl.dev ) {
+      devLinks.appendChild( document.createTextNode( ' - ' ) );
+      devLinks.appendChild( scenes[i].getSceneLink(
+        i,
+        sceneName,
+        scenes[i].title
+      ) );
+    }
+  }
+  if ( !found ) Scene.queueAssets();
+
   // Preload any queued assets
   assets.loadQueued(() => {
     webgl.on( 'show', () => {
@@ -41,45 +83,7 @@ module.exports = function () {
     // To avoid page pulling and such
     webgl.canvas.addEventListener('touchstart', ev => ev.preventDefault());
 
-    const sceneLinks = document.getElementById('sceneLinks');
-    const devLinks = sceneLinks.cloneNode();
-    devLinks.id = 'devLinks';
-    devLinks.textContent = 'Dev: ';
-    if ( webgl.dev ) sceneLinks.after( devLinks );
-    const titleElement = document.getElementById('title');
-    let count = 0;
-
-    let found = false;
-    for ( let i in scenes ) {
-      let sceneName = scenes[i].sceneName.toLowerCase();
-      let queryName = defined( query.scene, '' ).toLowerCase();
-      if ( sceneName === queryName ) {
-        webgl.scene.add( new scenes[i]() );
-        titleElement.textContent = scenes[i].title;
-        found = true;
-      }
-
-      if ( scenes[i].publish ) {
-        if ( count > 0) {
-          sceneLinks.appendChild( document.createTextNode( ' - ' ) );
-        }
-        count++;
-        sceneLinks.appendChild( scenes[i].getSceneLink(
-          count,
-          sceneName,
-          scenes[i].title
-        ) );
-      } else if ( webgl.dev ) {
-        devLinks.appendChild( document.createTextNode( ' - ' ) );
-        devLinks.appendChild( scenes[i].getSceneLink(
-          i,
-          sceneName,
-          scenes[i].title
-        ) );
-      }
-    }
-    if ( !found ) webgl.scene.add( new DefaultScene() );
-
+    webgl.scene.add( new Scene() );
     webgl.sceneObj.init();
 
     // start animation loop

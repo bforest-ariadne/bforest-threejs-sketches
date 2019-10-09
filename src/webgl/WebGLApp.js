@@ -18,6 +18,8 @@ module.exports = class WebGLApp extends EventEmitter {
     super();
     this.opt = opt;
     this.canvas = opt.canvas;
+    this.cargo = document.location.host.includes('cargo') ||
+      document.location.host.includes('ben-forest.com');
     this.viewport = opt.viewport;
     this.aside = opt.aside;
     this.query = query;
