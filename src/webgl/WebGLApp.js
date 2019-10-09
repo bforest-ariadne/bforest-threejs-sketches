@@ -43,7 +43,8 @@ module.exports = class WebGLApp extends EventEmitter {
     this.stoppedDiv = document.createElement('div');
     this.stoppedDiv.id = 'stopped';
     this.stoppedDiv.style.cssText = 'position: fixed; width: 100%; height: 100%; z-index: 2147483647; background-color: black; opacity: 0.5; display: none; top: 0px;';
-    document.body.appendChild( this.stoppedDiv );
+    if ( document.getElementById('stopped') !== null ) this.stoppedDiv = document.getElementById('stopped');
+    this.viewport.appendChild( this.stoppedDiv );
     const hide = document.getElementById('hide');
     if ( this.mobile ) hide.textContent = 'Two finger tap to hid the overlay';
 
@@ -111,8 +112,9 @@ module.exports = class WebGLApp extends EventEmitter {
     });
 
     // handle resize events
-    window.addEventListener('resize', () => this.resize());
-    window.addEventListener('orientationchange', () => this.resize());
+    window.addEventListener('resize', () => this.resize() );
+    if ( this.cargo ) this.viewport.addEventListener( 'resize', () => this.resize() );
+    window.addEventListener('orientationchange', () => this.resize() );
 
     // force an initial resize event
     this.resize();
@@ -207,6 +209,16 @@ module.exports = class WebGLApp extends EventEmitter {
 
   start () {
     this.log( 'app start' );
+    if ( this.cargo ) {
+      this.resize();
+      const webglContainer = document.getElementById('webgl');
+      webglContainer.parentNode.parentNode.childNodes.forEach( el => {
+        if ( el.classList && el.classList.contains('container_width') ) {
+          console.log('ellement to hide', el);
+          el.style.visibility = 'hidden';
+        }
+      });
+    }
     if ( this.dev && this.frameCount === 0 ) {
       this.debug();
     }
@@ -229,8 +241,9 @@ module.exports = class WebGLApp extends EventEmitter {
 
   resize (width, height, pixelRatio) {
     // get default values
-    width = defined(width, window.innerWidth);
-    height = defined(height, window.innerHeight);
+    this.log('resize');
+    width = defined( width, this.viewport.clientWidth );
+    height = defined(height, this.viewport.clientHeight );
     pixelRatio = defined(pixelRatio, Math.min(this.maxPixelRatio, window.devicePixelRatio));
 
     this.width = width;
