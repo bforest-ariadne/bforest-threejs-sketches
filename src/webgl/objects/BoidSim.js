@@ -29,6 +29,8 @@ module.exports = class BoidSim {
     const birdShaderBegin = glslify(path.resolve(__dirname, `../shaders/birdChunkBegin.vert`));
     const boidShaderPars = glslify(path.resolve(__dirname, `../shaders/boidChunkPars.vert`));
     const boidShaderBegin = glslify(path.resolve(__dirname, `../shaders/boidChunkBegin.vert`));
+    const boidFragShaderPars = glslify(path.resolve(__dirname, `../shaders/boidChunkPars.frag`));
+    const boidFragShaderTest = glslify(path.resolve(__dirname, `../shaders/boidChunkTest.frag`));
     const shaderPars = geometry === null ? birdShaderPars : boidShaderPars;
     const shaderBegin = geometry === null ? birdShaderBegin : boidShaderBegin;
 
@@ -131,6 +133,13 @@ module.exports = class BoidSim {
 
           shader.vertexShader = shader.vertexShader.replace(
             `#include <begin_vertex>`, shaderBegin );
+
+          shader.fragmentShader = boidFragShaderPars + shader.fragmentShader;
+
+          shader.fragmentShader = shader.fragmentShader.replace(
+            `gl_FragColor = vec4( outgoingLight, diffuseColor.a );`,
+            boidFragShaderTest
+          );
         };
 
         birdMesh = new THREE.Mesh( geometry, birdMat );

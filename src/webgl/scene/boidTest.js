@@ -112,10 +112,9 @@ class BoidTest extends SketchScene {
     boidMat.envMap = env.target.texture;
 
     const cScale = 30;
-    const cylinderGeo = new THREE.CylinderBufferGeometry( 0.25 * cScale, 0.0 * cScale, 1 * cScale, 8, 1 );
-    // cylinderGeo.lookAt( new THREE.Vector3(0, 0, -1) );
+    const cylinderGeo = new THREE.CylinderBufferGeometry( 0.25 * cScale, 0.0 * cScale, 1 * cScale, 32, 1 );
     cylinderGeo.rotateZ(Math.PI / 2);
-    // const boxGeo = new THREE.BoxBufferGeometry( 10, 10, 20, 1, 1, 1 );
+    const sphereGeo = new THREE.SphereBufferGeometry( 10, 16, 8 );
     const boxGeo = new THREE.BoxBufferGeometry( 20, 10, 10, 1, 1, 1 );
     const normalMat = new THREE.MeshNormalMaterial();
 
@@ -124,11 +123,12 @@ class BoidTest extends SketchScene {
       bounds: this.pars.boids.bounds,
       centerStrength: 1,
       // geometry: createBirdInstanceGeometry( this.pars.boids.width * this.pars.boids.width ),
-      geometry: cylinderGeo,
+      geometry: sphereGeo,
       material: boidMat
     });
     this.boidSim.birdMesh.castShadow = true;
     this.add( this.boidSim.birdMesh );
+    if ( webgl.dev ) window.birdMesh = this.boidSim.birdMesh;
     this.boidUniformUpdate();
 
     if ( this.pars.scene.testShadow ) {
