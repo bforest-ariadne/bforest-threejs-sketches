@@ -48,7 +48,7 @@ module.exports = function () {
     }
 
     if ( scenes[i].publish ) {
-      Scene = scenes[i];
+      // Scene = scenes[i];
       if ( count > 0) {
         sceneLinks.appendChild( document.createTextNode( ' - ' ) );
       }

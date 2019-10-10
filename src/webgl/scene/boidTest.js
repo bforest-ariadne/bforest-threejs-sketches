@@ -14,23 +14,38 @@ const name = 'boidtest';
 
 const title = 'Boid Sim Test';
 
-if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
+const queueAssets = () => {
+  const cubePath = 'assets/textures/blueLagoonNight_256/';
+  const cargoPath = 'https://files.cargocollective.com/c521688/';
   assets.queue({
-    url: 'assets/textures/blueLagoonNight_1024/',
+    url: cubePath,
+    cargoUrls: [
+      `${cargoPath}px.hdr`,
+      `${cargoPath}nx.hdr`,
+      `${cargoPath}py.hdr`,
+      `${cargoPath}ny.hdr`,
+      `${cargoPath}pz.hdr`,
+      `${cargoPath}nz.hdr`
+    ],
     key: 'env',
     envMap: true,
     hdr: true,
     pbr: true
   });
-  assets.queue({
-    url: 'assets/materials/gold1.glb',
-    key: 'gold'
-  });
+  // assets.queue({
+  //   url: 'assets/materials/gold1.glb',
+  //   key: 'gold'
+  // });
 
   for ( let i in materialAssets ) {
     assets.queue( materialAssets[i] );
   }
+};
+
+if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
+  queueAssets();
 }
+
 
 class BoidTest extends SketchScene {
   constructor () {
@@ -82,12 +97,18 @@ class BoidTest extends SketchScene {
 
     // boidGeo = geometry: new THREE.BoxBufferGeometry( 10, 10, 20 )
     let boidMat;
-    assets.get('gold').scene.traverse(child => {
-      if (child.isMesh && child.material) {
-        boidMat = child.material;
+    // boidMat = this.glbToMaterial( 'gold' );
+    boidMat = createMaterial(env.target.texture);
+    for ( let [ key, value ] of Object.entries( boidMat ) ) {
+      if ( value instanceof THREE.Texture && value.name.includes('assets') ) {
+      // console.log(value)
+        value.minFilter = THREE.LinearMipMapLinearFilter;
+        value.magFilter = THREE.LinearFilter;
+        value.anisotrophy = 1;
+        value.needsUpdate = true;
       }
-    });
-    // boidMat = createMaterial(env.target.texture);
+    }
+    boidMat.flatShading = true;
     boidMat.metalness = boidMat.roughness = 1;
     boidMat.envMap = env.target.texture;
 
@@ -186,6 +207,7 @@ class BoidTest extends SketchScene {
     }
   }
 }
+BoidTest.queueAssets = queueAssets;
 
 BoidTest.title = title;
 BoidTest.publish = false;
