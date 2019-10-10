@@ -29,8 +29,10 @@ require('three/examples/js/WebGL.js');
 // require('three/examples/js/controls/DeviceOrientationControls.js');
 require('./vendor/DeviceOrientation+OrbitControls.js');
 
-// ensure context is loaded before entry
-require('./context');
+window.addEventListener('load', () => {
+  // ensure context is loaded before entry
+  require('./context');
 
-// now start up WebGL app
-require('./startup')();
+  // now start up WebGL app
+  require('./startup')();
+});

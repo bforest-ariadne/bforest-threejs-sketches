@@ -11565,7 +11565,7 @@ module.exports = function getJSON(opt, cb) {
 }
 
 function noop() {}
-},{"xhr":68}],28:[function(require,module,exports){
+},{"xhr":67}],28:[function(require,module,exports){
 var once = require('once')
 var noop = function noop(){}
 
@@ -11805,7 +11805,7 @@ function once (fn) {
   return f
 }
 
-},{"wrappy":67}],33:[function(require,module,exports){
+},{"wrappy":66}],33:[function(require,module,exports){
 var defined = require('defined')
 var clamp = require('clamp')
 
@@ -12214,7 +12214,7 @@ module.exports = function (headers) {
 
   return result
 }
-},{"for-each":8,"trim":61}],36:[function(require,module,exports){
+},{"for-each":8,"trim":60}],36:[function(require,module,exports){
 module.exports = function parseUnit(str, out) {
     if (!out)
         out = [ 0, '' ]
@@ -18362,7 +18362,7 @@ inherits(Shader, EventEmitter);
 
 module.exports = Shader;
 
-},{"events":7,"util":65}],43:[function(require,module,exports){
+},{"events":7,"util":64}],43:[function(require,module,exports){
 // We hook into needsUpdate so it will lazily check
 // shader updates every frame of rendering.
 
@@ -18427,7 +18427,7 @@ Object.defineProperty(LiveShaderMaterial.prototype, 'needsUpdate', {
 
 module.exports = LiveShaderMaterial;
 
-},{"util":65}],44:[function(require,module,exports){
+},{"util":64}],44:[function(require,module,exports){
 var Shader = require('./lib/Shader');
 
 module.exports = createShader;
@@ -75057,152 +75057,6 @@ function Finger () {
 }
 
 },{"dprop":6,"events":7,"gl-vec2/distance":11,"mouse-event-offset":29}],60:[function(require,module,exports){
-var Emitter = require('events/')
-
-var allEvents = [
-  'touchstart', 'touchmove', 'touchend', 'touchcancel',
-  'mousedown', 'mousemove', 'mouseup'
-]
-
-var ROOT = { left: 0, top: 0 }
-
-module.exports = function handler (element, opt) {
-  opt = opt || {}
-  element = element || window
-
-  var emitter = new Emitter()
-  emitter.target = opt.target || element
-
-  var touch = null
-  var filtered = opt.filtered
-
-  var events = allEvents
-
-  // only a subset of events
-  if (typeof opt.type === 'string') {
-    events = allEvents.filter(function (type) {
-      return type.indexOf(opt.type) === 0
-    })
-  }
-
-  // grab the event functions
-  var funcs = events.map(function (type) {
-    var name = normalize(type)
-    var fn = function (ev) {
-      var client = ev
-      if (/^touch/.test(type)) {
-        if (/^touchend$/.test(type) && opt.preventSimulated !== false) {
-          ev.preventDefault()
-        }
-        
-        if (filtered) {
-          client = getFilteredTouch(ev, type)
-        } else {
-          client = getTargetTouch(ev.changedTouches, emitter.target)
-        }
-      }
-
-      if (!client) {
-        return
-      }
-
-      // get 2D position
-      var pos = offset(client, emitter.target)
-
-      // dispatch the normalized event to our emitter
-      emitter.emit(name, ev, pos)
-    }
-    return { type: type, listener: fn }
-  })
-
-  emitter.enable = function enable () {
-    funcs.forEach(listeners(element, true))
-
-    return emitter
-  }
-
-  emitter.disable = function dispose () {
-    touch = null
-    funcs.forEach(listeners(element, false))
-
-    return emitter
-  }
-
-  // initially enabled
-  emitter.enable()
-  return emitter
-
-  function getFilteredTouch (ev, type) {
-    var client
-
-    // clear touch if it was lifted or canceled
-    if (touch && /^touch(end|cancel)/.test(type)) {
-      // allow end event to trigger on tracked touch
-      client = getTouch(ev.changedTouches, touch.identifier || 0)
-      if (client) {
-        touch = null
-      }
-    } else if (!touch && /^touchstart/.test(type)) {
-      // not yet tracking any touches, pick one from target
-      touch = client = getTargetTouch(ev.changedTouches, emitter.target)
-    } else if (touch) {
-    // get the tracked touch
-      client = getTouch(ev.changedTouches, touch.identifier || 0)
-    }
-
-    return client
-  }
-}
-
-// get 2D client position of touch/mouse event
-function offset (ev, target) {
-  var cx = ev.clientX || 0
-  var cy = ev.clientY || 0
-  var rect = bounds(target)
-  return [ cx - rect.left, cy - rect.top ]
-}
-
-// since we are adding events to a parent we can't rely on targetTouches
-function getTargetTouch (touches, target) {
-  return Array.prototype.slice.call(touches).filter(function (t) {
-    return t.target === target
-  })[0] || touches[0]
-}
-
-function getTouch (touches, id) {
-  for (var i = 0; i < touches.length; i++) {
-    if (touches[i].identifier === id) {
-      return touches[i]
-    }
-  }
-  return null
-}
-
-function listeners (e, enabled) {
-  return function (data) {
-    if (enabled) e.addEventListener(data.type, data.listener, { passive: false })
-    else e.removeEventListener(data.type, data.listener, { passive: false })
-  }
-}
-
-// normalize touchstart/mousedown to "start" etc
-function normalize (event) {
-  return event.replace(/^(touch|mouse)/, '')
-    .replace(/up$/, 'end')
-    .replace(/down$/, 'start')
-}
-
-function bounds (element) {
-  if (element === window ||
-      element === document ||
-      element === document.body) {
-    return ROOT
-  } else {
-    return element.getBoundingClientRect()
-  }
-}
-
-},{"events/":7}],61:[function(require,module,exports){
 
 exports = module.exports = trim;
 
@@ -75218,7 +75072,7 @@ exports.right = function(str){
   return str.replace(/\s*$/, '');
 };
 
-},{}],62:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -81063,7 +80917,7 @@ exports.push([module.i, ".tp-fldv_t,.tp-rotv_t{-webkit-appearance:none;-moz-appe
 
 /******/ })["default"];
 });
-},{}],63:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -81088,14 +80942,14 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],64:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],65:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -81685,7 +81539,7 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":64,"_process":1,"inherits":63}],66:[function(require,module,exports){
+},{"./support/isBuffer":63,"_process":1,"inherits":62}],65:[function(require,module,exports){
 var bundleFn = arguments[3];
 var sources = arguments[4];
 var cache = arguments[5];
@@ -81767,7 +81621,7 @@ module.exports = function (fn, options) {
     return worker;
 };
 
-},{}],67:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 // Returns a wrapper function that returns a wrapped callback
 // The wrapper function should do some stuff, and return a
 // presumably different callback function.
@@ -81802,7 +81656,7 @@ function wrappy (fn, cb) {
   }
 }
 
-},{}],68:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 "use strict";
 var window = require("global/window")
 var isFunction = require("is-function")
@@ -82049,7 +81903,7 @@ function getXml(xhr) {
 
 function noop() {}
 
-},{"global/window":22,"is-function":25,"parse-headers":35,"xtend":69}],69:[function(require,module,exports){
+},{"global/window":22,"is-function":25,"parse-headers":35,"xtend":68}],68:[function(require,module,exports){
 module.exports = extend
 
 var hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -82070,7 +81924,7 @@ function extend() {
     return target
 }
 
-},{}],70:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -82099,18 +81953,16 @@ if (cargo) console.log('cargo site detected!');
 var gui = void 0;
 
 if (cargo) {
-  window.addEventListener('load', function () {
-    var background = viewport.parentNode.parentNode.parentNode.parentNode.parentNode.getElementsByClassName('page_background')[0];
-    background.style.zIndex = '1';
-    var webglContainer = document.getElementById('webgl');
-    webglContainer.style.cssText = '\n    position: absolute;\n    height: 100%;\n    right: 0px;\n    ';
-    webglContainer.classList.add('container_width');
-    webglContainer.parentNode.parentNode.firstElementChild.style.visibility = 'hidden';
-    background.appendChild(webglContainer);
-  });
+  var background = viewport.parentNode.parentNode.parentNode.parentNode.parentNode.getElementsByClassName('page_background')[0];
+  background.style.zIndex = '1';
+  var webglContainer = document.getElementById('webgl');
+  webglContainer.style.cssText = '\n    position: absolute;\n    height: 100%;\n    right: 0px;\n    ';
+  webglContainer.classList.add('container_width');
+  webglContainer.parentNode.parentNode.firstElementChild.style.visibility = 'hidden';
+  background.appendChild(webglContainer);
 }
 
-if (defined(query.dev)) {
+if (defined(query.dev) || document.location.hash.includes('dev')) {
   gui = new Tweakpane({
     container: document.getElementById('aside'),
     title: 'parameters'
@@ -82165,7 +82017,7 @@ var webgl = new WebGLApp({
 });
 
 // setup dev mode
-if (defined(query.dev)) {
+if (defined(query.dev) || document.location.hash.includes('dev')) {
   webgl.setDev(true);
   global.gui = gui;
 }
@@ -82196,7 +82048,7 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./util/AssetManager":73,"./util/query":80,"./webgl/WebGLApp":84,"dat.gui":3,"defined":5,"tweakpane":62}],71:[function(require,module,exports){
+},{"./util/AssetManager":72,"./util/query":79,"./webgl/WebGLApp":84,"dat.gui":3,"defined":5,"tweakpane":61}],70:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -82231,14 +82083,16 @@ require('three/examples/js/WebGL.js');
 // require('three/examples/js/controls/DeviceOrientationControls.js');
 require('./vendor/DeviceOrientation+OrbitControls.js');
 
-// ensure context is loaded before entry
-require('./context');
+window.addEventListener('load', function () {
+  // ensure context is loaded before entry
+  require('./context');
 
-// now start up WebGL app
-require('./startup')();
+  // now start up WebGL app
+  require('./startup')();
+});
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./context":70,"./startup":72,"./vendor/DeviceOrientation+OrbitControls.js":81,"three":47,"three/examples/js/WebGL.js":48,"three/examples/js/exporters/GLTFExporter":49,"three/examples/js/loaders/GLTFLoader.js":50,"three/examples/js/loaders/HDRCubeTextureLoader.js":51,"three/examples/js/loaders/RGBELoader.js":52,"three/examples/js/misc/GPUComputationRenderer":53,"three/examples/js/pmrem/PMREMCubeUVPacker.js":54,"three/examples/js/pmrem/PMREMGenerator.js":55,"three/examples/js/shaders/UnpackDepthRGBAShader":56,"three/examples/js/utils/ShadowMapViewer.js":57}],72:[function(require,module,exports){
+},{"./context":69,"./startup":71,"./vendor/DeviceOrientation+OrbitControls.js":80,"three":47,"three/examples/js/WebGL.js":48,"three/examples/js/exporters/GLTFExporter":49,"three/examples/js/loaders/GLTFLoader.js":50,"three/examples/js/loaders/HDRCubeTextureLoader.js":51,"three/examples/js/loaders/RGBELoader.js":52,"three/examples/js/misc/GPUComputationRenderer":53,"three/examples/js/pmrem/PMREMCubeUVPacker.js":54,"three/examples/js/pmrem/PMREMGenerator.js":55,"three/examples/js/shaders/UnpackDepthRGBAShader":56,"three/examples/js/utils/ShadowMapViewer.js":57}],71:[function(require,module,exports){
 'use strict';
 
 var query = require('./util/query');
@@ -82321,7 +82175,7 @@ module.exports = function () {
   });
 };
 
-},{"./context":70,"./util/query":80,"./webgl/scene/FeedbackTest":101,"./webgl/scene/GoldenFlock":102,"./webgl/scene/Honeycomb":103,"./webgl/scene/PbrTest":104,"./webgl/scene/PhysicsTest":106,"./webgl/scene/SketchScene":107,"./webgl/scene/SpinningBox":108,"./webgl/scene/TranslucentTest":109,"./webgl/scene/boidTest":110,"./webgl/scene/bpose":111,"defined":5,"gsap/umd/TweenMax":24}],73:[function(require,module,exports){
+},{"./context":69,"./util/query":79,"./webgl/scene/FeedbackTest":101,"./webgl/scene/GoldenFlock":102,"./webgl/scene/Honeycomb":103,"./webgl/scene/PbrTest":104,"./webgl/scene/PhysicsTest":106,"./webgl/scene/SketchScene":107,"./webgl/scene/SpinningBox":108,"./webgl/scene/TranslucentTest":109,"./webgl/scene/boidTest":110,"./webgl/scene/bpose":111,"defined":5,"gsap/umd/TweenMax":24}],72:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -82583,7 +82437,7 @@ var AssetManager = function () {
 module.exports = AssetManager;
 
 }).call(this,require('_process'))
-},{"../context":70,"./loadEnvMap":78,"./loadTexture":79,"_process":1,"defined":5,"load-img":26,"load-json-xhr":27,"map-limit":28,"path":37,"xhr":68}],74:[function(require,module,exports){
+},{"../context":69,"./loadEnvMap":77,"./loadTexture":78,"_process":1,"defined":5,"load-img":26,"load-json-xhr":27,"map-limit":28,"path":37,"xhr":67}],73:[function(require,module,exports){
 "use strict";
 
 var CUBE_FACE_SIZE = 1024;
@@ -82632,7 +82486,7 @@ EquiToCube.prototype.convert = function (map) {
 
 module.exports = EquiToCube;
 
-},{}],75:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 'use strict';
 
 module.exports = function exportGLTF(input) {
@@ -82687,7 +82541,7 @@ function saveArrayBuffer(buffer, filename) {
   save(new Blob([buffer], { type: 'application/octet-stream' }), filename);
 }
 
-},{}],76:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 /* eslint-disable no-tabs */
 /* eslint-disable no-mixed-spaces-and-tabs */
 /* !*********************************************************************
@@ -83553,13 +83407,13 @@ module.exports = function getRenderer(complete) {
 		evaluateNode(nodes[0]);
 };
 
-},{}],77:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 "use strict";
 
 // Very dumb mobile check...
 module.exports = /(Android|iOS|iPhone|iPod|iPad)/i.test(navigator.userAgent);
 
-},{}],78:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 'use strict';
 
 var noop = function noop() {};
@@ -83647,7 +83501,7 @@ function genCubeUrls(prefix, postfix) {
   return [prefix + 'px' + postfix, prefix + 'nx' + postfix, prefix + 'py' + postfix, prefix + 'ny' + postfix, prefix + 'pz' + postfix, prefix + 'nz' + postfix];
 }
 
-},{"./EquiToCube":74,"./loadTexture":79,"clamp":2,"defined":5}],79:[function(require,module,exports){
+},{"./EquiToCube":73,"./loadTexture":78,"clamp":2,"defined":5}],78:[function(require,module,exports){
 'use strict';
 
 var loadImg = require('load-img');
@@ -83705,7 +83559,7 @@ function setTextureParams(url, texture, opt) {
   texture.generateMipmaps = opt.generateMipmaps !== false;
 }
 
-},{"load-img":26}],80:[function(require,module,exports){
+},{"load-img":26}],79:[function(require,module,exports){
 'use strict';
 
 // an object holding all the parsed query parameters
@@ -83735,7 +83589,7 @@ function isNumber(x) {
 
 module.exports = parseOptions();
 
-},{"query-string":40}],81:[function(require,module,exports){
+},{"query-string":40}],80:[function(require,module,exports){
 'use strict';
 
 //DeviceOrientation+OrbitControls.js
@@ -84570,7 +84424,7 @@ THREE.OrbitControls = function (object, domElement, opts) {
 THREE.OrbitControls.prototype = Object.create(THREE.EventDispatcher.prototype);
 THREE.OrbitControls.prototype.constructor = THREE.OrbitControls;
 
-},{}],82:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 (function (global){
 "use strict";
 
@@ -98025,7 +97879,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 });
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],83:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: !0 });var GPU_BENCHMARK_SCORE_DESKTOP = ["772 - AMD Radeon HD 7290", "762 - AMD Radeon HD 8180", "760 - AMD Radeon HD 7310", "758 - AMD Radeon HD 7340", "754 - Intel HD Graphics (Bay Trail)", "712 - Intel HD Graphics (Ivy Bridge)", "708 - AMD Radeon HD 8210", "684 - Intel HD Graphics (Cherry Trail)", "683 - AMD Radeon HD 8250", "682 - AMD Radeon R6 (Mullins)", "681 - AMD Radeon HD 8240", "673 - AMD Radeon HD 8280", "670 - AMD Radeon R2 (Mullins/Beema/Carrizo-L)", "648 - Intel HD Graphics (Haswell)", "639 - Intel HD Graphics 400 (Braswell)", "638 - Intel HD Graphics (Braswell)", "637 - Intel HD Graphics 405 (Braswell)", "617 - Intel HD Graphics 500", "616 - Intel UHD Graphics 600", "615 - AMD Radeon HD 8330", "614 - AMD Radeon HD 8350G", "601 - AMD Radeon HD 8400", "597 - AMD Radeon HD 8450G", "588 - Intel HD Graphics 4200", "587 - Intel HD Graphics (Broadwell)", "586 - AMD Radeon R2 (Stoney Ridge)", "585 - AMD Radeon R3 (Mullins/Beema)", "584 - AMD Radeon R4 (Kaveri)", "583 - AMD Radeon R4 (Beema)", "582 - AMD Radeon R5 (Beema/Carrizo-L)", "580 - AMD Radeon R4 (Stoney Ridge)", "576 - Intel HD Graphics 4000", "575 - AMD Radeon HD 7480D", "567 - Intel HD Graphics 5300", "566 - Intel HD Graphics 505", "565 - Intel UHD Graphics 605", "536 - Intel HD Graphics 510", "535 - AMD Radeon HD 8610G", "534 - Intel HD Graphics 610", "533 - Intel HD Graphics 4400", "532 - Intel HD Graphics 515", "525 - AMD Radeon HD 8470D", "516 - AMD Radeon HD 8550G", "500 - Intel HD Graphics 5000", "497 - AMD Radeon HD 7660G", "496 - NVIDIA GeForce 710M", "493 - AMD Radeon R5 (Kaveri)", "492 - AMD Radeon R5 (Carrizo)", "491 - Intel HD Graphics 615", "490 - Intel UHD Graphics 615", "489 - Intel UHD Graphics 617", "481 - Qualcomm Adreno 630", "479 - Intel HD Graphics 5500", "477 - Intel HD Graphics 4600", "473 - Intel Iris Graphics 5100", "471 - NVIDIA Quadro K610M", "470 - Intel HD Graphics 6000", "464 - AMD Radeon R5 (Stoney Ridge)", "463 - AMD Radeon R5 M420", "462 - AMD Radeon R5 M315", "460 - AMD Radeon R5 M320", "457 - NVIDIA GeForce GT 720M", "456 - Intel Iris Graphics 6100", "455 - Intel HD Graphics 520", "454 - NVIDIA GeForce 820M", "453 - NVIDIA GeForce 910M", "451 - AMD Radeon RX Vega 3", "450 - AMD Radeon R5 M255", "449 - AMD Radeon R5 M430", "448 - AMD Radeon R5 M330", "445 - AMD Radeon HD 7560D", "439 - AMD Radeon HD 8650G", "423 - NVIDIA Quadro K1000M", "421 - AMD Radeon HD 7660D", "420 - AMD Radeon R6 M255DX", "413 - Intel HD Graphics 5600", "403 - AMD FirePro W2100", "394 - AMD Radeon R6 (Kaveri)", "382 - Qualcomm Adreno 680", "381 - AMD Radeon R6 (Carrizo)", "380 - Intel HD Graphics 620", "379 - Intel UHD Graphics 620", "378 - AMD Radeon R5 (Bristol Ridge)", "376 - Intel HD Graphics P530", "375 - Intel HD Graphics 530", "374 - Intel HD Graphics P630", "373 - Intel HD Graphics 630", "372 - Intel UHD Graphics P630", "371 - Intel UHD Graphics 630", "370 - Intel UHD Graphics G1 (Ice Lake 32 EU)", "369 - AMD Radeon RX Vega 6", "367 - AMD Radeon 520", "366 - AMD Radeon R7 M340", "359 - AMD Radeon R7 M440", "358 - AMD Radeon R8 M445DX", "355 - NVIDIA GeForce 920M", "353 - AMD Radeon R7 M360", "350 - AMD Radeon R7 M460", "348 - AMD Radeon R7 (Kaveri)", "347 - AMD Radeon R7 (Carrizo)", "346 - NVIDIA GeForce GT 640M", "345 - AMD Radeon R7 (Bristol Ridge)", "341 - AMD Radeon R7 M265", "337 - AMD FirePro M4100", "334 - NVIDIA GeForce GT 730M", "324 - AMD FirePro M4000", "322 - NVIDIA GeForce 825M", "320 - NVIDIA GeForce GT 735M", "317 - NVIDIA Quadro K2000M", "313 - Intel Iris Graphics 540", "312 - NVIDIA GeForce 920MX", "311 - Intel Iris Plus Graphics 640", "310 - NVIDIA GeForce MX110", "309 - NVIDIA GeForce 830M", "308 - Intel Iris Plus Graphics 645", "307 - AMD Radeon 530", "306 - Intel Iris Graphics 550", "305 - NVIDIA GeForce 930M", "304 - Intel Iris Plus Graphics 650", "303 - NVIDIA GeForce GT 740M", "302 - AMD Radeon R7 384 Cores (Kaveri Desktop)", "301 - Intel Iris Pro Graphics 5200", "300 - AMD Radeon R7 512 Cores (Kaveri Desktop)", "297 - NVIDIA GeForce GT 745M", "295 - NVIDIA GeForce 840M", "294 - NVIDIA Quadro M500M", "289 - AMD Radeon R7 M445", "288 - Intel Iris Plus Graphics 655", "287 - AMD Radeon R9 M375", "286 - AMD FirePro W4190M", "285 - NVIDIA Quadro M600M", "283 - NVIDIA GeForce 930MX", "282 - Intel Iris Plus Graphics G4 (Ice Lake 48 EU)", "281 - NVIDIA GeForce 940M", "280 - AMD Radeon RX Vega 8", "279 - NVIDIA Quadro K1100M", "278 - NVIDIA Quadro M520", "277 - NVIDIA GeForce 940MX", "276 - NVIDIA GeForce MX130", "275 - Intel Iris Pro Graphics 6200", "274 - NVIDIA GeForce GT 750M", "269 - AMD FirePro W4100", "268 - AMD FirePro W4170M", "266 - AMD Radeon R7 M465", "264 - AMD Radeon R9 M265X", "261 - NVIDIA GeForce 845M", "259 - NVIDIA GeForce GT 755M", "258 - AMD Radeon R7 250", "253 - NVIDIA Quadro K2100M", "252 - NVIDIA GeForce MX230", "251 - AMD FirePro M5100", "250 - AMD FirePro M6000", "248 - NVIDIA Quadro K3000M", "242 - AMD FirePro W5130M", "241 - NVIDIA Maxwell GPU Surface Book (940M, GDDR5)", "235 - AMD Radeon R9 M370X", "234 - AMD FirePro W5170M", "233 - NVIDIA Quadro K3100M", "222 - AMD Radeon R9 M470", "217 - Intel Iris Pro Graphics 580", "216 - Intel Iris Pro Graphics P580", "215 - AMD Radeon RX Vega 10", "214 - Intel Iris Plus Graphics G7 (Ice Lake 64 EU)", "213 - NVIDIA Quadro P500", "212 - NVIDIA Quadro K4000M", "207 - NVIDIA GeForce 945M", "201 - AMD Radeon RX Vega 11", "200 - NVIDIA Quadro M620", "199 - NVIDIA Quadro M1000M", "198 - NVIDIA GeForce GTX 850M", "197 - NVIDIA Quadro P520", "196 - AMD Radeon R9 M385X", "195 - AMD Radeon R9 M470X", "194 - AMD Radeon Pro 450", "193 - NVIDIA GeForce GTX 950M", "185 - NVIDIA GeForce GTX 860M", "184 - AMD Radeon Pro WX 3100 Mobile", "183 - AMD Radeon RX 540", "182 - AMD Radeon RX 540X", "180 - NVIDIA Quadro K4100M", "179 - NVIDIA Quadro K5000M", "178 - NVIDIA Quadro M2000M", "177 - NVIDIA GeForce MX150", "176 - NVIDIA GeForce MX250", "175 - NVIDIA Quadro P600", "174 - NVIDIA GeForce GT 1030 (Desktop)", "173 - AMD Radeon Pro 455", "172 - AMD Radeon Pro 555", "171 - AMD Radeon Pro 555X", "170 - AMD Radeon RX 550 (Laptop)", "169 - AMD Radeon RX 550X (Laptop)", "168 - NVIDIA Quadro P620", "167 - NVIDIA Quadro M1200", "162 - NVIDIA GeForce GTX 960M", "161 - AMD Radeon Pro WX 4130", "160 - AMD Radeon Pro 460", "159 - AMD Radeon Pro 560", "158 - AMD Radeon Pro 560X", "156 - AMD FirePro M6100", "155 - AMD Radeon R9 M390", "152 - AMD Radeon RX 460 (Laptop)", "145 - NVIDIA GeForce GTX 870M", "144 - NVIDIA Quadro M2200", "143 - AMD Radeon RX 560 (Laptop)", "142 - AMD Radeon RX 560X (Laptop)", "141 - NVIDIA GeForce GTX 965M", "139 - AMD Radeon Pro WX 4150", "138 - AMD Radeon RX 460 (Desktop)", "136 - NVIDIA Quadro P1000", "135 - NVIDIA Quadro K5100M", "131 - AMD Radeon R9 270X", "130 - NVIDIA GeForce GTX 950", "129 - NVIDIA GeForce GTX 1050 Max-Q", "128 - NVIDIA GeForce GTX 880M", "126 - AMD Radeon R7 370", "125 - AMD Radeon R9 M395", "124 - AMD FirePro W7170M", "123 - NVIDIA GeForce GTX 1050 (Laptop)", "122 - NVIDIA GeForce GTX 1050 (Desktop)", "121 - NVIDIA Quadro M3000M", "118 - AMD Radeon R9 M485X", "117 - AMD Radeon Pro Vega 16", "116 - AMD Radeon Pro WX Vega M GL", "115 - AMD Radeon RX Vega M GL / 870", "114 - NVIDIA GeForce GTX 1050 Ti Max-Q", "113 - AMD Radeon R9 M395X", "108 - NVIDIA GeForce GTX 970M", "107 - NVIDIA Quadro M4000M", "106 - NVIDIA Quadro P2000 Max-Q", "105 - NVIDIA Quadro P2000", "104 - NVIDIA GeForce GTX 1050 Ti (Desktop)", "103 - NVIDIA GeForce GTX 1050 Ti (Laptop)", "102 - NVIDIA GeForce GTX 960", "101 - AMD Radeon R9 380", "100 - AMD Radeon R9 280X", "99 - NVIDIA Quadro M5000M", "98 - AMD Radeon Pro Vega 20", "97 - AMD Radeon RX Vega M GH", "96 - NVIDIA GeForce GTX 980M", "89 - AMD Radeon R9 290X", "86 - NVIDIA Quadro T1000 Max-Q", "85 - NVIDIA Quadro T1000 (Laptop)", "84 - NVIDIA GeForce GTX 1650 Max-Q", "83 - AMD Radeon RX 470 (Laptop)", "82 - AMD Radeon RX 570 (Laptop)", "81 - AMD Radeon RX 570X (Laptop)", "80 - AMD Radeon RX 470 (Desktop)", "79 - AMD Radeon Pro WX 7100", "77 - NVIDIA Quadro P3000 Max-Q", "76 - NVIDIA GeForce GTX 1060 Max-Q", "75 - NVIDIA GeForce GTX 1650 (Laptop)", "74 - NVIDIA GeForce GTX 1650 (Desktop)", "73 - NVIDIA GeForce GTX 970", "72 - NVIDIA Quadro P3000", "71 - AMD Radeon RX Vega Mobile", "69 - AMD Radeon RX 580 (Laptop)", "68 - AMD Radeon RX 580X (Laptop)", "67 - NVIDIA Quadro P3200", "66 - NVIDIA Quadro P4000 Max-Q", "65 - NVIDIA GeForce GTX 1060 (Laptop)", "64 - AMD Radeon RX 480 (Desktop)", "63 - NVIDIA GeForce GTX 1650 Ti (Desktop)", "62 - NVIDIA Quadro T2000 Max-Q", "61 - NVIDIA Quadro T2000 (Laptop)", "60 - NVIDIA Quadro P4000", "59 - AMD Radeon RX 570 (Desktop)", "58 - NVIDIA GeForce GTX 1060 (Desktop)", "56 - AMD Radeon R9 390X", "55 - NVIDIA Quadro M5500", "54 - NVIDIA GeForce GTX 980 (Laptop)", "53 - AMD Radeon RX 580 (Desktop)", "52 - AMD Radeon RX 590 (Desktop)", "51 - NVIDIA GeForce GTX 980", "50 - AMD Radeon R9 Nano", "49 - AMD Radeon R9 Fury", "47 - NVIDIA Quadro P5000 Max-Q", "46 - NVIDIA GeForce GTX 1660 Ti Max-Q", "45 - NVIDIA GeForce GTX 1070 Max-Q", "44 - NVIDIA GeForce GTX 980 Ti", "43 - NVIDIA GeForce GTX 1660 Ti (Laptop)", "42 - NVIDIA Quadro P5000", "41 - NVIDIA Quadro P4200", "40 - NVIDIA GeForce GTX 1660 Ti (Desktop)", "39 - NVIDIA GeForce GTX 1070 (Laptop)", "38 - NVIDIA GeForce RTX 2060 Max-Q", "37 - AMD Radeon Pro Vega 56", "36 - NVIDIA GeForce GTX 1080 Max-Q", "35 - NVIDIA GeForce GTX 1070 (Desktop)", "34 - NVIDIA Quadro P5200", "32 - NVIDIA GeForce RTX 2060 (Laptop)", "31 - AMD Radeon RX Vega 56", "30 - NVIDIA Quadro RTX 3000 Max-Q", "29 - NVIDIA Quadro RTX 3000 (Laptop)", "28 - NVIDIA GeForce RTX 2070 Max-Q", "27 - NVIDIA GeForce GTX 1070 Ti (Desktop)", "26 - NVIDIA GeForce RTX 2060 (Desktop)", "25 - NVIDIA Quadro RTX 4000 Max-Q", "24 - NVIDIA Quadro RTX 4000 (Laptop)", "23 - NVIDIA GeForce GTX 1080 (Laptop)", "22 - AMD Radeon RX Vega 64", "21 - AMD Radeon RX 5700 (Desktop)", "20 - NVIDIA GeForce RTX 2060 Super", "19 - NVIDIA GeForce RTX 2070 (Laptop)", "18 - NVIDIA GeForce GTX 1080 (Desktop)", "17 - NVIDIA GeForce RTX 2070 (Desktop)", "16 - AMD Radeon RX 5700 XT (Desktop)", "15 - AMD Radeon VII", "14 - NVIDIA GeForce RTX 2070 Super", "13 - NVIDIA GeForce RTX 2080 Max-Q", "12 - NVIDIA GeForce GTX 1070 SLI (Laptop)", "11 - NVIDIA GeForce GTX 1070 SLI (Desktop)", "10 - NVIDIA GeForce GTX 1080 SLI (Laptop)", "9 - NVIDIA Titan X Pascal", "8 - NVIDIA GeForce GTX 1080 Ti (Desktop)", "7 - NVIDIA GeForce RTX 2080 (Laptop)", "6 - NVIDIA Quadro RTX 5000 Max-Q", "5 - NVIDIA Quadro RTX 5000 (Laptop)", "4 - NVIDIA GeForce RTX 2080 (Desktop)", "3 - NVIDIA GeForce RTX 2080 Super", "2 - NVIDIA GeForce RTX 2080 Ti (Desktop)", "1 - NVIDIA Titan RTX"],
     GPU_BENCHMARK_SCORE_MOBILE = ["915 - ARM Mali-200", "914 - Qualcomm Adreno 200", "913 - PowerVR SGX530", "912 - PowerVR SGX531", "911 - PowerVR SGX535", "910 - Vivante GC800", "909 - Qualcomm Adreno 203", "908 - Qualcomm Adreno 205", "906 - PowerVR SGX540", "904 - NVIDIA GeForce ULP (Tegra 2)", "903 - ARM Mali-400 MP", "902 - ARM Mali-400 MP2", "901 - Vivante GC1000+ Dual-Core", "900 - Qualcomm Adreno 220", "899 - Broadcom VideoCore-IV", "898 - NVIDIA GeForce ULP (Tegra 3)", "897 - ARM Mali-400 MP4", "896 - Vivante GC4000", "895 - Qualcomm Adreno 225", "887 - Qualcomm Adreno 302", "886 - Vivante GC7000UL", "885 - ARM Mali-T720", "884 - Qualcomm Adreno 304", "883 - Qualcomm Adreno 305", "882 - Qualcomm Adreno 306", "881 - Qualcomm Adreno 308", "880 - PowerVR SGX544", "879 - ARM Mali-T720 MP2", "878 - PowerVR SGX544MP2", "877 - PowerVR SGX545", "874 - PowerVR SGX543MP2", "864 - PowerVR SGX543MP3", "856 - ARM Mali-T830 MP1", "855 - ARM Mali-450 MP4", "854 - ARM Mali-T720 MP4", "853 - PowerVR GE8100", "852 - PowerVR GE8300", "851 - PowerVR GE8320", "850 - ARM Mali-T760 MP2", "849 - Qualcomm Adreno 320", "848 - ARM Mali-T624", "847 - PowerVR SGX543MP4", "820 - ARM Mali-T830 MP2", "819 - Qualcomm Adreno 405", "818 - PowerVR G6200", "817 - NVIDIA GeForce Tegra 4", "812 - ARM Mali-T604 MP4", "806 - ARM Mali-T830 MP3", "805 - ARM Mali-T860 MP2", "801 - Qualcomm Adreno 504", "800 - Qualcomm Adreno 505", "799 - PowerVR GE8322 / IMG8322", "798 - Qualcomm Adreno 506", "797 - Qualcomm Adreno 508", "796 - Qualcomm Adreno 509", "795 - ARM Mali-T628 MP4", "794 - PowerVR SGX554MP4", "756 - ARM Mali-T760 MP4", "755 - ARM Mali-T628 MP6", "754 - Intel HD Graphics (Bay Trail)", "753 - PowerVR G6400", "752 - PowerVR GX6250", "751 - PowerVR G6430", "750 - Qualcomm Adreno 330", "749 - Qualcomm Adreno 510", "748 - Qualcomm Adreno 512", "747 - Qualcomm Adreno 612", "684 - Intel HD Graphics (Cherry Trail)", "671 - ARM Mali-G51 MP4", "669 - Qualcomm Adreno 616", "668 - Qualcomm Adreno 618", "667 - Qualcomm Adreno 418", "647 - Qualcomm Adreno 420", "646 - PowerVR GX6450", "636 - ARM Mali-T880 MP2", "635 - ARM Mali-T760 MP6", "603 - ARM Mali-T880 MP4", "602 - ARM Mali-G72 MP3", "581 - Qualcomm Adreno 430", "578 - ARM Mali-G71 MP2", "577 - ARM Mali-T760 MP8", "531 - ARM Mali-T880 MP12", "530 - Apple A9 / PowerVR GT7600", "529 - NVIDIA Tegra K1 Kepler GPU", "528 - PowerVR GXA6850", "527 - Qualcomm Adreno 530", "488 - ARM Mali-G71 MP8", "487 - ARM Mali-G72 MP12", "486 - ARM Mali-G71 MP20", "485 - ARM Mali-G72 MP18", "484 - Qualcomm Adreno 540", "483 - ARM Mali-G76 MP10", "482 - ARM Mali-G76 MP12", "481 - Qualcomm Adreno 630", "480 - Qualcomm Adreno 640", "465 - Apple A10 Fusion GPU / PowerVR", "377 - NVIDIA Tegra X1 Maxwell GPU", "352 - Apple A9X / PowerVR Series 7XT", "316 - Apple A10X Fusion GPU / PowerVR", "315 - Apple A11 Bionic GPU", "314 - Apple A12 Bionic GPU", "284 - Apple A12X Bionic GPU"],
@@ -98109,7 +97963,147 @@ Object.defineProperty(exports, "__esModule", { value: !0 });var GPU_BENCHMARK_SC
   }return { tier: t, type: s };
 };exports.getGPUTier = getGPUTier;
 
-},{}],84:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
+'use strict';
+
+var Emitter = require('events/');
+
+var allEvents = ['touchstart', 'touchmove', 'touchend', 'touchcancel', 'mousedown', 'mousemove', 'mouseup'];
+
+var ROOT = { left: 0, top: 0 };
+
+module.exports = function handler(element, opt) {
+  opt = opt || {};
+  element = element || window;
+
+  var emitter = new Emitter();
+  emitter.target = opt.target || element;
+
+  var touch = null;
+  var filtered = opt.filtered;
+
+  var events = allEvents;
+
+  // only a subset of events
+  if (typeof opt.type === 'string') {
+    events = allEvents.filter(function (type) {
+      return type.indexOf(opt.type) === 0;
+    });
+  }
+
+  // grab the event functions
+  var funcs = events.map(function (type) {
+    var name = normalize(type);
+    var fn = function fn(ev) {
+      var client = ev;
+      if (/^touch/.test(type)) {
+        if (/^touchend$/.test(type) && opt.preventSimulated !== false) {
+          ev.preventDefault();
+        }
+
+        if (filtered) {
+          client = getFilteredTouch(ev, type);
+        } else {
+          client = getTargetTouch(ev.changedTouches, emitter.target);
+        }
+      }
+
+      if (!client) {
+        return;
+      }
+
+      // get 2D position
+      var pos = offset(client, emitter.target);
+
+      // dispatch the normalized event to our emitter
+      emitter.emit(name, ev, pos);
+    };
+    return { type: type, listener: fn };
+  });
+
+  emitter.enable = function enable() {
+    funcs.forEach(listeners(element, true));
+
+    return emitter;
+  };
+
+  emitter.disable = function dispose() {
+    touch = null;
+    funcs.forEach(listeners(element, false));
+
+    return emitter;
+  };
+
+  // initially enabled
+  emitter.enable();
+  return emitter;
+
+  function getFilteredTouch(ev, type) {
+    var client;
+
+    // clear touch if it was lifted or canceled
+    if (touch && /^touch(end|cancel)/.test(type)) {
+      // allow end event to trigger on tracked touch
+      client = getTouch(ev.changedTouches, touch.identifier || 0);
+      if (client) {
+        touch = null;
+      }
+    } else if (!touch && /^touchstart/.test(type)) {
+      // not yet tracking any touches, pick one from target
+      touch = client = getTargetTouch(ev.changedTouches, emitter.target);
+    } else if (touch) {
+      // get the tracked touch
+      client = getTouch(ev.changedTouches, touch.identifier || 0);
+    }
+
+    return client;
+  }
+};
+
+// get 2D client position of touch/mouse event
+function offset(ev, target) {
+  var cx = ev.clientX || 0;
+  var cy = ev.clientY || 0;
+  var rect = bounds(target);
+  return [cx - rect.left, cy - rect.top];
+}
+
+// since we are adding events to a parent we can't rely on targetTouches
+function getTargetTouch(touches, target) {
+  return Array.prototype.slice.call(touches).filter(function (t) {
+    return t.target === target;
+  })[0] || touches[0];
+}
+
+function getTouch(touches, id) {
+  for (var i = 0; i < touches.length; i++) {
+    if (touches[i].identifier === id) {
+      return touches[i];
+    }
+  }
+  return null;
+}
+
+function listeners(e, enabled) {
+  return function (data) {
+    if (enabled) e.addEventListener(data.type, data.listener, { passive: true });else e.removeEventListener(data.type, data.listener, { passive: true });
+  };
+}
+
+// normalize touchstart/mousedown to "start" etc
+function normalize(event) {
+  return event.replace(/^(touch|mouse)/, '').replace(/up$/, 'end').replace(/down$/, 'start');
+}
+
+function bounds(element) {
+  if (element === window || element === document || element === document.body) {
+    return ROOT;
+  } else {
+    return element.getBoundingClientRect();
+  }
+}
+
+},{"events/":7}],84:[function(require,module,exports){
 (function (process,global){
 'use strict';
 
@@ -98136,7 +98130,7 @@ var _require2 = require('../vendor/detect-gpu.cjs'),
 var _exportGLTF = require('../util/exportGLTF');
 var isMobile = require('../util/isMobile.js');
 var getRenderer = require('../util/getRenderer');
-var createTouches = require('touches');
+var createTouches = require('../vendor/touches/index.js');
 var query = require('../util/query');
 var noop = function noop() {};
 var Stats = require('stats.js');
@@ -98171,6 +98165,7 @@ module.exports = function (_EventEmitter) {
       _this.frameCount++;
 
       if (_this._checkReady()) _this.emit('show');
+      if (_this.frameCount === 2) _this.emit('frame2');
       _this.stats.end();
     };
 
@@ -98294,15 +98289,50 @@ module.exports = function (_EventEmitter) {
       }
     });
 
+    if (_this.cargo) {
+      // eslint-disable-next-line no-undef
+      Cargo.Event.on('homepage_loaded', function (e) {
+        console.log('homepage_loaded');
+        // this.stop();
+        setTimeout(function () {
+          _this.resize();
+        }, 10);
+        _this.resize();
+      });
+
+      // eslint-disable-next-line no-undef
+      Cargo.Event.on('mobile_breakpoint_triggered', function (e) {
+        _this.resize();
+      });
+
+      _this.on('frame2', function () {
+        _this.resize();
+      });
+      _this.hideOverlay();
+
+      // mobileTitle.firstElementChild.href = "Home-webgl";
+
+      // eslint-disable-next-line no-undef
+      Cargo.Event.on('add_history', function (e) {
+        console.log('cargo history', e);
+        if (e === 'Home-webgl') {
+          _this.moveCargoCanvas();
+          _this.start();
+        } else {
+          _this.stop();
+        }
+      });
+    }
+
     // handle resize events
     window.addEventListener('resize', function () {
-      return _this.resize();
+      _this.resize();
     });
     if (_this.cargo) _this.viewport.addEventListener('resize', function () {
-      return _this.resize();
+      _this.resize();
     });
     window.addEventListener('orientationchange', function () {
-      return _this.resize();
+      _this.resize();
     });
 
     // force an initial resize event
@@ -98395,12 +98425,14 @@ module.exports = function (_EventEmitter) {
       if (this.cargo) {
         this.resize();
         var webglContainer = document.getElementById('webgl');
-        webglContainer.parentNode.parentNode.childNodes.forEach(function (el) {
-          if (el.classList && el.classList.contains('container_width')) {
-            console.log('ellement to hide', el);
-            el.style.visibility = 'hidden';
-          }
-        });
+        if (webglContainer !== null) {
+          webglContainer.parentNode.parentNode.childNodes.forEach(function (el) {
+            if (el.classList && el.classList.contains('container_width')) {
+              console.log('ellement to hide', el);
+              el.style.visibility = 'hidden';
+            }
+          });
+        }
       }
       if (this.dev && this.frameCount === 0) {
         this.debug();
@@ -98415,6 +98447,7 @@ module.exports = function (_EventEmitter) {
   }, {
     key: 'stop',
     value: function stop() {
+      this.log('app stop');
       if (this._rafID === null) return;
       window.cancelAnimationFrame(this._rafID);
       this._rafID = null;
@@ -98563,7 +98596,12 @@ module.exports = function (_EventEmitter) {
   }, {
     key: 'hideOverlay',
     value: function hideOverlay() {
-      this.aside.style.visibility = this.aside.style.visibility === 'hidden' ? 'visible' : 'hidden';
+      if (this.cargo) {
+        this.aside.style.visibility = 'hidden';
+        this.aside.style.display = 'none';
+      } else {
+        this.aside.style.visibility = this.aside.style.visibility === 'hidden' ? 'visible' : 'hidden';
+      }
     }
   }, {
     key: 'nameMeshes',
@@ -98602,10 +98640,21 @@ module.exports = function (_EventEmitter) {
       // });
     }
   }, {
+    key: 'moveCargoCanvas',
+    value: function moveCargoCanvas() {
+      var background = this.viewport.parentNode.parentNode.parentNode.getElementsByClassName('page_background')[0];
+      background.style.zIndex = '1';
+      var webglContainer = document.getElementById('webgl');
+      webglContainer.style.cssText = '\n      position: absolute;\n      height: 100%;\n      right: 0px;\n      ';
+      webglContainer.classList.add('container_width');
+      webglContainer.parentNode.parentNode.firstElementChild.style.visibility = 'hidden';
+      background.appendChild(webglContainer);
+    }
+  }, {
     key: 'log',
     value: function log() {
       // logging for debug only
-      if (this.dev) {
+      if (this.dev || this.cargo) {
         var css = 'background: #ff00ff; color: #ff00ff';
         var text = ' ';
         var cssArray = ['%c '.concat(text), css];
@@ -98656,7 +98705,7 @@ function defaultFile(ext) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../util/exportGLTF":75,"../util/getRenderer":76,"../util/isMobile.js":77,"../util/query":80,"../vendor/detect-gpu.cjs":83,"./physics/physics-interface":94,"_process":1,"defined":5,"events":7,"object-assign":31,"postprocessing":38,"right-now":41,"stats.js":45,"touches":60}],85:[function(require,module,exports){
+},{"../util/exportGLTF":74,"../util/getRenderer":75,"../util/isMobile.js":76,"../util/query":79,"../vendor/detect-gpu.cjs":82,"../vendor/touches/index.js":83,"./physics/physics-interface":94,"_process":1,"defined":5,"events":7,"object-assign":31,"postprocessing":38,"right-now":41,"stats.js":45}],85:[function(require,module,exports){
 'use strict';
 
 // Custom Geometry - using 3 triangles each. No UVs, no normals currently.
@@ -99194,7 +99243,7 @@ var createMaterial = function createMaterial(envMap) {
 
 module.exports = { createMaterial: createMaterial, materialAssets: materialAssets };
 
-},{"../../context":70}],89:[function(require,module,exports){
+},{"../../context":69}],89:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -99688,7 +99737,7 @@ var BPoseObj = function (_THREE$Object3D) {
 module.exports = { BPoseObj: BPoseObj, bPoseObjAssets: bPoseObjAssets };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../context":70}],92:[function(require,module,exports){
+},{"../../context":69}],92:[function(require,module,exports){
 "use strict";
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -99902,7 +99951,7 @@ function createLightMesh() {
 
 module.exports = { SpotLight: SpotLight, PointLight: PointLight };
 
-},{"../../context":70,"defined":5,"object-assign":31}],94:[function(require,module,exports){
+},{"../../context":69,"defined":5,"object-assign":31}],94:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -100102,7 +100151,7 @@ module.exports = function () {
   return Physics;
 }();
 
-},{"./physicsSim.js":95,"webworkify":66}],95:[function(require,module,exports){
+},{"./physicsSim.js":95,"webworkify":65}],95:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -100315,7 +100364,7 @@ module.exports = function (self) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../vendor/cannon":82,"../scene/PhysicsTest-sim":105,"defined":5}],96:[function(require,module,exports){
+},{"../../vendor/cannon":81,"../scene/PhysicsTest-sim":105,"defined":5}],96:[function(require,module,exports){
 'use strict';
 
 var _require = require('postprocessing'),
@@ -100358,7 +100407,7 @@ module.exports = function basicBloom() {
   webgl.composer.addPass(effectPass);
 };
 
-},{"../../context":70,"postprocessing":38}],97:[function(require,module,exports){
+},{"../../context":69,"postprocessing":38}],97:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -100492,7 +100541,7 @@ module.exports = function basicBloom() {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../context":70,"./datamoshEffect":100,"defined":5,"postprocessing":38}],98:[function(require,module,exports){
+},{"../../context":69,"./datamoshEffect":100,"defined":5,"postprocessing":38}],98:[function(require,module,exports){
 'use strict';
 
 var _require = require('postprocessing'),
@@ -100522,7 +100571,7 @@ module.exports = function basicSMAA() {
   webgl.composer.addPass(effectPass);
 };
 
-},{"../../context":70,"postprocessing":38}],99:[function(require,module,exports){
+},{"../../context":69,"postprocessing":38}],99:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -100695,7 +100744,7 @@ module.exports = function basicBloom() {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../context":70,"defined":5,"postprocessing":38}],100:[function(require,module,exports){
+},{"../../context":69,"defined":5,"postprocessing":38}],100:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -100957,7 +101006,7 @@ FeedbackTest.sceneName = name;
 
 module.exports = FeedbackTest;
 
-},{"../../context":70,"../../util/query":80,"../postProcessing/basicDatamosh":97,"./SketchScene":107,"defined":5}],102:[function(require,module,exports){
+},{"../../context":69,"../../util/query":79,"../postProcessing/basicDatamosh":97,"./SketchScene":107,"defined":5}],102:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -101155,7 +101204,7 @@ GoldenFlock.sceneName = name;
 
 module.exports = GoldenFlock;
 
-},{"../../context":70,"../../util/query":80,"../objects/BoidSim":90,"../postProcessing/basicBloom":96,"./SketchScene":107,"defined":5}],103:[function(require,module,exports){
+},{"../../context":69,"../../util/query":79,"../objects/BoidSim":90,"../postProcessing/basicBloom":96,"./SketchScene":107,"defined":5}],103:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -101289,7 +101338,7 @@ Honeycomb.sceneName = name;
 
 module.exports = Honeycomb;
 
-},{"../../context":70,"../../util/query":80,"../postProcessing/basicBloom":96,"../shaders/honey.shader":113,"./SketchScene":107,"shader-reload/three/LiveShaderMaterial":43}],104:[function(require,module,exports){
+},{"../../context":69,"../../util/query":79,"../postProcessing/basicBloom":96,"../shaders/honey.shader":113,"./SketchScene":107,"shader-reload/three/LiveShaderMaterial":43}],104:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -101748,7 +101797,7 @@ PbrTest.sceneName = name;
 module.exports = PbrTest;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../context":70,"../../util/query":80,"../materialModifiers/ParallaxOclusionMaterialModifier":86,"../materials/IceMaterial":87,"../materials/createPbrMaterial":88,"../objects/lights":93,"../postProcessing/basicSSAO":99,"./SketchScene":107,"defined":5}],105:[function(require,module,exports){
+},{"../../context":69,"../../util/query":79,"../materialModifiers/ParallaxOclusionMaterialModifier":86,"../materials/IceMaterial":87,"../materials/createPbrMaterial":88,"../objects/lights":93,"../postProcessing/basicSSAO":99,"./SketchScene":107,"defined":5}],105:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -101875,7 +101924,7 @@ module.exports = function (_EventEmitter) {
   return PhysicsTestSim;
 }(EventEmitter);
 
-},{"../../vendor/cannon.js":82,"events":7}],106:[function(require,module,exports){
+},{"../../vendor/cannon.js":81,"events":7}],106:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -101959,7 +102008,7 @@ PhysicsTest.sceneName = name;
 
 module.exports = PhysicsTest;
 
-},{"../../context":70,"../postProcessing/basicSMAA":98,"./SketchScene":107}],107:[function(require,module,exports){
+},{"../../context":69,"../postProcessing/basicSMAA":98,"./SketchScene":107}],107:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -102170,7 +102219,7 @@ SketchScene.queueAssets = function () {};
 module.exports = SketchScene;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../context":70,"../postProcessing/basicSMAA":98,"defined":5,"orbit-controls":33}],108:[function(require,module,exports){
+},{"../../context":69,"../postProcessing/basicSMAA":98,"defined":5,"orbit-controls":33}],108:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -102680,7 +102729,7 @@ TranslucentTest.sceneName = name;
 module.exports = TranslucentTest;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../context":70,"../../util/query":80,"../materialModifiers/ParallaxOclusionMaterialModifier":86,"../materials/IceMaterial":87,"../materials/createPbrMaterial":88,"../objects/lights":93,"../postProcessing/basicSSAO":99,"./SketchScene":107,"defined":5}],110:[function(require,module,exports){
+},{"../../context":69,"../../util/query":79,"../materialModifiers/ParallaxOclusionMaterialModifier":86,"../materials/IceMaterial":87,"../materials/createPbrMaterial":88,"../objects/lights":93,"../postProcessing/basicSSAO":99,"./SketchScene":107,"defined":5}],110:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -102922,7 +102971,7 @@ BoidTest.sceneName = name;
 
 module.exports = BoidTest;
 
-},{"../../context":70,"../../util/query":80,"../materials/createPbrMaterial":88,"../objects/BoidSim":90,"../objects/ground":92,"../objects/lights":93,"../postProcessing/basicBloom":96,"./SketchScene":107,"defined":5}],111:[function(require,module,exports){
+},{"../../context":69,"../../util/query":79,"../materials/createPbrMaterial":88,"../objects/BoidSim":90,"../objects/ground":92,"../objects/lights":93,"../postProcessing/basicBloom":96,"./SketchScene":107,"defined":5}],111:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -103004,7 +103053,7 @@ Bpose.sceneName = name;
 
 module.exports = Bpose;
 
-},{"../../context":70,"../../util/query":80,"../objects/bposeObj":91,"../postProcessing/basicBloom":96,"./SketchScene":107,"defined":5}],112:[function(require,module,exports){
+},{"../../context":69,"../../util/query":79,"../objects/bposeObj":91,"../postProcessing/basicBloom":96,"./SketchScene":107,"defined":5}],112:[function(require,module,exports){
 'use strict';
 
 // ported from https://jsfiddle.net/2awLpf5u/1/ https://github.com/vanruesc/postprocessing/issues/145
@@ -103028,4 +103077,4 @@ module.exports = require('shader-reload')({
   fragment: glslify(["#define GLSLIFY 1\nuniform vec3 colorA;\nuniform vec3 colorB;\nuniform float time;\n\nvarying vec3 vNormal;\n\n// Because this is glslify, you can import\n// GLSL modules from npm like 'glsl-noise'\n\n// Also, using glslify-hex, you can use vec3(1.,0.,1.) to create vec3 colors\n\nvoid main () {\n  vec3 norm = vNormal * 0.5 + 0.5;\n  float t = norm.x;\n  t *= sin(time * 5.0 + norm.x * 10.0) * 0.5 + 0.5;\n  vec3 color = mix(colorA, colorB, t);\n  gl_FragColor = vec4(color, 1.0);\n  // gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n\n}"])
 });
 
-},{"glslify":23,"path":37,"shader-reload":44}]},{},[71]);
+},{"glslify":23,"path":37,"shader-reload":44}]},{},[70]);

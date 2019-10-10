@@ -6,7 +6,7 @@ const { getGPUTier } = require('../vendor/detect-gpu.cjs');
 const exportGLTF = require('../util/exportGLTF');
 const isMobile = require('../util/isMobile.js');
 const getRenderer = require('../util/getRenderer');
-const createTouches = require('touches');
+const createTouches = require('../vendor/touches/index.js');
 const query = require('../util/query');
 const noop = () => {};
 const Stats = require('stats.js');
@@ -111,10 +111,41 @@ module.exports = class WebGLApp extends EventEmitter {
       }
     });
 
+    if ( this.cargo ) {
+      // eslint-disable-next-line no-undef
+      Cargo.Event.on('homepage_loaded', e => {
+        console.log('homepage_loaded');
+        // this.stop();
+        setTimeout( () => { this.resize(); }, 10 );
+        this.resize();
+      });
+
+      // eslint-disable-next-line no-undef
+      Cargo.Event.on('mobile_breakpoint_triggered', e => {
+        this.resize();
+      });
+
+      this.on( 'frame2', () => { this.resize(); });
+      this.hideOverlay();
+
+      // mobileTitle.firstElementChild.href = "Home-webgl";
+
+      // eslint-disable-next-line no-undef
+      Cargo.Event.on('add_history', e => {
+        console.log('cargo history', e );
+        if ( e === 'Home-webgl' ) {
+          this.moveCargoCanvas();
+          this.start();
+        } else {
+          this.stop();
+        }
+      } );
+    }
+
     // handle resize events
-    window.addEventListener('resize', () => this.resize() );
-    if ( this.cargo ) this.viewport.addEventListener( 'resize', () => this.resize() );
-    window.addEventListener('orientationchange', () => this.resize() );
+    window.addEventListener('resize', () => { this.resize(); } );
+    if ( this.cargo ) this.viewport.addEventListener( 'resize', () => { this.resize(); } );
+    window.addEventListener('orientationchange', () => { this.resize(); } );
 
     // force an initial resize event
     this.resize();
@@ -179,6 +210,7 @@ module.exports = class WebGLApp extends EventEmitter {
     this.frameCount++;
 
     if ( this._checkReady() ) this.emit('show');
+    if ( this.frameCount === 2 ) this.emit('frame2');
     this.stats.end();
   }
 
@@ -212,12 +244,14 @@ module.exports = class WebGLApp extends EventEmitter {
     if ( this.cargo ) {
       this.resize();
       const webglContainer = document.getElementById('webgl');
-      webglContainer.parentNode.parentNode.childNodes.forEach( el => {
-        if ( el.classList && el.classList.contains('container_width') ) {
-          console.log('ellement to hide', el);
-          el.style.visibility = 'hidden';
-        }
-      });
+      if ( webglContainer !== null ) {
+        webglContainer.parentNode.parentNode.childNodes.forEach( el => {
+          if ( el.classList && el.classList.contains('container_width') ) {
+            console.log('ellement to hide', el);
+            el.style.visibility = 'hidden';
+          }
+        });
+      }
     }
     if ( this.dev && this.frameCount === 0 ) {
       this.debug();
@@ -231,6 +265,7 @@ module.exports = class WebGLApp extends EventEmitter {
   }
 
   stop () {
+    this.log( 'app stop' );
     if (this._rafID === null) return;
     window.cancelAnimationFrame(this._rafID);
     this._rafID = null;
@@ -355,7 +390,12 @@ module.exports = class WebGLApp extends EventEmitter {
   }
 
   hideOverlay() {
-    this.aside.style.visibility = (this.aside.style.visibility === 'hidden') ? 'visible' : 'hidden';
+    if ( this.cargo ) {
+      this.aside.style.visibility = 'hidden';
+      this.aside.style.display = 'none';
+    } else {
+      this.aside.style.visibility = (this.aside.style.visibility === 'hidden') ? 'visible' : 'hidden';
+    }
   }
 
   _traverse = (fn, ...args) => {
@@ -407,10 +447,23 @@ module.exports = class WebGLApp extends EventEmitter {
     //   key: 'BStem_left'
     // });
   }
+  moveCargoCanvas() {
+    const background = this.viewport.parentNode.parentNode.parentNode.getElementsByClassName('page_background')[0];
+    background.style.zIndex = '1';
+    const webglContainer = document.getElementById('webgl');
+    webglContainer.style.cssText = `
+      position: absolute;
+      height: 100%;
+      right: 0px;
+      `;
+    webglContainer.classList.add('container_width');
+    webglContainer.parentNode.parentNode.firstElementChild.style.visibility = 'hidden';
+    background.appendChild( webglContainer );
+  }
 
   log() {
     // logging for debug only
-    if ( this.dev ) {
+    if ( this.dev || this.cargo ) {
       const css = 'background: #ff00ff; color: #ff00ff';
       const text = ' ';
       let cssArray = ['%c '.concat(text), css];

@@ -1,0 +1,121 @@
+<div id="webgl">
+  <style>
+  #main-canvas{
+    position: fixed !important;
+    display: block;
+    max-height: 100%;
+    max-width: 100%;
+  }
+  
+  p {
+    margin: 0;
+    margin-left: 1%;
+  }
+  
+  h3 {
+    margin: 0px;
+    margin-left: 1%;
+  }
+  h4 {
+    margin-top: 0em;
+    margin-left: 1%;
+  }
+  
+  div[role="main"] {
+    height: 100%;
+  }
+  
+  div[role="complementary"] {
+    padding: 0 5px;
+    position: fixed;
+    right: 0;
+    top: 0;
+  }
+  
+  .info {
+    color: rgb(95, 95, 95);
+    font-size: 75%;
+    left: 5px;
+    position: fixed;
+    bottom: 5px;
+    width: 47%;
+    background-color: rgba(0, 0, 0, 0.32);
+  }
+  
+  .github {
+    bottom: 15px;
+    left: 15px;
+    opacity: 0.075;
+    position: fixed;
+    transition: opacity 0.2s;
+  }
+  
+  .github:active, .github:hover {
+    opacity: 0.25;
+  }
+  
+  #viewport p {
+    left: 0;
+    position: fixed;
+    right: 0;
+    text-align: center;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
+  #sceneLinks {
+    line-height: 100%;
+    margin-bottom: 0em;
+  }
+  
+  #loadingPage {
+    background-color: black;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    z-index: 1;
+    display: block;
+  }
+  #loadingText {
+    position: relative;
+    top: 40%;
+    text-align: center;
+  }
+  #loading {
+    /* display: block; */
+    /* position: relative; */
+    /* color: white; */
+    /* top: 322px; */
+    margin: auto;
+    font-size: 2em;
+  }
+  </style>
+  
+      <div id="loadingPage" style="opacity: 0; display: none;">
+        <div id="loadingText">
+          
+            <p id="loading">loading</p>
+            <div class="lds-css ng-scope">
+              <div style="width:100%;height:100%" class="lds-eclipse">
+                <div>
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+      
+      <div role="main" id="viewport">
+        <canvas class="main-canvas" style="display: block; position: fixed; z-index: -1000; width: 621px; height: 0px;" __spector_context_type="webgl" width="621" height="0"></canvas>
+      <div id="stopped" style="position: fixed; width: 100%; height: 100%; z-index: 2147483647; background-color: black; opacity: 0.5; display: none; top: 0px;"></div></div>
+        
+      <div role="complementary" id="aside" style="visibility: hidden; display: none;">
+        <div class="info" id="info">
+  
+          <h3>Bforest Three.js Sketches</h3>
+  
+          <h4 id="title"> Title </h4>
+          <p id="sceneLinks"> Sketches: <a title="Golden Flocking" href="https://benforest.cargo.site/?scene=goldenflock">1</a></p>
+          <p id="hide">Press ALT to hide the overlay</p>
+        </div>
+      <div style="position: fixed; top: 0px; left: 0px; cursor: pointer; opacity: 0.9; z-index: 10000;"><canvas width="80" height="48" style="width: 80px; height: 48px; display: block;"></canvas><canvas width="80" height="48" style="width: 80px; height: 48px; display: none;"></canvas><canvas width="80" height="48" style="width: 80px; height: 48px; display: none;"></canvas></div></div>
