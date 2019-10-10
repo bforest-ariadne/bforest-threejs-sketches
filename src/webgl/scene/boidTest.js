@@ -46,7 +46,6 @@ if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
   queueAssets();
 }
 
-
 class BoidTest extends SketchScene {
   constructor () {
     super(name);
@@ -111,9 +110,14 @@ class BoidTest extends SketchScene {
     boidMat.flatShading = false;
     boidMat.metalness = boidMat.roughness = 1;
     boidMat.envMap = env.target.texture;
+
     const cScale = 30;
-    const cylinderGeo = new THREE.CylinderBufferGeometry( 0.25 * cScale, 0.25 * cScale, 1 * cScale, 8, 1 );
-    cylinderGeo.lookAt( new THREE.Vector3(0, -1, 0) );
+    const cylinderGeo = new THREE.CylinderBufferGeometry( 0.25 * cScale, 0.0 * cScale, 1 * cScale, 8, 1 );
+    // cylinderGeo.lookAt( new THREE.Vector3(0, 0, -1) );
+    cylinderGeo.rotateZ(Math.PI / 2);
+    // const boxGeo = new THREE.BoxBufferGeometry( 10, 10, 20, 1, 1, 1 );
+    const boxGeo = new THREE.BoxBufferGeometry( 20, 10, 10, 1, 1, 1 );
+    const normalMat = new THREE.MeshNormalMaterial();
 
     this.boidSim = new BoidSim( webgl.renderer, {
       width: this.pars.boids.width,
@@ -122,13 +126,6 @@ class BoidTest extends SketchScene {
       // geometry: createBirdInstanceGeometry( this.pars.boids.width * this.pars.boids.width ),
       geometry: cylinderGeo,
       material: boidMat
-      // material: new THREE.MeshStandardMaterial({
-      //   side: THREE.DoubleSide,
-      //   flatShading: true,
-      //   metalness: 1,
-      //   roughness: 0.5,
-      //   envMap: env.target.texture
-      // })
     });
     this.boidSim.birdMesh.castShadow = true;
     this.add( this.boidSim.birdMesh );

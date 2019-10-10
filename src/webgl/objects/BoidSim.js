@@ -114,7 +114,7 @@ module.exports = class BoidSim {
       } );
 
       var birdMesh = new THREE.Mesh( geometry, birdMat );
-      birdMesh.rotation.y = Math.PI / 2;
+      // birdMesh.rotation.y = Math.PI / 2;
       birdMesh.matrixAutoUpdate = true;
       birdMesh.updateMatrix();
 
@@ -134,7 +134,7 @@ module.exports = class BoidSim {
         };
 
         birdMesh = new THREE.Mesh( geometry, birdMat );
-        birdMesh.rotation.y = Math.PI / 2;
+        // birdMesh.rotation.y = Math.PI / 2;
         birdMesh.matrixAutoUpdate = true;
         birdMesh.updateMatrix();
 

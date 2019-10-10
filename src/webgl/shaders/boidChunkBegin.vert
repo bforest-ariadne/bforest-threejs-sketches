@@ -15,6 +15,7 @@
 
 	newPosition = mat3( modelMatrix ) * newPosition;
 
+	mat3 rot = calcLookAtMatrix( vec3(0,0,0), velocity, 0.  );
 
 	velocity.z *= -1.;
 	float xz = length( velocity.xz );
@@ -40,11 +41,15 @@
 		0     , 0    , 1
 	);
 
-	#if !defined(FLAT_SHADED) && defined(STANDARD)
-		transformedNormal = normalMatrix * objectNormal;
-		transformedNormal = maty * matz  * transformedNormal;
-		//transformedNormal = normalMatrix * transformedNormal;
-		vNormal = normalize( transformedNormal );
+
+
+	// #if !defined(FLAT_SHADED) && defined(STANDARD)
+	#if !defined(FLAT_SHADED) 
+		// transformedNormal = objectNormal;
+		// transformedNormal = maty * matz  * transformedNormal;
+		// transformedNormal = rot * transformedNormal;
+		// transformedNormal = normalMatrix * transformedNormal;
+		vNormal = normalize( normalMatrix * maty * matz  * objectNormal );
 	#endif
 
 	newPosition =  maty * matz * newPosition;
