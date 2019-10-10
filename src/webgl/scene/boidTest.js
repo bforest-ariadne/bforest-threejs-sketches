@@ -76,7 +76,7 @@ class BoidTest extends SketchScene {
 
     // webgl.scene.fog = new THREE.Fog( 0x000000, 1, 1000 );
     webgl.scene.background = new THREE.Color( 0x000000 );
-    // webgl.scene.background = env.cubeMap;
+    webgl.scene.background = env.cubeMap;
 
     webgl.renderer.setClearColor( 0x000000, 1);
 
@@ -108,16 +108,19 @@ class BoidTest extends SketchScene {
         value.needsUpdate = true;
       }
     }
-    boidMat.flatShading = true;
+    boidMat.flatShading = false;
     boidMat.metalness = boidMat.roughness = 1;
     boidMat.envMap = env.target.texture;
+    const cScale = 30;
+    const cylinderGeo = new THREE.CylinderBufferGeometry( 0.25 * cScale, 0.25 * cScale, 1 * cScale, 8, 1 );
+    cylinderGeo.lookAt( new THREE.Vector3(0, -1, 0) );
 
     this.boidSim = new BoidSim( webgl.renderer, {
       width: this.pars.boids.width,
       bounds: this.pars.boids.bounds,
       centerStrength: 1,
       // geometry: createBirdInstanceGeometry( this.pars.boids.width * this.pars.boids.width ),
-      geometry: new THREE.BoxBufferGeometry( 10, 10, 20, 1, 1, 1 ),
+      geometry: cylinderGeo,
       material: boidMat
       // material: new THREE.MeshStandardMaterial({
       //   side: THREE.DoubleSide,

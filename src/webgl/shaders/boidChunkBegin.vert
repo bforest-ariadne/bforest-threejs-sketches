@@ -40,17 +40,19 @@
 		0     , 0    , 1
 	);
 
+	#if !defined(FLAT_SHADED) && defined(STANDARD)
+		transformedNormal = normalMatrix * objectNormal;
+		transformedNormal = maty * matz  * transformedNormal;
+		//transformedNormal = normalMatrix * transformedNormal;
+		vNormal = normalize( transformedNormal );
+	#endif
+
 	newPosition =  maty * matz * newPosition;
 	//newPosition += ( pos * 0.1 );
 	newPosition += pos;
 	transformed = newPosition;
 
-// #if !defined(FLAT_SHADED) && defined(STANDARD)
-// 	transformedNormal = objectNormal;
-// 	transformedNormal = mat3( r ) * transformedNormal;
-// 	transformedNormal = normalMatrix * transformedNormal;
-// 	vNormal = normalize( transformedNormal );
-// #endif
+
 
 // transformed *= scale.x;
 // transformed = ( r * vec4(transformed, 1.0)).xyz;
