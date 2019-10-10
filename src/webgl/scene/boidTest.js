@@ -112,7 +112,7 @@ class BoidTest extends SketchScene {
     boidMat.envMap = env.target.texture;
 
     const cScale = 30;
-    const cylinderGeo = new THREE.CylinderBufferGeometry( 0.25 * cScale, 0.0 * cScale, 1 * cScale, 32, 1 );
+    const cylinderGeo = new THREE.CylinderBufferGeometry( 0.25 * cScale, 0.0 * cScale, 20, 32, 1 );
     cylinderGeo.rotateZ(Math.PI / 2);
     const sphereGeo = new THREE.SphereBufferGeometry( 10, 16, 8 );
     const boxGeo = new THREE.BoxBufferGeometry( 20, 10, 10, 1, 1, 1 );
@@ -123,7 +123,7 @@ class BoidTest extends SketchScene {
       bounds: this.pars.boids.bounds,
       centerStrength: 1,
       // geometry: createBirdInstanceGeometry( this.pars.boids.width * this.pars.boids.width ),
-      geometry: sphereGeo,
+      geometry: cylinderGeo,
       material: boidMat
     });
     this.boidSim.birdMesh.castShadow = true;

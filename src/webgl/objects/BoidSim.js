@@ -99,7 +99,8 @@ module.exports = class BoidSim {
         'texturePosition': { value: null },
         'textureVelocity': { value: null },
         'time': { value: 1.0 },
-        'delta': { value: 0.0 }
+        'delta': { value: 0.0 },
+        'squashiness': { value: 0.5 }
       };
 
       // THREE.ShaderMaterial

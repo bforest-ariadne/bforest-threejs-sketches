@@ -12,5 +12,5 @@ varying float test;
 varying vec3 testvec;
 
 uniform float time;
-
 uniform float delta;
+uniform float squashiness;

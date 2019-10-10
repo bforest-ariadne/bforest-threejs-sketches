@@ -50,6 +50,6 @@ mat3 matz =  mat3(
 	vNormal = normalize( normalMatrix * maty * matz  * objectNormal );
 #endif
 
-newPosition =  maty * matz * ( newPosition *  mix( vec3(1.),vec3(squash,1. / squash,1. / squash), 0.5) );
+newPosition =  maty * matz * ( newPosition *  mix( vec3(1.),vec3(squash,1. / squash,1. / squash), squashiness) );
 newPosition += pos;
 transformed = newPosition;
