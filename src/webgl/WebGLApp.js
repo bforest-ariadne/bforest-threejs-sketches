@@ -113,30 +113,37 @@ module.exports = class WebGLApp extends EventEmitter {
 
     if ( this.cargo ) {
       // eslint-disable-next-line no-undef
-      Cargo.Event.on('homepage_loaded', e => {
-        console.log('homepage_loaded');
-        // this.stop();
-        setTimeout( () => { this.resize(); }, 10 );
-        this.resize();
-      });
+      // Cargo.Event.on('homepage_loaded', e => {
+      //   console.log('homepage_loaded');
+      //   // this.stop();
+      //   setTimeout( () => { this.resize(); }, 10 );
+      //   this.resize();
+      // });
+      const container = this.viewport.parentNode;
+      container.style.width = this.mobile ? '100%' : '65%';
+      this.log( 'cargo width', container.style.width );
+      this.resize();
 
       // eslint-disable-next-line no-undef
       Cargo.Event.on('mobile_breakpoint_triggered', e => {
+        if ( typeof e === 'undefined' ) return;
+        container.style.width = e ? '65%' : '100%';
         this.resize();
       });
 
       this.on( 'frame2', () => { this.resize(); });
       this.hideOverlay();
 
-      // mobileTitle.firstElementChild.href = "Home-webgl";
+      // // mobileTitle.firstElementChild.href = "Home-webgl";
 
       // eslint-disable-next-line no-undef
       Cargo.Event.on('add_history', e => {
         console.log('cargo history', e );
         if ( e === 'Home-webgl' ) {
-          this.moveCargoCanvas();
+          this.viewport.parentNode.style.display = '';
           this.start();
         } else {
+          this.viewport.parentNode.style.display = 'none';
           this.stop();
         }
       } );
@@ -241,17 +248,19 @@ module.exports = class WebGLApp extends EventEmitter {
 
   start () {
     this.log( 'app start' );
+    this._traverse('start');
+    this.clock.getDelta();
     if ( this.cargo ) {
-      this.resize();
-      const webglContainer = document.getElementById('webgl');
-      if ( webglContainer !== null ) {
-        webglContainer.parentNode.parentNode.childNodes.forEach( el => {
-          if ( el.classList && el.classList.contains('container_width') ) {
-            console.log('ellement to hide', el);
-            el.style.visibility = 'hidden';
-          }
-        });
-      }
+      // this.resize();
+      // const webglContainer = document.getElementById('webgl');
+      // if ( webglContainer !== null ) {
+      //   webglContainer.parentNode.parentNode.childNodes.forEach( el => {
+      //     if ( el.classList && el.classList.contains('container_width') ) {
+      //       console.log('ellement to hide', el);
+      //       el.style.visibility = 'hidden';
+      //     }
+      //   });
+      // }
     }
     if ( this.dev && this.frameCount === 0 ) {
       this.debug();
@@ -265,6 +274,7 @@ module.exports = class WebGLApp extends EventEmitter {
   }
 
   stop () {
+    this._traverse('stop');
     this.log( 'app stop' );
     if (this._rafID === null) return;
     window.cancelAnimationFrame(this._rafID);

@@ -108,6 +108,7 @@ class GoldenFlock extends SketchScene {
   update (delta = 0, now = 0, frame = 0) {
     super.update();
     if ( defined( this.boidSim ) ) {
+      // this.log('delta, now, frame', delta, now, frame );
       if ( !this.animate ) return;
       this.boidSim.predatorPosition.copy( this.pars.boids.predatorPosition );
 
@@ -145,9 +146,24 @@ class GoldenFlock extends SketchScene {
     });
   }
 
+  start() {
+    this.animate = true;
+    this.log('started scene');
+  }
+
+  stop() {
+    this.animate = false;
+    this.log('stopped scene');
+  }
+
   onKeydown(ev) {
     if ( ev.keyCode === 32 && !ev.shiftKey ) {
-      this.animate = !this.animate;
+      // this.animate = !this.animate;
+      if ( this.animate ) {
+        this.stop();
+      } else {
+        this.start();
+      }
     }
   }
 }
