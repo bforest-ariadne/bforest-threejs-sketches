@@ -32,7 +32,7 @@ const queueAssets = () => {
     cargoUrl: `${cargoPath}gold1_512.glb`,
     key: 'gold'
   });
-}
+};
 
 if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
   queueAssets();
@@ -87,6 +87,16 @@ class GoldenFlock extends SketchScene {
     let boidMat;
     boidMat = this.glbToMaterial( 'gold' );
     // boidMat = createMaterial(env.target.texture);
+    for ( let [ key, value ] of Object.entries( boidMat ) ) {
+      if ( value instanceof THREE.Texture && value.name.includes('assets') ) {
+      // console.log(value)
+        value.minFilter = THREE.LinearMipMapLinearFilter;
+        value.magFilter = THREE.LinearFilter;
+        value.anisotrophy = 1;
+        value.needsUpdate = true;
+      }
+    }
+    boidMat.flatShading = true;
     boidMat.metalness = boidMat.roughness = 1;
     boidMat.envMap = env.target.texture;
 

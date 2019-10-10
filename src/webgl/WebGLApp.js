@@ -112,13 +112,6 @@ module.exports = class WebGLApp extends EventEmitter {
     });
 
     if ( this.cargo ) {
-      // eslint-disable-next-line no-undef
-      // Cargo.Event.on('homepage_loaded', e => {
-      //   console.log('homepage_loaded');
-      //   // this.stop();
-      //   setTimeout( () => { this.resize(); }, 10 );
-      //   this.resize();
-      // });
       const container = this.viewport.parentNode;
       container.style.width = this.mobile ? '100%' : '65%';
       this.log( 'cargo width', container.style.width );
@@ -133,8 +126,6 @@ module.exports = class WebGLApp extends EventEmitter {
 
       this.on( 'frame2', () => { this.resize(); });
       this.hideOverlay();
-
-      // // mobileTitle.firstElementChild.href = "Home-webgl";
 
       // eslint-disable-next-line no-undef
       Cargo.Event.on('add_history', e => {
@@ -250,18 +241,6 @@ module.exports = class WebGLApp extends EventEmitter {
     this.log( 'app start' );
     this._traverse('start');
     this.clock.getDelta();
-    if ( this.cargo ) {
-      // this.resize();
-      // const webglContainer = document.getElementById('webgl');
-      // if ( webglContainer !== null ) {
-      //   webglContainer.parentNode.parentNode.childNodes.forEach( el => {
-      //     if ( el.classList && el.classList.contains('container_width') ) {
-      //       console.log('ellement to hide', el);
-      //       el.style.visibility = 'hidden';
-      //     }
-      //   });
-      // }
-    }
     if ( this.dev && this.frameCount === 0 ) {
       this.debug();
     }
@@ -456,19 +435,6 @@ module.exports = class WebGLApp extends EventEmitter {
     //   url: 'assets/audio/44/BlackShell_v2_BStem_left.mp3',
     //   key: 'BStem_left'
     // });
-  }
-  moveCargoCanvas() {
-    const background = this.viewport.parentNode.parentNode.parentNode.getElementsByClassName('page_background')[0];
-    background.style.zIndex = '1';
-    const webglContainer = document.getElementById('webgl');
-    webglContainer.style.cssText = `
-      position: absolute;
-      height: 100%;
-      right: 0px;
-      `;
-    webglContainer.classList.add('container_width');
-    webglContainer.parentNode.parentNode.firstElementChild.style.visibility = 'hidden';
-    background.appendChild( webglContainer );
   }
 
   log() {
