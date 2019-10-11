@@ -61,20 +61,28 @@ class PointLight extends THREE.PointLight {
     decay = 2,
     createMesh = true,
     castShadow = true,
+    shadowMapSize = 2048,
+    shadowCameraNear = 1,
+    shadowCameraFar = 30,
     meshSize = 2,
+    position = new THREE.Vector3(),
     name = `pointlight${pointLightCount++}`
   } = {} ) {
     super( color, intensity, distance, decay );
     // parameters = assign({}, parameters);
     this.name = name;
+    this.position.copy( position );
     if ( castShadow ) {
       this.castShadow = castShadow;
-      this.shadow.camera.near = 1;
-      this.shadow.camera.far = 40;
+      this.shadow.mapSize.width = shadowMapSize;
+      this.shadow.mapSize.height = shadowMapSize;
+      this.shadow.camera.near = shadowCameraNear;
+      this.shadow.camera.far = shadowCameraFar;
     }
     if ( createMesh ) {
       this.mesh = createLightMesh();
       this.mesh.material.color = this.color;
+      // this.mesh.material.color.multiplyScalar( intensity );
       this.mesh.material.size = meshSize;
       this.mesh.name = `${this.name}Mesh`;
       this.add( this.mesh );

@@ -100,7 +100,10 @@ void main() {
 
   #ifdef USE_TRANSLUCENCY
     // vec3 thicknessColor = vec3(1.0, 1.0, 1.0);
-    vec3 thickness = thicknessColor * texture2D(thicknessMap, vUv * thicknessRepeat).r;
+    vec3 thickness = thicknessColor;
+    #ifdef USE_THICKNES_MAP
+      thickness *= texture2D(thicknessMap, vUv * thicknessRepeat).r;
+    #endif
     vec3 N = geometry.normal;
     vec3 V = normalize(geometry.viewDir);
     float thicknessCutoff = 0.75;

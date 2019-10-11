@@ -2,7 +2,7 @@
 const glslify = require('glslify');
 const path = require('path');
 const assign = require('object-assign');
-// const defined = require('defined');
+const defined = require('defined');
 
 // This is the original source, we will copy + paste it for our own GLSL
 // const vertexShader = THREE.ShaderChunk.meshphysical_vert;
@@ -16,11 +16,12 @@ class IceMaterial extends THREE.MeshStandardMaterial {
   constructor (parameters) {
     parameters = assign({}, parameters);
     super();
+    if ( defined( parameters.thicknessMap, false) ) this.defines['USE_THICKNESS_MAP'] = '';
     this.uniforms = assign({},
       THREE.ShaderLib.standard.uniforms,
       {
         // your custom uniforms or overrides to built-ins
-        thicknessMap: { type: 't', value: parameters.thicknessMap || new THREE.Texture() },
+        thicknessMap: { type: 't', value: parameters.thicknessMap || null },
         thicknessRepeat: { type: 'v3', value: parameters.thicknessRepeat || new THREE.Vector2() },
         thicknessPower: { type: 'f', value: 20 },
         thicknessScale: { type: 'f', value: 4 },

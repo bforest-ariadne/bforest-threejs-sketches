@@ -31,11 +31,11 @@ const materialAssets = [
   //   key: 'mask',
   //   texture: true
   // }
-  {
-    url: `assets/textures/${folder}/height.jpg`,
-    key: 'h',
-    texture: true
-  }
+  // {
+  //   url: `assets/textures/${folder}/height.jpg`,
+  //   key: 'h',
+  //   texture: true
+  // }
 ];
 
 const createMaterial = ( envMap ) => {

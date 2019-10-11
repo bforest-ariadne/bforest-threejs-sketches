@@ -150,14 +150,31 @@ module.exports = class BoidSim {
         birdMesh = new THREE.Mesh( geometry, birdMat );
         // birdMesh.rotation.y = Math.PI / 2;
         birdMesh.matrixAutoUpdate = true;
+        birdMesh.frustumCulled = false;
         birdMesh.updateMatrix();
 
         // custom depth material - required for instanced shadows
         var customDepthMaterial = new THREE.MeshDepthMaterial();
-        customDepthMaterial.onBeforeCompile = birdMat.onBeforeCompile;
+        customDepthMaterial.onBeforeCompile = ( shader, renderer ) => {
+          birdMat.onBeforeCompile( shader, renderer );
+          shader.vertexShader = `
+          #define MESH_DEPTH_SHADER
+          ` + shader.vertexShader;
+        };
         customDepthMaterial.depthPacking = THREE.RGBADepthPacking;
 
+        // custom distance material - required for instanced pointlight shadows
+        const customDistanceMaterial = new THREE.MeshDistanceMaterial();
+        customDistanceMaterial.onBeforeCompile = ( shader, renderer ) => {
+          birdMat.onBeforeCompile( shader, renderer );
+          shader.vertexShader = `
+          #define MESH_DEPTH_SHADER
+          ` + shader.vertexShader;
+        };
+        customDistanceMaterial.depthPacking = THREE.RGBADepthPacking;
+
         birdMesh.customDepthMaterial = customDepthMaterial;
+        birdMesh.customDistanceMaterial = customDistanceMaterial;
         birdMesh.onBeforeRender = (renderer, scene, camera, geometry, material) => {
           material.onBeforeCompile = birdMat.onBeforeCompile;
           material.side = birdMat.side;

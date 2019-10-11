@@ -46,8 +46,8 @@ mat3 matz =  mat3(
 );
 
 
-// #if !defined(FLAT_SHADED) && defined(STANDARD)
-#if !defined(FLAT_SHADED) 
+// #if !defined(FLAT_SHADED) && defined(STANDARD) 
+#if !defined(FLAT_SHADED) && !defined(MESH_DEPTH_SHADER)
 	vNormal = normalize( normalMatrix * maty * matz  * objectNormal );
 #endif
 

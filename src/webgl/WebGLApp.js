@@ -63,7 +63,7 @@ module.exports = class WebGLApp extends EventEmitter {
     this.renderer = new THREE.WebGLRenderer(assign({
       antialias: false,
       alpha: false,
-      logarithmicDepthBuffer: false,
+      logarithmicDepthBuffer: true,
       // enabled for saving screen shots of the canvas,
       // may wish to disable this for perf reasons
       preserveDrawingBuffer: false,

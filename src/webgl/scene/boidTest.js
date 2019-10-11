@@ -98,6 +98,7 @@ class BoidTest extends SketchScene {
     webgl.renderer.gammaOutput = true;
     webgl.renderer.gammaFactor = 2.2;
     webgl.renderer.shadowMap.enabled = true;
+    webgl.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     webgl.renderer.autoClear = false;
     webgl.renderer.physicallyCorrectLights = true;
     webgl.renderer.toneMapping = THREE.Uncharted2ToneMapping;
@@ -109,12 +110,12 @@ class BoidTest extends SketchScene {
 
     postProcessSetup( true );
 
-    this.pointLight = new PointLight({
-      intensity: 1000,
-      meshSize: 100,
-      castShadow: false
-    });
-    this.add( this.pointLight );
+    this.room = new THREE.Mesh(
+      new THREE.BoxBufferGeometry( 400, 400, 400 ),
+      new THREE.MeshStandardMaterial({ side: THREE.BackSide })
+    );
+    this.room.receiveShadow = true;
+    this.add( this.room );
 
     // boidGeo = geometry: new THREE.BoxBufferGeometry( 10, 10, 20 )
     let boidMat;
@@ -122,7 +123,7 @@ class BoidTest extends SketchScene {
     // boidMat = createMaterial(env.target.texture);
     this.iceMaterial = new IceMaterial({
       // roughnessMap: assets.get('lava'),
-      thicknessMap: assets.get('h'),
+      // thicknessMap: assets.get('h'),
       roughnessMap: assets.get('aorm'),
       metalnessMap: assets.get('aorm'),
       normalMap: assets.get('n'),
@@ -164,9 +165,21 @@ class BoidTest extends SketchScene {
       material: boidMat
     });
     this.boidSim.birdMesh.castShadow = true;
+    this.boidSim.birdMesh.receiveShadow = true;
     this.add( this.boidSim.birdMesh );
     if ( webgl.dev ) window.birdMesh = this.boidSim.birdMesh;
     this.boidUniformUpdate();
+    
+
+    this.pointLight = new PointLight({
+      intensity: 3000,
+      meshSize: 100,
+      castShadow: true,
+      shadowMapSize: 256,
+      shadowCameraFar: 1000,
+      shadowCameraNear: 50
+    });
+    this.add( this.pointLight );
 
     if ( this.pars.scene.testShadow ) {
       this.spotLight = new SpotLight({
@@ -196,6 +209,7 @@ class BoidTest extends SketchScene {
       window.testSphere = testSphere;
     }
     this.adjustEnvIntensity();
+    this.iceMatUniformsUpdate();
     this.setupGui();
   }
 
@@ -219,8 +233,8 @@ class BoidTest extends SketchScene {
 
   iceMatUniformsUpdate() {
     for ( let [ key, value ] of Object.entries( this.pars.iceMat ) ) {
-      if ( this.iceMat.uniforms[ key ].type !== 'f' ) continue;
-      this.iceMat.uniforms[ key ].value = value;
+      if ( this.iceMaterial.uniforms[ key ].type !== 'f' ) continue;
+      this.iceMaterial.uniforms[ key ].value = value;
     }
   }
 
@@ -340,6 +354,7 @@ class BoidTest extends SketchScene {
     }).on( 'change', () => {
       this.boidSim.centerPosition.copy( this.pars.boids.centerPosition );
     });
+    f.expanded = false;
 
     f = gui.addFolder({title: `iceMat`});
 
@@ -396,6 +411,7 @@ class BoidTest extends SketchScene {
     f.addInput( this.iceMaterial, 'thicknessColorStyle', {
       label: 'thicknessColor'
     });
+    f.expanded = false;
   }
 
   adjustEnvIntensity( value ) {
