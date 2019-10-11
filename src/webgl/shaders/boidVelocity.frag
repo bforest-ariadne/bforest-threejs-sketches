@@ -7,6 +7,8 @@
 			uniform float freedomFactor;
 			uniform vec3 predator;
 			uniform vec3 center;
+			uniform float centerStrength;
+			uniform float speedLimit;
 
 			const float width = resolution.x;
 			const float height = resolution.y;
@@ -123,7 +125,9 @@
 				dist = length( dir );
 
 				dir.y *= 2.5;
-				velocity -= normalize( dir ) * delta * 5.;
+				// velocity -= normalize( dir ) * delta * 5.;
+				velocity -= normalize( dir ) * delta * centerStrength;
+
 
 				for ( float y = 0.0; y < height; y++ ) {
 					for ( float x = 0.0; x < width; x++ ) {

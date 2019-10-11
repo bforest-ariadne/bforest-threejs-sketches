@@ -64,7 +64,8 @@ class BoidTest extends SketchScene {
         freedom: 0.75,
         squashiness: 0.9,
         predatorPosition: new THREE.Vector3( 800, 800, 0 ),
-        centerPosition: new THREE.Vector3()
+        centerPosition: new THREE.Vector3(),
+        centerStrength: 5
       }
     };
   }
@@ -123,7 +124,7 @@ class BoidTest extends SketchScene {
     this.boidSim = new BoidSim( webgl.renderer, {
       width: this.pars.boids.width,
       bounds: this.pars.boids.bounds,
-      centerStrength: 1,
+      centerStrength: this.pars.boids.centerStrength,
       // geometry: createBirdInstanceGeometry( this.pars.boids.width * this.pars.boids.width ),
       geometry: boidGeo,
       material: boidMat
@@ -178,6 +179,7 @@ class BoidTest extends SketchScene {
     this.boidSim.velocityUniforms[ 'separationDistance' ].value = this.pars.boids.separation;
     this.boidSim.velocityUniforms[ 'alignmentDistance' ].value = this.pars.boids.alignment;
     this.boidSim.velocityUniforms[ 'cohesionDistance' ].value = this.pars.boids.cohesion;
+    this.boidSim.velocityUniforms[ 'centerStrength' ].value = this.pars.boids.centerStrength;
   }
 
   setupGui() {
@@ -224,6 +226,14 @@ class BoidTest extends SketchScene {
       min: 0.0,
       max: 40.0,
       label: 'alignment distance'
+    }).on( 'change', () => {
+      this.boidUniformUpdate();
+    });
+
+    f.addInput( this.pars.boids, 'centerStrength', {
+      min: 0.0,
+      max: 100.0,
+      label: 'centerStrength'
     }).on( 'change', () => {
       this.boidUniformUpdate();
     });
