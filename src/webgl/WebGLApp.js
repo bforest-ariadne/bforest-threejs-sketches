@@ -263,16 +263,24 @@ module.exports = class WebGLApp extends EventEmitter {
     return this;
   }
 
-  resize (width, height, pixelRatio) {
+  resize ( width, height, pixelRatio, scale ) {
     // get default values
     this.log('resize');
+
+    scale = Math.max(scale === undefined ? 1.0 : scale, 0.1);
+    const inv = 1 / scale;
+
     width = defined( width, this.viewport.clientWidth );
-    height = defined(height, this.viewport.clientHeight );
+    height = defined( height, this.viewport.clientHeight );
     pixelRatio = defined(pixelRatio, Math.min(this.maxPixelRatio, window.devicePixelRatio));
+
+    width = Math.ceil(width * scale);
+    height = Math.ceil(height * scale);
 
     this.width = width;
     this.height = height;
     this.pixelRatio = pixelRatio;
+    this.scale = scale;
 
     // update pixel ratio if necessary
     if (this.renderer.getPixelRatio() !== pixelRatio) {
@@ -281,6 +289,9 @@ module.exports = class WebGLApp extends EventEmitter {
 
     // setup new size & update camera aspect if necessary
     defined( this.composer, this.renderer ).setSize(width, height);
+    this.renderer.domElement.style.transform = 'scale(' + inv + ')';
+    this.renderer.domElement.style.transformOrigin = 'left top';
+
     if (this.camera.isPerspectiveCamera) {
       this.camera.aspect = width / height;
     }
