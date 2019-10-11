@@ -5,10 +5,10 @@ const defined = require('defined');
 
 module.exports = class BoidSim {
   constructor( renderer, {
-    separation = 20.0,
-    alignment = 20.0,
-    cohesion = 20.0,
-    freedom = 0.75,
+    separation = 1.0,
+    alignment = 1.0,
+    cohesion = 1.0,
+    squashiness = 0.0,
     predatorPosition = new THREE.Vector3(),
     centerPosition = new THREE.Vector3(),
     width = 32,
@@ -60,12 +60,11 @@ module.exports = class BoidSim {
       this.velocityUniforms[ 'time' ] = { value: 1.0 };
       this.velocityUniforms[ 'delta' ] = { value: 0.0 };
       this.velocityUniforms[ 'testing' ] = { value: 1.0 };
-      this.velocityUniforms[ 'separationDistance' ] = { value: 1.0 };
-      this.velocityUniforms[ 'alignmentDistance' ] = { value: 1.0 };
-      this.velocityUniforms[ 'cohesionDistance' ] = { value: 1.0 };
-      this.velocityUniforms[ 'freedomFactor' ] = { value: 1.0 };
-      this.velocityUniforms[ 'predator' ] = { value: new THREE.Vector3() };
-      this.velocityUniforms[ 'center' ] = { value: new THREE.Vector3() };
+      this.velocityUniforms[ 'separationDistance' ] = { value: separation };
+      this.velocityUniforms[ 'alignmentDistance' ] = { value: alignment };
+      this.velocityUniforms[ 'cohesionDistance' ] = { value: cohesion };
+      this.velocityUniforms[ 'predator' ] = { value: this.predatorPosition };
+      this.velocityUniforms[ 'center' ] = { value: this.centerPosition };
       this.velocityVariable.material.defines.BOUNDS = BOUNDS.toFixed( 2 );
 
       this.velocityVariable.wrapS = THREE.RepeatWrapping;

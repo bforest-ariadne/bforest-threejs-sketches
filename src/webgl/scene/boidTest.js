@@ -56,26 +56,27 @@ class BoidTest extends SketchScene {
         envMapIntensity: 1
       },
       boids: {
-        width: 32,
+        width: webgl.gpuInfo.tierNum === 1 ? 16 : 32,
         bounds: 800,
         separation: 20.0,
         alignment: 20.0,
         cohesion: 20.0,
         freedom: 0.75,
+        squashiness: 0.9,
         predatorPosition: new THREE.Vector3( 200, 200, 0 )
       }
     };
   }
   init() {
     this.controlsInit();
-    this.controls.distance = 350;
+    this.controls.distance = webgl.gpuInfo.tierNum === 1 ? 750 : 350;
     // this.controls.position = [-387.5724404469007, 639.4741434068955, -686.0763950300969];
     this.controls.position = [ 0, 0, 350 ];
     let env = assets.get('env');
 
     // webgl.scene.fog = new THREE.Fog( 0x000000, 1, 1000 );
     webgl.scene.background = new THREE.Color( 0x000000 );
-    webgl.scene.background = env.cubeMap;
+    // webgl.scene.background = env.cubeMap;
 
     webgl.renderer.setClearColor( 0x000000, 1);
 
@@ -111,11 +112,11 @@ class BoidTest extends SketchScene {
     boidMat.metalness = boidMat.roughness = 1;
     boidMat.envMap = env.target.texture;
 
-    const cScale = 30;
-    const cylinderGeo = new THREE.CylinderBufferGeometry( 0.25 * cScale, 0.0 * cScale, 20, 32, 1 );
-    cylinderGeo.rotateZ(Math.PI / 2);
-    const sphereGeo = new THREE.SphereBufferGeometry( 10, 16, 8 );
-    const boxGeo = new THREE.BoxBufferGeometry( 20, 10, 10, 1, 1, 1 );
+    let boidGeo;
+    // boidGeo = new THREE.CylinderBufferGeometry( 7, 7.0, 20, 32, 1 );
+    // boidGeo.rotateZ(Math.PI / 2);
+    boidGeo = new THREE.SphereBufferGeometry( 10, 16, 8 );
+    // boidGeo = new THREE.BoxBufferGeometry( 20, 10, 10, 1, 1, 1 );
     const normalMat = new THREE.MeshNormalMaterial();
 
     this.boidSim = new BoidSim( webgl.renderer, {
@@ -123,7 +124,7 @@ class BoidTest extends SketchScene {
       bounds: this.pars.boids.bounds,
       centerStrength: 1,
       // geometry: createBirdInstanceGeometry( this.pars.boids.width * this.pars.boids.width ),
-      geometry: cylinderGeo,
+      geometry: boidGeo,
       material: boidMat
     });
     this.boidSim.birdMesh.castShadow = true;
@@ -176,7 +177,6 @@ class BoidTest extends SketchScene {
     this.boidSim.velocityUniforms[ 'separationDistance' ].value = this.pars.boids.separation;
     this.boidSim.velocityUniforms[ 'alignmentDistance' ].value = this.pars.boids.alignment;
     this.boidSim.velocityUniforms[ 'cohesionDistance' ].value = this.pars.boids.cohesion;
-    this.boidSim.velocityUniforms[ 'freedomFactor' ].value = this.pars.boids.freedom;
   }
 
   setupGui() {
@@ -189,6 +189,66 @@ class BoidTest extends SketchScene {
       label: 'env level'
     }).on( 'change', () => {
       this.adjustEnvIntensity();
+    });
+
+    f = gui.addFolder({title: `boid sim`});
+
+    f.addInput( this.pars.boids, 'squashiness', {
+      min: 0.0,
+      max: 1.0,
+      step: 0.01,
+      label: 'squashiness'
+    }).on( 'change', () => {
+      this.boidSim.birdUniforms.squashiness.value = this.pars.boids.squashiness;
+    });
+
+    f.addInput( this.pars.boids, 'separation', {
+      min: 0.0,
+      max: 40.0,
+      label: 'separation distance'
+    }).on( 'change', () => {
+      this.boidUniformUpdate();
+    });
+
+    f.addInput( this.pars.boids, 'cohesion', {
+      min: 0.0,
+      max: 40.0,
+      label: 'cohesion distance'
+    }).on( 'change', () => {
+      this.boidUniformUpdate();
+    });
+
+    f.addInput( this.pars.boids, 'alignment', {
+      min: 0.0,
+      max: 40.0,
+      label: 'alignment distance'
+    }).on( 'change', () => {
+      this.boidUniformUpdate();
+    });
+
+    const predatorRange = 800;
+    f.addInput( this.pars.boids.predatorPosition, 'x', {
+      min: -predatorRange,
+      max: predatorRange,
+      label: 'predator x'
+    }).on( 'change', () => {
+      this.boidSim.predatorPosition.copy( this.pars.boids.predatorPosition );
+    });
+
+    f.addInput( this.pars.boids.predatorPosition, 'y', {
+      min: -predatorRange,
+      max: predatorRange,
+      label: 'predator y'
+    }).on( 'change', () => {
+      this.boidSim.predatorPosition.copy( this.pars.boids.predatorPosition );
+    });
+
+    f.addInput( this.pars.boids.predatorPosition, 'z', {
+      min: -predatorRange,
+      max: predatorRange,
+      label: 'predator z'
+    }).on( 'change', () => {
+      this.boidSim.predatorPosition.copy( this.pars.boids.predatorPosition );
     });
   }
 

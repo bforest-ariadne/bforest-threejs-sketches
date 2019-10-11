@@ -8,7 +8,7 @@ const { assets } = require('../../context');
 //   assets.queue( materialAssets[i] );
 // }
 
-const folder = 'Marble03';
+const folder = 'Tiles32';
 
 const materialAssets = [
   {

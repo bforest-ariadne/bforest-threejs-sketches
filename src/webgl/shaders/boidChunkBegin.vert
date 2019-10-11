@@ -14,9 +14,10 @@ vec3 newPosition = position;
 // }
 
 // float squash = length( pos - (velocity * pos) ) * 0.003;
-float squash = length( velocity ) * 10.0;
-squash = clamp( squash, 1., 2. );
-test = squash;
+float squash = length( velocity.xz ) * 2.;
+// test = pow(squash, 3.);
+squash = clamp( pow(squash, 3.), 1., 2. );
+// squash *= 10.0;
 
 newPosition = mat3( modelMatrix ) * newPosition;
 
@@ -51,5 +52,6 @@ mat3 matz =  mat3(
 #endif
 
 newPosition =  maty * matz * ( newPosition *  mix( vec3(1.),vec3(squash,1. / squash,1. / squash), squashiness) );
+// newPosition = maty * matz * newPosition; 
 newPosition += pos;
 transformed = newPosition;

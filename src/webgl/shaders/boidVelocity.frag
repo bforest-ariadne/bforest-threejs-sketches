@@ -92,7 +92,9 @@
 
 				float limit = SPEED_LIMIT;
 
-				dir = predator * UPPER_BOUNDS - selfPosition;
+				// dir = predator * UPPER_BOUNDS - selfPosition;
+				dir = predator - selfPosition;
+
 				dir.z = 0.;
 				// dir.z *= 0.6;
 				dist = length( dir );
