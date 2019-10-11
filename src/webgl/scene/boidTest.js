@@ -6,7 +6,9 @@ const defined = require('defined');
 const BoidSim = require('../objects/BoidSim');
 const { SpotLight, PointLight } = require('../objects/lights');
 const Ground = require('../objects/ground');
+// eslint-disable-next-line no-unused-vars
 const { createMaterial, materialAssets } = require('../materials/createPbrMaterial');
+const IceMaterial = require('../materials/IceMaterial');
 
 // const { BirdGeometry, createBirdInstanceGeometry } = require( '../geos/Bird.js' );
 
@@ -53,7 +55,7 @@ class BoidTest extends SketchScene {
     this.pars = {
       scene: {
         testShadow: false,
-        envMapIntensity: 1
+        envMapIntensity: 0.02
       },
       boids: {
         width: webgl.gpuInfo.tierNum === 1 ? 16 : 32,
@@ -62,17 +64,26 @@ class BoidTest extends SketchScene {
         alignment: 20.0,
         cohesion: 20.0,
         freedom: 0.75,
-        squashiness: 0.9,
-        predatorPosition: new THREE.Vector3( 800, 800, 0 ),
+        squashiness: 1.0,
+        predatorPosition: new THREE.Vector3( 0, 0, 0 ),
         centerPosition: new THREE.Vector3(),
-        centerStrength: 5,
+        centerStrength: 63,
         speedLimit: 9
+      },
+      iceMat: {
+        thicknessAmbient: 0,
+        thicknessDistortion: 0.19,
+        thicknessPower: 30,
+        thicknessScale: 10,
+        thicknessAttenuation: 1,
+        thicknessRepeat: 1,
+        thicknessColor: 0xffffff
       }
     };
   }
   init() {
     this.controlsInit();
-    this.controls.distance = webgl.gpuInfo.tierNum === 1 ? 750 : 350;
+    this.controls.distance = 350;
     // this.controls.position = [-387.5724404469007, 639.4741434068955, -686.0763950300969];
     this.controls.position = [ 0, 0, 350 ];
     let env = assets.get('env');
@@ -98,11 +109,33 @@ class BoidTest extends SketchScene {
 
     postProcessSetup( true );
 
+    this.pointLight = new PointLight({
+      intensity: 1000,
+      meshSize: 100,
+      castShadow: false
+    });
+    this.add( this.pointLight );
+
     // boidGeo = geometry: new THREE.BoxBufferGeometry( 10, 10, 20 )
     let boidMat;
     // boidMat = this.glbToMaterial( 'gold' );
-    boidMat = createMaterial(env.target.texture);
-    for ( let [ key, value ] of Object.entries( boidMat ) ) {
+    // boidMat = createMaterial(env.target.texture);
+    this.iceMaterial = new IceMaterial({
+      // roughnessMap: assets.get('lava'),
+      thicknessMap: assets.get('h'),
+      roughnessMap: assets.get('aorm'),
+      metalnessMap: assets.get('aorm'),
+      normalMap: assets.get('n'),
+      aoMap: assets.get('aorm'),
+      map: assets.get('c'),
+      roughness: 1,
+      metalness: 1,
+      envMap: env.target.texture
+    });
+
+    boidMat = this.iceMaterial;
+
+    for ( let value of Object.values( boidMat ) ) {
       if ( value instanceof THREE.Texture && value.name.includes('assets') ) {
       // console.log(value)
         value.minFilter = THREE.LinearMipMapLinearFilter;
@@ -118,9 +151,9 @@ class BoidTest extends SketchScene {
     let boidGeo;
     // boidGeo = new THREE.CylinderBufferGeometry( 7, 7.0, 20, 32, 1 );
     // boidGeo.rotateZ(Math.PI / 2);
-    boidGeo = new THREE.SphereBufferGeometry( 10, 16, 8 );
-    // boidGeo = new THREE.BoxBufferGeometry( 20, 10, 10, 1, 1, 1 );
-    const normalMat = new THREE.MeshNormalMaterial();
+    // boidGeo = new THREE.SphereBufferGeometry( 10, 16, 8 );
+    boidGeo = new THREE.BoxBufferGeometry( 20, 15, 2, 1, 1, 1 );
+    // const normalMat = new THREE.MeshNormalMaterial();
 
     this.boidSim = new BoidSim( webgl.renderer, {
       width: this.pars.boids.width,
@@ -182,6 +215,13 @@ class BoidTest extends SketchScene {
     this.boidSim.velocityUniforms[ 'cohesionDistance' ].value = this.pars.boids.cohesion;
     this.boidSim.velocityUniforms[ 'centerStrength' ].value = this.pars.boids.centerStrength;
     this.boidSim.velocityUniforms[ 'speedLimit' ].value = this.pars.boids.speedLimit;
+  }
+
+  iceMatUniformsUpdate() {
+    for ( let [ key, value ] of Object.entries( this.pars.iceMat ) ) {
+      if ( this.iceMat.uniforms[ key ].type !== 'f' ) continue;
+      this.iceMat.uniforms[ key ].value = value;
+    }
   }
 
   setupGui() {
@@ -299,6 +339,62 @@ class BoidTest extends SketchScene {
       label: 'center z'
     }).on( 'change', () => {
       this.boidSim.centerPosition.copy( this.pars.boids.centerPosition );
+    });
+
+    f = gui.addFolder({title: `iceMat`});
+
+    f.addInput( this.pars.iceMat, 'thicknessAmbient', {
+      min: 0.0,
+      max: 1,
+      step: 0.01,
+      label: 'thicknessAmbient'
+    }).on( 'change', () => {
+      this.iceMatUniformsUpdate();
+    });
+
+    f.addInput( this.pars.iceMat, 'thicknessDistortion', {
+      min: 0.0,
+      max: 1,
+      step: 0.01,
+      label: 'thicknessDistortion'
+    }).on( 'change', () => {
+    });
+
+    f.addInput( this.pars.iceMat, 'thicknessPower', {
+      min: 0.0,
+      max: 100,
+      step: 1,
+      label: 'thicknessPower'
+    }).on( 'change', () => {
+    });
+
+    f.addInput( this.pars.iceMat, 'thicknessScale', {
+      min: 0.0,
+      max: 10,
+      step: 0.01,
+      label: 'thicknessScale'
+    }).on( 'change', () => {
+    });
+
+    f.addInput( this.pars.iceMat, 'thicknessAttenuation', {
+      min: 0.0,
+      max: 1,
+      step: 0.01,
+      label: 'thicknessAttenuation'
+    });
+
+    f.addInput( this.pars.iceMat, 'thicknessRepeat', {
+      min: 0.0,
+      max: 5,
+      step: 0.01,
+      label: 'thicknessRepeat'
+    }).on( 'change', () => {
+      this.iceMaterial.uniforms.thicknessRepeat.value.x = this.pars.iceMat.thicknessRepeat;
+      this.iceMaterial.uniforms.thicknessRepeat.value.y = this.pars.iceMat.thicknessRepeat;
+    });
+
+    f.addInput( this.iceMaterial, 'thicknessColorStyle', {
+      label: 'thicknessColor'
     });
   }
 

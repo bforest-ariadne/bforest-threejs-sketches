@@ -9,6 +9,7 @@
 			uniform vec3 center;
 			uniform float centerStrength;
 			uniform float speedLimit;
+			uniform float scale;
 
 			const float width = resolution.x;
 			const float height = resolution.y;

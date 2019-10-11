@@ -54,12 +54,17 @@ class SpotLight extends THREE.SpotLight {
 }
 
 class PointLight extends THREE.PointLight {
-  constructor ( parameters, {
+  constructor ({
+    color = 0xffffff,
+    intensity = 1,
+    distance = 0,
+    decay = 2,
     createMesh = true,
     castShadow = true,
+    meshSize = 2,
     name = `pointlight${pointLightCount++}`
   } = {} ) {
-    super( parameters );
+    super( color, intensity, distance, decay );
     // parameters = assign({}, parameters);
     this.name = name;
     if ( castShadow ) {
@@ -70,13 +75,14 @@ class PointLight extends THREE.PointLight {
     if ( createMesh ) {
       this.mesh = createLightMesh();
       this.mesh.material.color = this.color;
+      this.mesh.material.size = meshSize;
       this.mesh.name = `${this.name}Mesh`;
       this.add( this.mesh );
     }
   }
 
   update() {
-    if ( defined( this.mesh ) ) this.mesh.material.opacity = this.intensity;
+    if ( defined( this.mesh ) ) this.mesh.material.opacity = (this.intensity);
   }
 }
 

@@ -8,7 +8,7 @@ const { assets } = require('../../context');
 //   assets.queue( materialAssets[i] );
 // }
 
-const folder = 'Tiles32';
+const folder = 'Ice04';
 
 const materialAssets = [
   {
@@ -30,7 +30,7 @@ const materialAssets = [
   //   url: `assets/textures/${folder}/mask.jpg`,
   //   key: 'mask',
   //   texture: true
-  // },
+  // }
   {
     url: `assets/textures/${folder}/height.jpg`,
     key: 'h',
@@ -57,6 +57,8 @@ const createMaterial = ( envMap ) => {
     flatShading: true,
     name: folder
   });
+
+  material.userData.thicknessMap
 
   // const textures = [ material.roughnessMap, material.metalnessMap, material.normalMap, material.map, material.aoMap ];
   const textures = [];
