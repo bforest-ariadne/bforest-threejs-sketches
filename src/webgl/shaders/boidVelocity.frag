@@ -92,7 +92,8 @@
 
 				vec3 velocity = selfVelocity;
 
-				float limit = SPEED_LIMIT;
+				// float limit = SPEED_LIMIT;
+				float limit = speedLimit;
 
 				// dir = predator * UPPER_BOUNDS - selfPosition;
 				dir = predator - selfPosition;

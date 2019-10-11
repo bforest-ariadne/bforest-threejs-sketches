@@ -12,6 +12,7 @@ module.exports = class BoidSim {
     predatorPosition = new THREE.Vector3(),
     centerPosition = new THREE.Vector3(),
     centerStrength = 5,
+    speedLimit = 9,
     width = 32,
     bounds = 0.001,
     geometry = null,
@@ -68,6 +69,7 @@ module.exports = class BoidSim {
       this.velocityUniforms[ 'predator' ] = { value: this.predatorPosition };
       this.velocityUniforms[ 'center' ] = { value: this.centerPosition };
       this.velocityUniforms[ 'centerStrength' ] = { value: this.centerStrength };
+      this.velocityUniforms[ 'speedLimit' ] = { value: speedLimit };
       this.velocityVariable.material.defines.BOUNDS = BOUNDS.toFixed( 2 );
 
       this.velocityVariable.wrapS = THREE.RepeatWrapping;

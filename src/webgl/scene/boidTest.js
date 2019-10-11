@@ -65,7 +65,8 @@ class BoidTest extends SketchScene {
         squashiness: 0.9,
         predatorPosition: new THREE.Vector3( 800, 800, 0 ),
         centerPosition: new THREE.Vector3(),
-        centerStrength: 5
+        centerStrength: 5,
+        speedLimit: 9
       }
     };
   }
@@ -180,6 +181,7 @@ class BoidTest extends SketchScene {
     this.boidSim.velocityUniforms[ 'alignmentDistance' ].value = this.pars.boids.alignment;
     this.boidSim.velocityUniforms[ 'cohesionDistance' ].value = this.pars.boids.cohesion;
     this.boidSim.velocityUniforms[ 'centerStrength' ].value = this.pars.boids.centerStrength;
+    this.boidSim.velocityUniforms[ 'speedLimit' ].value = this.pars.boids.speedLimit;
   }
 
   setupGui() {
@@ -234,6 +236,13 @@ class BoidTest extends SketchScene {
       min: 0.0,
       max: 100.0,
       label: 'centerStrength'
+    }).on( 'change', () => {
+      this.boidUniformUpdate();
+    });
+    f.addInput( this.pars.boids, 'speedLimit', {
+      min: 0.0,
+      max: 100.0,
+      label: 'speedLimit'
     }).on( 'change', () => {
       this.boidUniformUpdate();
     });
