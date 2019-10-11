@@ -25,6 +25,7 @@ module.exports = class WebGLApp extends EventEmitter {
     this.query = query;
     this.clock = new THREE.Clock();
     this.frameCount = 0;
+    this._scale = 1;
     this.lastTimeMsec = null;
     this.loadingPage = document.getElementById('loadingPage');
     this.assetManager = {};
@@ -280,7 +281,7 @@ module.exports = class WebGLApp extends EventEmitter {
     this.width = width;
     this.height = height;
     this.pixelRatio = pixelRatio;
-    this.scale = scale;
+    this._scale = scale;
 
     // update pixel ratio if necessary
     if (this.renderer.getPixelRatio() !== pixelRatio) {
@@ -302,6 +303,15 @@ module.exports = class WebGLApp extends EventEmitter {
     // draw a frame to ensure the new size has been registered visually
     this.draw();
     return this;
+  }
+
+  get scale() {
+    return this._scale;
+  }
+
+  set scale( scale ) {
+    if ( defined( scale, false ) ) this._scale = scale;
+    this.resize( this.viewport.clientWidth, this.viewport.clientHeight, this.pixelRatio, this._scale );
   }
 
   setGpuInfo() {
