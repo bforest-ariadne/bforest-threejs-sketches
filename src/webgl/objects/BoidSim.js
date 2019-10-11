@@ -209,7 +209,7 @@ module.exports = class BoidSim {
     // this.velocityUniforms[ "predator" ].value.set( 0.5 * mouseX / windowHalfX, - 0.5 * mouseY / windowHalfY, 0 );
 
     this.velocityUniforms[ 'predator' ].value.copy( this.predatorPosition );
-    this.velocityUniforms[ 'center' ].value.set( 0, 0, 0 );
+    this.velocityUniforms[ 'center' ].value.copy( this.centerPosition );
 
     // mouseX = 10000;
     // mouseY = 10000;

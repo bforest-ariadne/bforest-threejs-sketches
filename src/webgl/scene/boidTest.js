@@ -63,7 +63,8 @@ class BoidTest extends SketchScene {
         cohesion: 20.0,
         freedom: 0.75,
         squashiness: 0.9,
-        predatorPosition: new THREE.Vector3( 200, 200, 0 )
+        predatorPosition: new THREE.Vector3( 800, 800, 0 ),
+        centerPosition: new THREE.Vector3()
       }
     };
   }
@@ -190,6 +191,7 @@ class BoidTest extends SketchScene {
     }).on( 'change', () => {
       this.adjustEnvIntensity();
     });
+    f.expanded = false;
 
     f = gui.addFolder({title: `boid sim`});
 
@@ -225,7 +227,9 @@ class BoidTest extends SketchScene {
     }).on( 'change', () => {
       this.boidUniformUpdate();
     });
+    f.expanded = false;
 
+    f = gui.addFolder({title: `boid predator`});
     const predatorRange = 800;
     f.addInput( this.pars.boids.predatorPosition, 'x', {
       min: -predatorRange,
@@ -249,6 +253,33 @@ class BoidTest extends SketchScene {
       label: 'predator z'
     }).on( 'change', () => {
       this.boidSim.predatorPosition.copy( this.pars.boids.predatorPosition );
+    });
+    f.expanded = false;
+
+    f = gui.addFolder({title: `boid center`});
+    const centerRange = 100;
+    f.addInput( this.pars.boids.centerPosition, 'x', {
+      min: -centerRange,
+      max: centerRange,
+      label: 'center x'
+    }).on( 'change', () => {
+      this.boidSim.centerPosition.copy( this.pars.boids.centerPosition );
+    });
+
+    f.addInput( this.pars.boids.centerPosition, 'y', {
+      min: -centerRange,
+      max: centerRange,
+      label: 'center y'
+    }).on( 'change', () => {
+      this.boidSim.centerPosition.copy( this.pars.boids.centerPosition );
+    });
+
+    f.addInput( this.pars.boids.centerPosition, 'z', {
+      min: -centerRange,
+      max: centerRange,
+      label: 'center z'
+    }).on( 'change', () => {
+      this.boidSim.centerPosition.copy( this.pars.boids.centerPosition );
     });
   }
 
