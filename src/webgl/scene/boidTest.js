@@ -55,7 +55,7 @@ class BoidTest extends SketchScene {
     this.pars = {
       scene: {
         testShadow: false,
-        envMapIntensity: 0.02
+        envMapIntensity: 0.22
       },
       boids: {
         width: webgl.gpuInfo.tierNum === 1 ? 16 : 32,
@@ -63,22 +63,18 @@ class BoidTest extends SketchScene {
         alignmentDistance: 20.0,
         cohesionDistance: 20.0,
         squashiness: 1.0,
-        predator: new THREE.Vector3( 0, 0, 0 ),
+        predator: new THREE.Vector3( 0, 800, 800 ),
         center: new THREE.Vector3(),
-        centerStrength: 63,
+        centerStrength: 11,
         speedLimit: 9
       },
       iceMat: {
         thicknessAmbient: 0,
         thicknessDistortion: 0.19,
-        thicknessPower: 30,
-        thicknessScale: 10,
-        thicknessAttenuation: 1,
+        thicknessPower: 5.43,
+        thicknessScale: 17.39,
+        thicknessAttenuation: 0.15,
         thicknessRepeat: 1
-      },
-      gui: {
-        folder: null,
-        folders: {}
       }
     };
     this.simFolders = [];
@@ -113,8 +109,12 @@ class BoidTest extends SketchScene {
     postProcessSetup( true );
 
     this.room = new THREE.Mesh(
-      new THREE.BoxBufferGeometry( 400, 400, 400 ),
-      new THREE.MeshStandardMaterial({ side: THREE.BackSide })
+      new THREE.BoxBufferGeometry( 600, 600, 600 ),
+      new THREE.MeshStandardMaterial({ 
+        side: THREE.BackSide,
+        metalness: 0,
+        roughness: 0.9
+      })
     );
     this.room.receiveShadow = true;
     this.add( this.room );
@@ -231,6 +231,8 @@ class BoidTest extends SketchScene {
       if ( this.boidSim.velocityUniforms[ key ].type !== 'f' ) continue;
       this.boidSim.velocityUniforms[ key ].value = value;
     }
+    this.boidSim.predatorPosition.copy( this.pars.boids.predator );
+    this.boidSim.centerPosition.copy( this.pars.boids.center );
     this.boidSim.birdUniforms.squashiness.value = this.pars.boids.squashiness;
   }
 
