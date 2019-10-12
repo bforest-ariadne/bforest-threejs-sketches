@@ -13,7 +13,8 @@ const scenes = [
   require('./webgl/scene/PbrTest'),
   require('./webgl/scene/TranslucentTest'),
   require('./webgl/scene/boidTest'),
-  require('./webgl/scene/GoldenFlock')
+  require('./webgl/scene/GoldenFlock'),
+  require('./webgl/scene/BoidShredder')
 ];
 
 const DefaultScene = scenes[0];
