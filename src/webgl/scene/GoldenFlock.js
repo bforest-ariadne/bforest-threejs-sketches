@@ -3,6 +3,7 @@ const { webgl, assets, gui } = require('../../context');
 const postProcessSetup = require('../postProcessing/basicBloom');
 const query = require('../../util/query');
 const defined = require('defined');
+const { merge } = require('merge-anything');
 const BoidSim = require('../objects/BoidSim');
 
 const name = 'goldenflock';
@@ -43,7 +44,7 @@ class GoldenFlock extends SketchScene {
     super(name);
     this.public = true;
     this.animate = true;
-    this.pars = {
+    const pars = {
       scene: {
         testShadow: false,
         envMapIntensity: 1
@@ -54,10 +55,10 @@ class GoldenFlock extends SketchScene {
         separation: 20.0,
         alignment: 20.0,
         cohesion: 20.0,
-        freedom: 0.75,
         predatorPosition: new THREE.Vector3( 200, 200, 0 )
       }
     };
+    this.pars = merge( this.pars, pars );
   }
   init() {
     this.controlsInit();
@@ -104,7 +105,7 @@ class GoldenFlock extends SketchScene {
       width: this.pars.boids.width,
       bounds: this.pars.boids.bounds,
       centerStrength: 1,
-      geometry: new THREE.BoxBufferGeometry( 10, 10, 20, 1, 1, 1 ),
+      geometry: new THREE.BoxBufferGeometry( 20, 10, 10, 1, 1, 1 ),
       material: boidMat
     });
     this.boidSim.birdMesh.castShadow = true;
@@ -130,7 +131,6 @@ class GoldenFlock extends SketchScene {
     this.boidSim.velocityUniforms[ 'separationDistance' ].value = this.pars.boids.separation;
     this.boidSim.velocityUniforms[ 'alignmentDistance' ].value = this.pars.boids.alignment;
     this.boidSim.velocityUniforms[ 'cohesionDistance' ].value = this.pars.boids.cohesion;
-    this.boidSim.velocityUniforms[ 'freedomFactor' ].value = this.pars.boids.freedom;
   }
 
   setupGui() {

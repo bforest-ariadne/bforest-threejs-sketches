@@ -11,6 +11,7 @@ const Ground = require('../objects/ground');
 const { createMaterial, materialAssets } = require('../materials/createPbrMaterial');
 const IceMaterial = require('../materials/IceMaterial');
 const { toneMappingOptions } = require('../../util/constants');
+const { KernelSize } = require('postprocessing');
 
 // const { BirdGeometry, createBirdInstanceGeometry } = require( '../geos/Bird.js' );
 
@@ -60,9 +61,21 @@ class BoidTest extends SketchScene {
         envMapIntensity: 0.22
       },
       renderer: {
-        exposure: 1,
+        exposure: 9.46,
         whitePoint: 1,
         toneMapping: toneMappingOptions.Uncharted2
+      },
+      'bloomEffect': {
+        'dithering': true,
+        'resolution': 360,
+        'kernelSize': KernelSize.LARGE,
+        'scale': 1,
+        'opacity': 3.11,
+        'luminance': {
+          'filter': true,
+          'threshold': 0.5,
+          'smoothing': 0.42
+        }
       },
       boids: {
         width: webgl.gpuInfo.tierNum === 1 ? 16 : 32,
@@ -92,7 +105,6 @@ class BoidTest extends SketchScene {
     super.init();
     this.controlsInit();
     this.controls.distance = 350;
-    // this.controls.position = [-387.5724404469007, 639.4741434068955, -686.0763950300969];
     this.controls.position = [ 0, 0, 350 ];
     let env = assets.get('env');
 
@@ -102,16 +114,6 @@ class BoidTest extends SketchScene {
 
     webgl.renderer.setClearColor( 0x000000, 1);
 
-    webgl.renderer.gammaInput = true;
-    webgl.renderer.gammaOutput = true;
-    webgl.renderer.gammaFactor = 2.2;
-    webgl.renderer.shadowMap.enabled = true;
-    webgl.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    webgl.renderer.autoClear = false;
-    webgl.renderer.physicallyCorrectLights = true;
-    webgl.renderer.toneMapping = THREE.Uncharted2ToneMapping;
-    webgl.renderer.toneMappingExposure = 1;
-
     webgl.camera.fov = 75;
     webgl.camera.far = 5000;
     webgl.camera.updateProjectionMatrix();
@@ -120,10 +122,11 @@ class BoidTest extends SketchScene {
 
     this.room = new THREE.Mesh(
       new THREE.BoxBufferGeometry( 600, 600, 600 ),
-      new THREE.MeshStandardMaterial({ 
+      new THREE.MeshStandardMaterial({
         side: THREE.BackSide,
-        metalness: 0,
-        roughness: 0.9
+        metalness: 0.4,
+        roughness: 0.54,
+        color: 0x222222
       })
     );
     this.room.receiveShadow = true;
@@ -185,7 +188,7 @@ class BoidTest extends SketchScene {
     this.pointLight = new PointLight({
       intensity: 3000,
       meshSize: 100,
-      castShadow: true,
+      castShadow: false,
       shadowMapSize: 256,
       shadowCameraFar: 1000,
       shadowCameraNear: 50

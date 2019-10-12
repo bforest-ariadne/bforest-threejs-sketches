@@ -7,7 +7,12 @@ const toneMappingOptions = {
   ACESFilmic: THREE.ACESFilmicToneMapping
 };
 
-const SIDE_A = 'a';
-const SIDE_B = 'b';
+const resolutionOptions = {
+  '240': 240,
+  '360': 360,
+  '480': 480,
+  '720': 720,
+  '1080': 1080
+};
 
-module.exports = { toneMappingOptions, SIDE_A, SIDE_B };
+module.exports = { toneMappingOptions, resolutionOptions };

@@ -1,7 +1,7 @@
 const { BloomEffect, EffectComposer, EffectPass, RenderPass, KernelSize, BlendFunction, SMAAEffect, BrightnessContrastEffect, DepthEffect } = require('postprocessing');
 const { webgl, assets, gui } = require('../../context');
 const defined = require('defined');
-const { toneMappingOptions } = require('../../util/constants');
+const { toneMappingOptions, resolutionOptions } = require('../../util/constants');
 const RenderMode = {
   DEFAULT: 0,
   NORMALS: 1,
@@ -13,7 +13,7 @@ module.exports = function basicBloom( guiEnabled = false ) {
     'bloomEffect': {
       'dithering': true,
       'resolution': 360,
-      'kernel size': KernelSize.HUGE,
+      'kernelSize': KernelSize.HUGE,
       'scale': 1,
       'opacity': 3.11,
       'luminance': {
@@ -33,7 +33,6 @@ module.exports = function basicBloom( guiEnabled = false ) {
 
   };
 
-
   if ( defined( webgl.sceneObj.pars, false ) ) {
     Object.assign( params, webgl.sceneObj.pars );
   }
@@ -44,7 +43,7 @@ module.exports = function basicBloom( guiEnabled = false ) {
 
   const bloomEffect = new BloomEffect({
     blendFunction: BlendFunction.SCREEN,
-    kernelSize: params.bloomEffect['kernel size'],
+    kernelSize: params.bloomEffect['kernelSize'],
     luminanceThreshold: params.bloomEffect.luminance.threshold,
     luminanceSmoothing: params.bloomEffect.luminance.smoothing,
     height: params.bloomEffect.resolution
@@ -62,7 +61,7 @@ module.exports = function basicBloom( guiEnabled = false ) {
   const brightContrastEffect = new BrightnessContrastEffect();
   brightContrastEffect.uniforms.get('contrast').value = 0.1;
 
-  const effectPass = new EffectPass(webgl.camera, smaaEffect, brightContrastEffect, bloomEffect );
+  const effectPass = new EffectPass(webgl.camera, smaaEffect, bloomEffect );
   // const effectPass = new EffectPass(webgl.camera, smaaEffect, brightContrastEffect, bloomEffect, depthEffect );
   effectPass.renderToScreen = true;
 
@@ -72,6 +71,7 @@ module.exports = function basicBloom( guiEnabled = false ) {
   if ( !guiEnabled ) return;
 
   const scene = webgl.sceneObj;
+  scene.postFolders = [];
 
   const postFolder = gui.addFolder({
     title: `Post FX`,
@@ -93,18 +93,18 @@ module.exports = function basicBloom( guiEnabled = false ) {
     webgl.renderer.toneMappingExposure = params.renderer.exposure;
     webgl.renderer.toneMappingWhitePoint = params.renderer.whitePoint;
     webgl.renderer.toneMapping = params.renderer.toneMapping;
-  }
+  };
 
   const scaleGui = renderFolder.addInput( webgl, 'scale', {
     min: 0.1,
     max: 2
   });
-  window.scaleGui = scaleGui;
+
   renderFolder.addButton({
     title: 'reset scale'
   }).on( 'click', () => {
     webgl.scale = 1;
-    gui.refresh();
+    scaleGui.refresh();
   });
 
   renderFolder.addInput( params.renderer, 'exposure', {
@@ -118,19 +118,58 @@ module.exports = function basicBloom( guiEnabled = false ) {
   }).on( 'change', () => { updateRenderPars(); });
 
   renderFolder.addInput( params.renderer, 'toneMapping', {
-    options: Object.keys( toneMappingOptions )
+    options: toneMappingOptions
   }).on( 'change', () => { updateRenderPars(); });
 
-
   const bloomFolder = gui.addFolder({
-    title: `renderer`,
+    title: `bloom`,
     expanded: false
   });
   scene.postFolders.push( bloomFolder );
+
+  bloomFolder.addInput( params.bloomEffect, 'resolution', {
+    options: resolutionOptions
+  }).on( 'change', () => {
+    bloomEffect.height = Number.parseInt( params.bloomEffect.resolution );
+  });
+  bloomFolder.addInput( params.bloomEffect, 'kernelSize', {
+    options: KernelSize
+  }).on( 'change', () => {
+    bloomEffect.blurPass.kernelSize = Number.parseInt(params.bloomEffect['kernelSize']);
+  });
+  bloomFolder.addInput( params.bloomEffect, 'scale', {
+    min: 0,
+    max: 1
+  }).on( 'change', () => {
+    bloomEffect.blurPass.scale = Number.parseFloat(params.bloomEffect.scale);
+  });
+  bloomFolder.addInput( params.bloomEffect.luminance, 'filter' ).on( 'change', () => {
+    bloomEffect.luminancePass.enabled = params.bloomEffect.luminance.filter;
+  });
+  bloomFolder.addInput( params.bloomEffect.luminance, 'threshold', {
+    min: 0,
+    max: 1,
+    step: 0.001
+  }).on( 'change', () => {
+    bloomEffect.luminanceMaterial.threshold = Number.parseFloat(params.bloomEffect.luminance.threshold);
+  });
+  bloomFolder.addInput( params.bloomEffect.luminance, 'smoothing', {
+    min: 0,
+    max: 1,
+    step: 0.001
+  }).on( 'change', () => {
+    bloomEffect.luminanceMaterial.smoothing = Number.parseFloat(params.bloomEffect.luminance.smoothing);
+  });
+  bloomFolder.addInput( params.bloomEffect, 'opacity', {
+    min: 0,
+    max: 10,
+    step: 0.01
+  }).on( 'change', () => {
+    bloomEffect.blendMode.opacity.value = params.bloomEffect.opacity;
+  });
 
   scene.postFolders.forEach( folder => {
     const element = folder.controller.view.element;
     element.style.display = postFolder.expanded ? '' : 'none';
   } );
-
 };
