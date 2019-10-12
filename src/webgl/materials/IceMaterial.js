@@ -24,7 +24,7 @@ class IceMaterial extends THREE.MeshStandardMaterial {
         thicknessMap: { type: 't', value: parameters.thicknessMap || null },
         thicknessRepeat: { type: 'v2', value: parameters.thicknessRepeat || new THREE.Vector2(), min: 0, max: 10 },
         thicknessPower: { type: 'f', value: 20, min: 0, max: 100 },
-        thicknessScale: { type: 'f', value: 4, min: 0, max: 10 },
+        thicknessScale: { type: 'f', value: 4, min: 0, max: 100 },
         thicknessDistortion: { type: 'f', value: 0.185, min: 0, max: 1 },
         thicknessAmbient: { type: 'f', value: 0.0, min: 0, max: 1 },
         thicknessAttenuation: { type: 'f', value: 0.8, min: 0, max: 1 },
