@@ -20,6 +20,7 @@ module.exports = class WebGLApp extends EventEmitter {
     this.dev = defined( query.dev, false );
     this.canvas = opt.canvas;
     this.cargo = opt.cargo;
+    this.gui = opt.gui;
     this.viewport = opt.viewport;
     this.aside = opt.aside;
     this.query = query;
@@ -225,6 +226,11 @@ module.exports = class WebGLApp extends EventEmitter {
     global.app = this;
     global.stats = this.stats;
 
+    if (typeof __THREE_DEVTOOLS__ !== 'undefined') {
+      __THREE_DEVTOOLS__.dispatchEvent(new CustomEvent('entity', { type: 'scene', detail: this.scene }));
+      __THREE_DEVTOOLS__.dispatchEvent(new CustomEvent('entity', { type: 'renderer', detail: this.renderer }));
+    }
+
     this.scene.traverse(obj => {
       if (typeof obj.debug === 'function') {
         obj.debug();
@@ -312,6 +318,10 @@ module.exports = class WebGLApp extends EventEmitter {
   set scale( scale ) {
     if ( defined( scale, false ) ) this._scale = scale;
     this.resize( this.viewport.clientWidth, this.viewport.clientHeight, this.pixelRatio, this._scale );
+  }
+
+  setupGui() {
+
   }
 
   setGpuInfo() {

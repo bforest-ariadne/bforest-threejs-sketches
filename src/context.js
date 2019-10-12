@@ -88,7 +88,8 @@ const webgl = new WebGLApp({
   canvas,
   viewport,
   aside,
-  cargo
+  cargo,
+  gui
 });
 
 // setup dev mode

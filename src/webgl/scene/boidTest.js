@@ -78,6 +78,10 @@ class BoidTest extends SketchScene {
         thicknessAttenuation: 1,
         thicknessRepeat: 1,
         thicknessColor: 0xffffff
+      },
+      gui: {
+        folder: null,
+        folders: {}
       }
     };
   }
@@ -239,9 +243,17 @@ class BoidTest extends SketchScene {
   }
 
   setupGui() {
-    let f = gui.addFolder({title: `Scene: ${this.name}`});
+    let f;
+    let sceneFolder = gui.addFolder({
+      title: `Scene: ${this.name}`,
+      expanded: false
+    });
+    this.pars.gui.folder = sceneFolder;
+    sceneFolder.on( 'fold', e => {
+      console.log('scene gui folder expanded', sceneFolder.expanded);
+    });
 
-    f.addInput( this.pars.scene, 'envMapIntensity', {
+    sceneFolder.addInput( this.pars.scene, 'envMapIntensity', {
       min: 0.0,
       max: 1.0,
       step: 0.01,
@@ -249,7 +261,9 @@ class BoidTest extends SketchScene {
     }).on( 'change', () => {
       this.adjustEnvIntensity();
     });
-    f.expanded = false;
+    if ( webgl.dev ) window.boidSceneFolder = f;
+    // this.folders
+    // f.on( 'fold', e => { console.log('scene gui folder expanded', f.controller.folder.expanded ); });
 
     f = gui.addFolder({title: `boid sim`});
 
