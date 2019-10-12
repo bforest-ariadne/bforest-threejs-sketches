@@ -77,6 +77,12 @@ class BoidTest extends SketchScene {
           'smoothing': 0.42
         }
       },
+      levels: {
+        hue: 0,
+        saturation: 0,
+        brightness: 0,
+        contrast: 0.2
+      },
       boids: {
         width: webgl.gpuInfo.tierNum === 1 ? 16 : 32,
         separationDistance: 20.0,

@@ -49,6 +49,18 @@ class GoldenFlock extends SketchScene {
         testShadow: false,
         envMapIntensity: 1
       },
+      'bloomEffect': {
+        'dithering': true,
+        'resolution': 480,
+        'kernelSize': KernelSize.HUGE,
+        'scale': 1,
+        'opacity': 3.11,
+        'luminance': {
+          'filter': true,
+          'threshold': 0.05,
+          'smoothing': 0.89
+        }
+      },
       boids: {
         width: 32,
         bounds: 800,

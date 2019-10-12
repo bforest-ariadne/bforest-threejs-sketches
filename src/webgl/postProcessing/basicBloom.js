@@ -1,4 +1,4 @@
-const { BloomEffect, EffectComposer, EffectPass, RenderPass, KernelSize, BlendFunction, SMAAEffect, BrightnessContrastEffect, DepthEffect } = require('postprocessing');
+const { BloomEffect, EffectComposer, EffectPass, RenderPass, KernelSize, BlendFunction, SMAAEffect, BrightnessContrastEffect, HueSaturationEffect, DepthEffect } = require('postprocessing');
 const { webgl, assets, gui } = require('../../context');
 const defined = require('defined');
 const { toneMappingOptions, resolutionOptions } = require('../../util/constants');
@@ -21,6 +21,12 @@ module.exports = function basicBloom( guiEnabled = false ) {
         'threshold': 0.079,
         'smoothing': 0.89
       }
+    },
+    levels: {
+      hue: 0,
+      saturation: 0,
+      brightness: 0,
+      contrast: 0.1
     },
     postProcessing: {
       renderMode: RenderMode.DEFAULT
@@ -58,10 +64,17 @@ module.exports = function basicBloom( guiEnabled = false ) {
   //   blendFunction: BlendFunction.SKIP
   // });
 
-  const brightContrastEffect = new BrightnessContrastEffect();
-  brightContrastEffect.uniforms.get('contrast').value = 0.1;
+  const brightContrastEffect = new BrightnessContrastEffect({
+    brightness: params.levels.brightness,
+    contrast: params.levels.contrast
+  });
 
-  const effectPass = new EffectPass(webgl.camera, smaaEffect, bloomEffect );
+  const hueSaturationEffect = new HueSaturationEffect({
+    hue: params.levels.hue,
+    saturation: params.levels.saturation
+  });
+
+  const effectPass = new EffectPass(webgl.camera, smaaEffect, brightContrastEffect, hueSaturationEffect, bloomEffect );
   // const effectPass = new EffectPass(webgl.camera, smaaEffect, brightContrastEffect, bloomEffect, depthEffect );
   effectPass.renderToScreen = true;
 
@@ -166,6 +179,36 @@ module.exports = function basicBloom( guiEnabled = false ) {
     step: 0.01
   }).on( 'change', () => {
     bloomEffect.blendMode.opacity.value = params.bloomEffect.opacity;
+  });
+
+  const levelsFolder = gui.addFolder({
+    title: `levels`,
+    expanded: false
+  });
+  scene.postFolders.push( levelsFolder );
+  levelsFolder.addInput( params.levels, 'hue', {
+    min: 0,
+    max: Math.PI * 2
+  }).on( 'change', () => {
+    hueSaturationEffect.setHue( Number.parseFloat(params.levels.hue) );
+  });
+  levelsFolder.addInput( params.levels, 'saturation', {
+    min: -1,
+    max: 1
+  }).on( 'change', () => {
+    hueSaturationEffect.uniforms.get('saturation').value = Number.parseFloat(params.levels.saturation);
+  });
+  levelsFolder.addInput( params.levels, 'brightness', {
+    min: -1,
+    max: 1
+  }).on( 'change', () => {
+    brightContrastEffect.uniforms.get('brightness').value = Number.parseFloat(params.levels.brightness);
+  });
+  levelsFolder.addInput( params.levels, 'contrast', {
+    min: -1,
+    max: 1
+  }).on( 'change', () => {
+    brightContrastEffect.uniforms.get('contrast').value = Number.parseFloat(params.levels.contrast);
   });
 
   scene.postFolders.forEach( folder => {
