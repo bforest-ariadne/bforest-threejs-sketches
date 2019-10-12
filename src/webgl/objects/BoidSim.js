@@ -16,7 +16,9 @@ module.exports = class BoidSim {
     width = 32,
     bounds = 0.001,
     geometry = null,
-    material = null
+    material = null,
+    useCustomDepth = false,
+    useCustomDistance = false
   } = {} ) {
     this.predatorPosition = predatorPosition;
     this.centerPosition = centerPosition;
@@ -153,28 +155,32 @@ module.exports = class BoidSim {
         birdMesh.frustumCulled = false;
         birdMesh.updateMatrix();
 
+        if ( useCustomDepth ) {
         // custom depth material - required for instanced shadows
-        var customDepthMaterial = new THREE.MeshDepthMaterial();
-        customDepthMaterial.onBeforeCompile = ( shader, renderer ) => {
-          birdMat.onBeforeCompile( shader, renderer );
-          shader.vertexShader = `
+          var customDepthMaterial = new THREE.MeshDepthMaterial();
+          customDepthMaterial.onBeforeCompile = ( shader, renderer ) => {
+            birdMat.onBeforeCompile( shader, renderer );
+            shader.vertexShader = `
           #define MESH_DEPTH_SHADER
           ` + shader.vertexShader;
-        };
-        customDepthMaterial.depthPacking = THREE.RGBADepthPacking;
+          };
+          customDepthMaterial.depthPacking = THREE.RGBADepthPacking;
+          birdMesh.customDepthMaterial = customDepthMaterial;
+        }
 
-        // custom distance material - required for instanced pointlight shadows
-        const customDistanceMaterial = new THREE.MeshDistanceMaterial();
-        customDistanceMaterial.onBeforeCompile = ( shader, renderer ) => {
-          birdMat.onBeforeCompile( shader, renderer );
-          shader.vertexShader = `
-          #define MESH_DEPTH_SHADER
-          ` + shader.vertexShader;
-        };
-        customDistanceMaterial.depthPacking = THREE.RGBADepthPacking;
+        if ( useCustomDistance ) {
+          // custom distance material - required for instanced pointlight shadows
+          const customDistanceMaterial = new THREE.MeshDistanceMaterial();
+          customDistanceMaterial.onBeforeCompile = ( shader, renderer ) => {
+            birdMat.onBeforeCompile( shader, renderer );
+            shader.vertexShader = `
+         #define MESH_DEPTH_SHADER
+         ` + shader.vertexShader;
+          };
+          customDistanceMaterial.depthPacking = THREE.RGBADepthPacking;
+          birdMesh.customDistanceMaterial = customDistanceMaterial;
+        }
 
-        birdMesh.customDepthMaterial = customDepthMaterial;
-        birdMesh.customDistanceMaterial = customDistanceMaterial;
         birdMesh.onBeforeRender = (renderer, scene, camera, geometry, material) => {
           material.onBeforeCompile = birdMat.onBeforeCompile;
           material.side = birdMat.side;

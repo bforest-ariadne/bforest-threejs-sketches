@@ -230,7 +230,7 @@ class BoidTest extends SketchScene {
     }
     this.adjustEnvIntensity();
     this.iceMatUniformsUpdate();
-    this.setupGui();
+    if ( webgl.gui ) this.setupGui();
   }
 
   update (delta = 0, now = 0, frame = 0) {

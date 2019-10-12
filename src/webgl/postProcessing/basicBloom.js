@@ -81,7 +81,7 @@ module.exports = function basicBloom( guiEnabled = false ) {
   webgl.composer.addPass(new RenderPass(webgl.scene, webgl.camera));
   webgl.composer.addPass(effectPass);
 
-  if ( !guiEnabled ) return;
+  if ( !guiEnabled || !webgl.gui ) return;
 
   const scene = webgl.sceneObj;
   scene.postFolders = [];
