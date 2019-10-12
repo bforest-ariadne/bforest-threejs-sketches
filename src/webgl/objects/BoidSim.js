@@ -63,13 +63,13 @@ module.exports = class BoidSim {
       this.velocityUniforms[ 'time' ] = { value: 1.0 };
       this.velocityUniforms[ 'delta' ] = { value: 0.0 };
       this.velocityUniforms[ 'testing' ] = { value: 1.0 };
-      this.velocityUniforms[ 'separationDistance' ] = { value: separation };
-      this.velocityUniforms[ 'alignmentDistance' ] = { value: alignment };
-      this.velocityUniforms[ 'cohesionDistance' ] = { value: cohesion };
-      this.velocityUniforms[ 'predator' ] = { value: this.predatorPosition };
-      this.velocityUniforms[ 'center' ] = { value: this.centerPosition };
-      this.velocityUniforms[ 'centerStrength' ] = { value: this.centerStrength };
-      this.velocityUniforms[ 'speedLimit' ] = { value: speedLimit };
+      this.velocityUniforms[ 'separationDistance' ] = { value: separation, type: 'f', min: 0, max: 40 };
+      this.velocityUniforms[ 'alignmentDistance' ] = { value: alignment, type: 'f', min: 0, max: 40 };
+      this.velocityUniforms[ 'cohesionDistance' ] = { value: cohesion, type: 'f', min: 0, max: 40 };
+      this.velocityUniforms[ 'predator' ] = { value: this.predatorPosition, type: 'v3' };
+      this.velocityUniforms[ 'center' ] = { value: this.centerPosition, type: 'v3' };
+      this.velocityUniforms[ 'centerStrength' ] = { value: this.centerStrength, type: 'f', min: 0, max: 100 };
+      this.velocityUniforms[ 'speedLimit' ] = { value: speedLimit, type: 'f', min: 0, max: 100 };
       this.velocityVariable.material.defines.BOUNDS = BOUNDS.toFixed( 2 );
 
       this.velocityVariable.wrapS = THREE.RepeatWrapping;
@@ -99,12 +99,12 @@ module.exports = class BoidSim {
 
       // For Vertex and Fragment
       this.birdUniforms = {
-        'color': { value: new THREE.Color( 0xff2200 ) },
-        'texturePosition': { value: null },
-        'textureVelocity': { value: null },
+        'color': { value: new THREE.Color( 0xff2200 ), type: 'v3' },
+        'texturePosition': { value: null, type: 't' },
+        'textureVelocity': { value: null, type: 't' },
         'time': { value: 1.0 },
         'delta': { value: 0.0 },
-        'squashiness': { value: 0.5 }
+        'squashiness': { value: 0.5, type: 'f', min: 0, max: 1 }
       };
 
       // THREE.ShaderMaterial

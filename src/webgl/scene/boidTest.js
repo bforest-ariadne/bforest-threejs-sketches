@@ -59,14 +59,12 @@ class BoidTest extends SketchScene {
       },
       boids: {
         width: webgl.gpuInfo.tierNum === 1 ? 16 : 32,
-        bounds: 800,
-        separation: 20.0,
-        alignment: 20.0,
-        cohesion: 20.0,
-        freedom: 0.75,
+        separationDistance: 20.0,
+        alignmentDistance: 20.0,
+        cohesionDistance: 20.0,
         squashiness: 1.0,
-        predatorPosition: new THREE.Vector3( 0, 0, 0 ),
-        centerPosition: new THREE.Vector3(),
+        predator: new THREE.Vector3( 0, 0, 0 ),
+        center: new THREE.Vector3(),
         centerStrength: 63,
         speedLimit: 9
       },
@@ -76,14 +74,14 @@ class BoidTest extends SketchScene {
         thicknessPower: 30,
         thicknessScale: 10,
         thicknessAttenuation: 1,
-        thicknessRepeat: 1,
-        thicknessColor: 0xffffff
+        thicknessRepeat: 1
       },
       gui: {
         folder: null,
         folders: {}
       }
     };
+    this.simFolders = [];
   }
   init() {
     this.controlsInit();
@@ -173,7 +171,6 @@ class BoidTest extends SketchScene {
     this.add( this.boidSim.birdMesh );
     if ( webgl.dev ) window.birdMesh = this.boidSim.birdMesh;
     this.boidUniformUpdate();
-    
 
     this.pointLight = new PointLight({
       intensity: 3000,
@@ -221,18 +218,20 @@ class BoidTest extends SketchScene {
     super.update();
     if ( defined( this.boidSim ) ) {
       if ( !this.animate ) return;
-      this.boidSim.predatorPosition.copy( this.pars.boids.predatorPosition );
+      // this.boidSim.predatorPosition.copy( this.pars.boids.predatorPosition );
 
       this.boidSim.update( delta, now, frame );
     }
   }
 
   boidUniformUpdate() {
-    this.boidSim.velocityUniforms[ 'separationDistance' ].value = this.pars.boids.separation;
-    this.boidSim.velocityUniforms[ 'alignmentDistance' ].value = this.pars.boids.alignment;
-    this.boidSim.velocityUniforms[ 'cohesionDistance' ].value = this.pars.boids.cohesion;
-    this.boidSim.velocityUniforms[ 'centerStrength' ].value = this.pars.boids.centerStrength;
-    this.boidSim.velocityUniforms[ 'speedLimit' ].value = this.pars.boids.speedLimit;
+    for ( let [ key, value ] of Object.entries( this.pars.boids ) ) {
+      if ( key === 'width' || key === 'squashiness' ) continue;
+      if ( !defined( this.boidSim.velocityUniforms[key].type, false) ) continue;
+      if ( this.boidSim.velocityUniforms[ key ].type !== 'f' ) continue;
+      this.boidSim.velocityUniforms[ key ].value = value;
+    }
+    this.boidSim.birdUniforms.squashiness.value = this.pars.boids.squashiness;
   }
 
   iceMatUniformsUpdate() {
@@ -243,14 +242,11 @@ class BoidTest extends SketchScene {
   }
 
   setupGui() {
-    let f;
     let sceneFolder = gui.addFolder({
       title: `Scene: ${this.name}`,
       expanded: false
-    });
-    this.pars.gui.folder = sceneFolder;
-    sceneFolder.on( 'fold', e => {
-      console.log('scene gui folder expanded', sceneFolder.expanded);
+    }).on( 'fold', e => {
+      this.log( 'scene gui folder expanded', sceneFolder.expanded );
     });
 
     sceneFolder.addInput( this.pars.scene, 'envMapIntensity', {
@@ -261,171 +257,106 @@ class BoidTest extends SketchScene {
     }).on( 'change', () => {
       this.adjustEnvIntensity();
     });
-    if ( webgl.dev ) window.boidSceneFolder = f;
-    // this.folders
-    // f.on( 'fold', e => { console.log('scene gui folder expanded', f.controller.folder.expanded ); });
 
-    f = gui.addFolder({title: `boid sim`});
-
-    f.addInput( this.pars.boids, 'squashiness', {
-      min: 0.0,
-      max: 1.0,
-      step: 0.01,
-      label: 'squashiness'
-    }).on( 'change', () => {
-      this.boidSim.birdUniforms.squashiness.value = this.pars.boids.squashiness;
+    const boidsFolder = gui.addFolder({
+      title: `boids`,
+      expanded: false
+    }).on( 'fold', () => {
+      this.simFolders.forEach( folder => {
+        const element = folder.controller.view.element;
+        element.style.display = boidsFolder.expanded ? '' : 'none';
+      } );
     });
+    window.boidsFolder = boidsFolder;
 
-    f.addInput( this.pars.boids, 'separation', {
-      min: 0.0,
-      max: 40.0,
-      label: 'separation distance'
-    }).on( 'change', () => {
-      this.boidUniformUpdate();
+    const simFolder = gui.addFolder({
+      title: `boid sim`,
+      expanded: false
     });
+    this.simFolders.push( simFolder );
+    for ( let key of Object.keys( this.pars.boids ) ) {
+      if ( key === 'width' ) continue;
+      const uniform = defined(this.boidSim.velocityUniforms[key], false) || defined(this.boidSim.birdUniforms[key], false);
+      if ( defined( uniform.type ) && uniform.type === 'f') {
+        simFolder.addInput( this.pars.boids, key, {
+          min: uniform.min,
+          max: uniform.max,
+          label: key
+        }).on( 'change', () => {
+          this.boidUniformUpdate();
+        });
+      }
+    }
 
-    f.addInput( this.pars.boids, 'cohesion', {
-      min: 0.0,
-      max: 40.0,
-      label: 'cohesion distance'
-    }).on( 'change', () => {
-      this.boidUniformUpdate();
+    const predatorFolder = gui.addFolder({
+      title: `boid predator`,
+      expanded: false
     });
+    for ( let key of Object.keys( this.pars.boids.predator ) ) {
+      const predatorRange = 800;
+      predatorFolder.addInput( this.pars.boids.predator, key, {
+        min: -predatorRange,
+        max: predatorRange,
+        label: `predator ${key}`
+      }).on( 'change', () => {
+        this.boidSim.predatorPosition.copy( this.pars.boids.predator );
+      });
+    }
+    this.simFolders.push( predatorFolder );
 
-    f.addInput( this.pars.boids, 'alignment', {
-      min: 0.0,
-      max: 40.0,
-      label: 'alignment distance'
-    }).on( 'change', () => {
-      this.boidUniformUpdate();
+    const centerFolder = gui.addFolder({
+      title: `boid center`,
+      expanded: false
     });
+    this.simFolders.push( centerFolder );
+    for ( let key of Object.keys( this.pars.boids.center ) ) {
+      const centerRange = 100;
+      centerFolder.addInput( this.pars.boids.center, key, {
+        min: -centerRange,
+        max: centerRange,
+        label: `center ${key}`
+      }).on( 'change', () => {
+        this.boidSim.centerPosition.copy( this.pars.boids.center );
+      });
+    }
 
-    f.addInput( this.pars.boids, 'centerStrength', {
-      min: 0.0,
-      max: 100.0,
-      label: 'centerStrength'
-    }).on( 'change', () => {
-      this.boidUniformUpdate();
+    const iceMatFolder = gui.addFolder({
+      title: `iceMat`,
+      expanded: false
     });
-    f.addInput( this.pars.boids, 'speedLimit', {
-      min: 0.0,
-      max: 100.0,
-      label: 'speedLimit'
-    }).on( 'change', () => {
-      this.boidUniformUpdate();
-    });
-    f.expanded = false;
-
-    f = gui.addFolder({title: `boid predator`});
-    const predatorRange = 800;
-    f.addInput( this.pars.boids.predatorPosition, 'x', {
-      min: -predatorRange,
-      max: predatorRange,
-      label: 'predator x'
-    }).on( 'change', () => {
-      this.boidSim.predatorPosition.copy( this.pars.boids.predatorPosition );
-    });
-
-    f.addInput( this.pars.boids.predatorPosition, 'y', {
-      min: -predatorRange,
-      max: predatorRange,
-      label: 'predator y'
-    }).on( 'change', () => {
-      this.boidSim.predatorPosition.copy( this.pars.boids.predatorPosition );
-    });
-
-    f.addInput( this.pars.boids.predatorPosition, 'z', {
-      min: -predatorRange,
-      max: predatorRange,
-      label: 'predator z'
-    }).on( 'change', () => {
-      this.boidSim.predatorPosition.copy( this.pars.boids.predatorPosition );
-    });
-    f.expanded = false;
-
-    f = gui.addFolder({title: `boid center`});
-    const centerRange = 100;
-    f.addInput( this.pars.boids.centerPosition, 'x', {
-      min: -centerRange,
-      max: centerRange,
-      label: 'center x'
-    }).on( 'change', () => {
-      this.boidSim.centerPosition.copy( this.pars.boids.centerPosition );
-    });
-
-    f.addInput( this.pars.boids.centerPosition, 'y', {
-      min: -centerRange,
-      max: centerRange,
-      label: 'center y'
-    }).on( 'change', () => {
-      this.boidSim.centerPosition.copy( this.pars.boids.centerPosition );
-    });
-
-    f.addInput( this.pars.boids.centerPosition, 'z', {
-      min: -centerRange,
-      max: centerRange,
-      label: 'center z'
-    }).on( 'change', () => {
-      this.boidSim.centerPosition.copy( this.pars.boids.centerPosition );
-    });
-    f.expanded = false;
-
-    f = gui.addFolder({title: `iceMat`});
-
-    f.addInput( this.pars.iceMat, 'thicknessAmbient', {
-      min: 0.0,
-      max: 1,
-      step: 0.01,
-      label: 'thicknessAmbient'
-    }).on( 'change', () => {
-      this.iceMatUniformsUpdate();
-    });
-
-    f.addInput( this.pars.iceMat, 'thicknessDistortion', {
-      min: 0.0,
-      max: 1,
-      step: 0.01,
-      label: 'thicknessDistortion'
-    }).on( 'change', () => {
-    });
-
-    f.addInput( this.pars.iceMat, 'thicknessPower', {
-      min: 0.0,
-      max: 100,
-      step: 1,
-      label: 'thicknessPower'
-    }).on( 'change', () => {
-    });
-
-    f.addInput( this.pars.iceMat, 'thicknessScale', {
-      min: 0.0,
-      max: 10,
-      step: 0.01,
-      label: 'thicknessScale'
-    }).on( 'change', () => {
-    });
-
-    f.addInput( this.pars.iceMat, 'thicknessAttenuation', {
-      min: 0.0,
-      max: 1,
-      step: 0.01,
-      label: 'thicknessAttenuation'
-    });
-
-    f.addInput( this.pars.iceMat, 'thicknessRepeat', {
-      min: 0.0,
-      max: 5,
-      step: 0.01,
-      label: 'thicknessRepeat'
-    }).on( 'change', () => {
-      this.iceMaterial.uniforms.thicknessRepeat.value.x = this.pars.iceMat.thicknessRepeat;
-      this.iceMaterial.uniforms.thicknessRepeat.value.y = this.pars.iceMat.thicknessRepeat;
-    });
-
-    f.addInput( this.iceMaterial, 'thicknessColorStyle', {
+    for ( let key of Object.keys( this.pars.iceMat ) ) {
+      const uniform = this.iceMaterial.uniforms[key];
+      if ( uniform.type === 'f' ) {
+        iceMatFolder.addInput( this.pars.iceMat, key, {
+          min: uniform.min,
+          max: uniform.max,
+          label: key
+        }).on( 'change', () => {
+          this.iceMatUniformsUpdate();
+        });
+      } else if ( uniform.type === 'v2' ) {
+        iceMatFolder.addInput( this.pars.iceMat, key, {
+          min: uniform.min,
+          max: uniform.max,
+          label: key
+        }).on( 'change', () => {
+          uniform.value.x = this.pars.iceMat[key];
+          uniform.value.y = this.pars.iceMat[key];
+        });
+      } else {
+        iceMatFolder.addInput( this.pars.iceMat, key, {
+          label: key
+        });
+      }
+    }
+    iceMatFolder.addInput( this.iceMaterial, 'thicknessColorStyle', {
       label: 'thicknessColor'
     });
-    f.expanded = false;
+
+    this.simFolders.forEach( folder => {
+      const element = folder.controller.view.element;
+      element.style.display = simFolder.expanded ? '' : 'none';
+    } );
   }
 
   adjustEnvIntensity( value ) {

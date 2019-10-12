@@ -72,6 +72,8 @@ module.exports = class WebGLApp extends EventEmitter {
       failIfMajorPerformanceCaveat: true
     }, opt));
 
+    this.renderer.info.autoReset = false;
+
     // getRenderer(function(renderer) { console.log(renderer); } );
 
     this.setGpuInfo();
@@ -211,6 +213,7 @@ module.exports = class WebGLApp extends EventEmitter {
 
     if ( this._checkReady() ) this.emit('show');
     if ( this.frameCount === 2 ) this.emit('frame2');
+    this.renderer.info.reset();
     this.stats.end();
   }
 
@@ -230,6 +233,11 @@ module.exports = class WebGLApp extends EventEmitter {
       __THREE_DEVTOOLS__.dispatchEvent(new CustomEvent('entity', { type: 'scene', detail: this.scene }));
       __THREE_DEVTOOLS__.dispatchEvent(new CustomEvent('entity', { type: 'renderer', detail: this.renderer }));
     }
+    // if (window.ThreeDevTools) {
+    //   const scene = this.scene;
+    //   const renderer = this.renderer;
+    //   window.ThreeDevTools.connect({ scene, renderer });
+    // }
 
     this.scene.traverse(obj => {
       if (typeof obj.debug === 'function') {
