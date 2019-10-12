@@ -22,8 +22,8 @@ class SketchScene extends THREE.Object3D {
 
     this.pars = {
       renderer: {
-        exposure: 2,
-        whitePoint: 5,
+        exposure: 1,
+        whitePoint: 1,
         toneMapping: toneMappingOptions.Uncharted2,
         gammaInput: true,
         gammaOutput: true,

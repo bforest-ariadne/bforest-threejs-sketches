@@ -104,7 +104,7 @@ class GoldenFlock extends SketchScene {
     this.boidSim = new BoidSim( webgl.renderer, {
       width: this.pars.boids.width,
       bounds: this.pars.boids.bounds,
-      centerStrength: 1,
+      centerStrength: 5,
       geometry: new THREE.BoxBufferGeometry( 20, 10, 10, 1, 1, 1 ),
       material: boidMat
     });
