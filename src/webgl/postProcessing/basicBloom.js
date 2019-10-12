@@ -1,15 +1,17 @@
 const { BloomEffect, EffectComposer, EffectPass, RenderPass, KernelSize, BlendFunction, SMAAEffect, BrightnessContrastEffect, DepthEffect } = require('postprocessing');
 const { webgl, assets, gui } = require('../../context');
 const defined = require('defined');
+const { toneMappingOptions } = require('../../util/constants');
 const RenderMode = {
   DEFAULT: 0,
   NORMALS: 1,
   DEPTH: 2
 };
 
-module.exports = function basicBloom() {
+module.exports = function basicBloom( guiEnabled = false ) {
   let params = {
     'bloomEffect': {
+      'dithering': true,
       'resolution': 360,
       'kernel size': KernelSize.HUGE,
       'scale': 1,
@@ -23,12 +25,14 @@ module.exports = function basicBloom() {
     postProcessing: {
       renderMode: RenderMode.DEFAULT
     },
-    exposure: 4.2,
-    whitePoint: 5,
-    toneMapping: 'Uncharted2'
+    renderer: {
+      exposure: 4.2,
+      whitePoint: 5,
+      toneMapping: 'Uncharted2'
+    }
+
   };
 
-  // params = defined( app.sceneObj.pars, params );
 
   if ( defined( webgl.sceneObj.pars, false ) ) {
     Object.assign( params, webgl.sceneObj.pars );
@@ -40,13 +44,16 @@ module.exports = function basicBloom() {
 
   const bloomEffect = new BloomEffect({
     blendFunction: BlendFunction.SCREEN,
-    kernelSize: KernelSize.Huge,
-    luminanceThreshold: 0.05,
-    luminanceSmoothing: 0.89,
-    height: 480});
+    kernelSize: params.bloomEffect['kernel size'],
+    luminanceThreshold: params.bloomEffect.luminance.threshold,
+    luminanceSmoothing: params.bloomEffect.luminance.smoothing,
+    height: params.bloomEffect.resolution
+  });
 
   bloomEffect.inverted = true;
-  bloomEffect.blendMode.opacity.value = 0.8;
+  bloomEffect.blendMode.opacity.value = params.bloomEffect.opacity;
+  bloomEffect.dithering = true;
+  bloomEffect.luminancePass.enabled = params.bloomEffect.luminance.filter;
 
   // const depthEffect = new DepthEffect({
   //   blendFunction: BlendFunction.SKIP
@@ -62,26 +69,68 @@ module.exports = function basicBloom() {
   webgl.composer.addPass(new RenderPass(webgl.scene, webgl.camera));
   webgl.composer.addPass(effectPass);
 
-  // function toggleRenderMode() {
-  //   const mode = Number.parseInt(params.postProcessing['renderMode']);
+  if ( !guiEnabled ) return;
 
-  //   // effectPass.enabled = (mode === RenderMode.DEFAULT || mode === RenderMode.DEPTH);
-  //   // normalPass.renderToScreen = (mode === RenderMode.NORMALS);
-  //   depthEffect.blendMode.blendFunction = (mode === RenderMode.DEPTH) ? BlendFunction.NORMAL : BlendFunction.SKIP;
+  const scene = webgl.sceneObj;
 
-  //   effectPass.recompile();
-  // }
+  const postFolder = gui.addFolder({
+    title: `Post FX`,
+    expanded: false
+  }).on( 'fold', () => {
+    scene.postFolders.forEach( folder => {
+      const element = folder.controller.view.element;
+      element.style.display = postFolder.expanded ? '' : 'none';
+    } );
+  });
 
-  // global.modes = BlendFunction;
+  const renderFolder = gui.addFolder({
+    title: `renderer`,
+    expanded: false
+  });
+  scene.postFolders.push( renderFolder );
 
-  // let fold = gui.addFolder({title: 'Post'});
-  // fold.expanded = false;
+  const updateRenderPars = () => {
+    webgl.renderer.toneMappingExposure = params.renderer.exposure;
+    webgl.renderer.toneMappingWhitePoint = params.renderer.whitePoint;
+    webgl.renderer.toneMapping = params.renderer.toneMapping;
+  }
 
-  // fold.addInput(params.postProcessing, 'renderMode', {
-  //   options: {
-  //     default: RenderMode.DEFAULT,
-  //     // normals: RenderMode.NORMALS,
-  //     depth: RenderMode.DEPTH
-  //   }
-  // }).onChange(toggleRenderMode);
+  const scaleGui = renderFolder.addInput( webgl, 'scale', {
+    min: 0.1,
+    max: 2
+  });
+  window.scaleGui = scaleGui;
+  renderFolder.addButton({
+    title: 'reset scale'
+  }).on( 'click', () => {
+    webgl.scale = 1;
+    gui.refresh();
+  });
+
+  renderFolder.addInput( params.renderer, 'exposure', {
+    min: 0,
+    max: 10
+  }).on( 'change', () => { updateRenderPars(); });
+
+  renderFolder.addInput( params.renderer, 'whitePoint', {
+    min: 0,
+    max: 10
+  }).on( 'change', () => { updateRenderPars(); });
+
+  renderFolder.addInput( params.renderer, 'toneMapping', {
+    options: Object.keys( toneMappingOptions )
+  }).on( 'change', () => { updateRenderPars(); });
+
+
+  const bloomFolder = gui.addFolder({
+    title: `renderer`,
+    expanded: false
+  });
+  scene.postFolders.push( bloomFolder );
+
+  scene.postFolders.forEach( folder => {
+    const element = folder.controller.view.element;
+    element.style.display = postFolder.expanded ? '' : 'none';
+  } );
+
 };

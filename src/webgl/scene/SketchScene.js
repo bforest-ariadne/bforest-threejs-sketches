@@ -1,7 +1,7 @@
 const { gui, webgl, assets } = require('../../context');
 const createOrbitControls = require('orbit-controls');
 const defined = require('defined');
-const basicSMAA = require('../postProcessing/basicSMAA');
+const { toneMappingOptions } = require('../../util/constants');
 
 let name = 'sketchScene';
 const title = 'No Title';
@@ -20,24 +20,31 @@ class SketchScene extends THREE.Object3D {
     this.debugGlobals = [];
     this.debugGlobalsLive = [];
 
-    if (gui) {
-      // assume it can be falsey, e.g. if we strip dat-gui out of bundle
-      // attach dat.gui stuff here as usual
-    }
-
-    // this.init();
+    this.pars = {
+      renderer: {
+        exposure: 2,
+        whitePoint: 5,
+        toneMapping: toneMappingOptions.Uncharted2,
+        gammaInput: true,
+        gammaOutput: true,
+        gammaFactor: 2.2,
+        shadowMapEnabled: true,
+        autoClear: false,
+        physicallyCorrectLights: true
+      }
+    };
   }
 
   init() {
-    this.controlsInit();
-    basicSMAA();
-    this.mesh = new THREE.Mesh(
-      new THREE.BoxGeometry(1, 1, 1),
-      new THREE.MeshBasicMaterial({
-        wireframe: true, color: 'white'
-      })
-    );
-    this.add(this.mesh);
+    webgl.renderer.gammaInput = this.pars.renderer.gammaInput;
+    webgl.renderer.gammaOutput = this.pars.renderer.gammaOutput;
+    webgl.renderer.gammaFactor = this.pars.renderer.gammaFactor;
+    webgl.renderer.shadowMap.enabled = this.pars.renderer.shadowMapEnabled;
+    webgl.renderer.autoClear = this.pars.renderer.autoClear;
+    webgl.renderer.physicallyCorrectLights = this.pars.renderer.physicallyCorrectLights;
+    webgl.renderer.toneMapping = this.pars.renderer.toneMapping;
+    webgl.renderer.toneMappingExposure = this.pars.renderer.exposure;
+    webgl.renderer.toneMappingWhitePoint = this.pars.renderer.whitePoint;
   }
 
   update (dt = 0, time = 0, frame = 0) {

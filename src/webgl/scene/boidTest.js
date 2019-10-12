@@ -3,12 +3,14 @@ const { webgl, assets, gui } = require('../../context');
 const postProcessSetup = require('../postProcessing/basicBloom');
 const query = require('../../util/query');
 const defined = require('defined');
+const { merge } = require('merge-anything');
 const BoidSim = require('../objects/BoidSim');
 const { SpotLight, PointLight } = require('../objects/lights');
 const Ground = require('../objects/ground');
 // eslint-disable-next-line no-unused-vars
 const { createMaterial, materialAssets } = require('../materials/createPbrMaterial');
 const IceMaterial = require('../materials/IceMaterial');
+const { toneMappingOptions } = require('../../util/constants');
 
 // const { BirdGeometry, createBirdInstanceGeometry } = require( '../geos/Bird.js' );
 
@@ -52,10 +54,15 @@ class BoidTest extends SketchScene {
   constructor () {
     super(name);
     this.animate = true;
-    this.pars = {
+    const pars = {
       scene: {
         testShadow: false,
         envMapIntensity: 0.22
+      },
+      renderer: {
+        exposure: 1,
+        whitePoint: 1,
+        toneMapping: toneMappingOptions.Uncharted2
       },
       boids: {
         width: webgl.gpuInfo.tierNum === 1 ? 16 : 32,
@@ -72,14 +79,17 @@ class BoidTest extends SketchScene {
         thicknessAmbient: 0,
         thicknessDistortion: 0.19,
         thicknessPower: 5.43,
-        thicknessScale: 17.39,
+        thicknessScale: 28,
         thicknessAttenuation: 0.15,
         thicknessRepeat: 1
       }
     };
+    this.pars = merge( this.pars, pars );
     this.simFolders = [];
+    this.postFolders = [];
   }
   init() {
+    super.init();
     this.controlsInit();
     this.controls.distance = 350;
     // this.controls.position = [-387.5724404469007, 639.4741434068955, -686.0763950300969];
