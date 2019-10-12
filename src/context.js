@@ -75,6 +75,11 @@ if ( defined(query.dev) || document.location.hash.includes('dev') ) {
     folder.dispose();
 
     gui.element.style.backgroundColor = '#2f3137a1';
+    gui.element.style.cssText = `
+    background-color: rgba(47, 49, 55, 0.63);
+    overflow-y: overlay;
+    max-height: 100%;
+    `;
   }
 }
 

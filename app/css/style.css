@@ -50,7 +50,8 @@ div[role="complementary"] {
 	padding: 0 5px;
 	position: fixed;
 	right: 0;
-	top: 0;
+  top: 0;
+  height: 35%
 }
 
 .info {

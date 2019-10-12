@@ -44,7 +44,7 @@ module.exports = class WebGLApp extends EventEmitter {
 
     this.stoppedDiv = document.createElement('div');
     this.stoppedDiv.id = 'stopped';
-    this.stoppedDiv.style.cssText = 'position: fixed; width: 100%; height: 100%; z-index: 2147483647; background-color: black; opacity: 0.5; display: none; top: 0px;';
+    this.stoppedDiv.style.cssText = 'position: fixed; width: 100%; height: 100%; z-index: 0; background-color: black; opacity: 0.5; display: none; top: 0px;';
     if ( document.getElementById('stopped') !== null ) this.stoppedDiv = document.getElementById('stopped');
     this.viewport.appendChild( this.stoppedDiv );
     const hide = document.getElementById('hide');
