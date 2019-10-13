@@ -22,7 +22,7 @@ scenes.push(
   require('./webgl/scene/BoidShredder')
 );
 
-const DefaultScene = scenes[0];
+const DefaultScene = scenes[ scenes.length - 1 ];
 
 module.exports = function () {
   // Set background color
@@ -45,7 +45,7 @@ module.exports = function () {
   let found = false;
   for ( let i in scenes ) {
     let sceneName = scenes[i].sceneName.toLowerCase();
-    let queryName = defined( query.scene, '' ).toLowerCase();
+    let queryName = defined( query.scene, '' ).toString().toLowerCase();
     if ( sceneName === queryName ) {
       Scene = scenes[i];
       // webgl.scene.add( new scenes[i]() );
