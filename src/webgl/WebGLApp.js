@@ -335,14 +335,14 @@ module.exports = class WebGLApp extends EventEmitter {
   setGpuInfo() {
     let renderString = '';
 
-    if ( navigator.userAgent.includes('Apple') ) getRenderer( renderer => { renderString = renderer; } );
+    if ( navigator.userAgent.includes('Apple') && this.mobile ) getRenderer( renderer => { renderString = renderer; } );
 
     this.gpuInfo = getGPUTier({
       glContext: this.renderer.getContext(), // Optionally pass in a WebGL context to avoid creating a temporary one internally
       mobileBenchmarkPercentages: [85, 13, 2, 1], // (Default) [TIER_0, TIER_1, TIER_2, TIER_3]
       desktopBenchmarkPercentages: [0, 50, 30, 20], // (Default) [TIER_0, TIER_1, TIER_2, TIER_3]
-      forceRendererString: renderString, // (Development) Force a certain renderer string
-      forceMobile: true // (Development) Force the use of mobile benchmarking scores
+      forceRendererString: renderString // (Development) Force a certain renderer string
+      // forceMobile: false // (Development) Force the use of mobile benchmarking scores
     });
     this.gpuInfo.tierNum = parseInt(this.gpuInfo.tier.slice(-1));
   }
