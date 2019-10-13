@@ -1,4 +1,4 @@
-// taken from https://gist.github.com/mattdesl/2ee82157a86962347dedb6572142df7c
+// adapted IceMaterial by @Mattdesl https://gist.github.com/mattdesl/2ee82157a86962347dedb6572142df7c
 const glslify = require('glslify');
 const path = require('path');
 const assign = require('object-assign');

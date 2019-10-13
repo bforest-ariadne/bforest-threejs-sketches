@@ -5,10 +5,7 @@ const query = require('../../util/query');
 const defined = require('defined');
 const { merge } = require('merge-anything');
 const BoidSim = require('../objects/BoidSim');
-const { SpotLight, PointLight } = require('../objects/lights');
-const Ground = require('../objects/ground');
-// eslint-disable-next-line no-unused-vars
-const { createMaterial, materialAssets } = require('../materials/createPbrMaterial');
+const { PointLight } = require('../objects/lights');
 const IceMaterial = require('../materials/IceMaterial');
 const { toneMappingOptions } = require('../../util/constants');
 const { KernelSize } = require('postprocessing');
@@ -138,13 +135,10 @@ class BoidShredder extends SketchScene {
     this.room.receiveShadow = true;
     this.add( this.room );
 
-    // boidGeo = geometry: new THREE.BoxBufferGeometry( 10, 10, 20 )
     let boidMat;
     boidMat = this.glbToMaterial( 'plastic' );
     // boidMat = createMaterial(env.target.texture);
     this.iceMaterial = new IceMaterial({
-      // roughnessMap: assets.get('lava'),
-      // thicknessMap: assets.get('h'),
       roughnessMap: boidMat.roughnessMap,
       metalnessMap: boidMat.metalnessMap,
       normalMap: boidMat.normalMap,
@@ -172,17 +166,13 @@ class BoidShredder extends SketchScene {
     boidMat.envMap = env.target.texture;
 
     let boidGeo;
-    // boidGeo = new THREE.CylinderBufferGeometry( 7, 7.0, 20, 32, 1 );
-    // boidGeo.rotateZ(Math.PI / 2);
-    // boidGeo = new THREE.SphereBufferGeometry( 10, 16, 8 );
+
     boidGeo = new THREE.BoxBufferGeometry( 20, 15, 2, 1, 1, 1 );
-    // const normalMat = new THREE.MeshNormalMaterial();
 
     this.boidSim = new BoidSim( webgl.renderer, {
       width: this.pars.boids.width,
       bounds: this.pars.boids.bounds,
       centerStrength: this.pars.boids.centerStrength,
-      // geometry: createBirdInstanceGeometry( this.pars.boids.width * this.pars.boids.width ),
       geometry: boidGeo,
       material: boidMat
     });
@@ -202,33 +192,6 @@ class BoidShredder extends SketchScene {
     });
     this.add( this.pointLight );
 
-    if ( this.pars.scene.testShadow ) {
-      this.spotLight = new SpotLight({
-        intensity: 50,
-        distance: 500,
-        angle: 1,
-        shadowCameraFar: 200,
-        meshSize: 20,
-        position: new THREE.Vector3( 0, 100, 0 )
-      });
-      this.add( this.spotLight );
-
-      this.ground = new Ground({
-        size: 500,
-        height: -50
-      });
-
-      this.add( this.ground );
-
-      const testSphere = new THREE.Mesh(
-        new THREE.SphereBufferGeometry( 20 ),
-        new THREE.MeshNormalMaterial()
-      );
-      testSphere.name = 'testSphere';
-      testSphere.castShadow = true;
-      this.add( testSphere );
-      window.testSphere = testSphere;
-    }
     this.adjustEnvIntensity();
     this.iceMatUniformsUpdate();
     if ( webgl.gui ) this.setupGui();
