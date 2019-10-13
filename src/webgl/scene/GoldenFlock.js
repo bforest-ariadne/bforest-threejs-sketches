@@ -7,11 +7,10 @@ const { merge } = require('merge-anything');
 const BoidSim = require('../objects/BoidSim');
 const { KernelSize } = require('postprocessing');
 
-
+// static properties / methods
 const name = 'goldenflock';
-
 const title = 'Golden Flocking';
-
+const publish = true;
 const queueAssets = () => {
   const cubePath = 'assets/textures/blueLagoonNight_256/';
   const cargoPath = 'https://files.cargocollective.com/c521688/';
@@ -195,7 +194,7 @@ class GoldenFlock extends SketchScene {
 GoldenFlock.queueAssets = queueAssets;
 
 GoldenFlock.title = title;
-GoldenFlock.publish = true;
+GoldenFlock.publish = publish;
 GoldenFlock.sceneName = name;
 
 module.exports = GoldenFlock;

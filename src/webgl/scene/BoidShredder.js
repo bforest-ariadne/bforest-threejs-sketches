@@ -13,12 +13,10 @@ const IceMaterial = require('../materials/IceMaterial');
 const { toneMappingOptions } = require('../../util/constants');
 const { KernelSize } = require('postprocessing');
 
-// const { BirdGeometry, createBirdInstanceGeometry } = require( '../geos/Bird.js' );
-
+// static properties / methods
 const name = 'boidshredder';
-
 const title = 'Boid Shredder';
-
+const publish = true;
 const queueAssets = () => {
   const cubePath = 'assets/textures/blueLagoonNight_256/';
   const cargoPath = 'https://files.cargocollective.com/c521688/';
@@ -39,12 +37,13 @@ const queueAssets = () => {
   });
   assets.queue({
     url: 'assets/materials/Plastic01_512.glb',
+    cargoUrl: `${cargoPath}Plastic01_512.glb`,
     key: 'plastic'
   });
 
-  for ( let i in materialAssets ) {
-    // assets.queue( materialAssets[i] );
-  }
+  // for ( let i in materialAssets ) {
+  //   assets.queue( materialAssets[i] );
+  // }
 };
 
 if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
@@ -400,7 +399,7 @@ class BoidShredder extends SketchScene {
 BoidShredder.queueAssets = queueAssets;
 
 BoidShredder.title = title;
-BoidShredder.publish = false;
+BoidShredder.publish = publish;
 BoidShredder.sceneName = name;
 
 module.exports = BoidShredder;
