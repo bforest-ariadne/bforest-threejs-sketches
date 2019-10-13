@@ -165,8 +165,14 @@ class BoidShredder extends SketchScene {
     boidMat = this.iceMaterial;
 
     for ( let value of Object.values( boidMat ) ) {
-      if ( value instanceof THREE.Texture && value.name.includes('assets') ) {
-      // console.log(value)
+      if ( value instanceof THREE.Texture ) {
+        // dont modifiy env textures
+        if ( value.mapping === THREE.CubeReflectionMapping ||
+          value.mapping === THREE.CubeRefractionMapping ||
+          value.mapping === THREE.CubeUVReflectionMapping ||
+          value.mapping === THREE.CubeUVRefractionMapping ) continue;
+
+        value.encoding = THREE.LinearEncoding;
         value.minFilter = THREE.LinearMipMapLinearFilter;
         value.magFilter = THREE.LinearFilter;
         value.anisotrophy = 1;

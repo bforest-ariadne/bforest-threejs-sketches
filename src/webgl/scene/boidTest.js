@@ -149,7 +149,7 @@ class BoidTest extends SketchScene {
     // boidMat = this.glbToMaterial( 'gold' );
     // boidMat = createMaterial(env.target.texture);
     boidMat = this.glbToMaterial( 'plastic' );
-
+ 
     if ( webgl.dev ) window.boidMat = boidMat;
     this.iceMaterial = new IceMaterial({
       // roughnessMap: assets.get('aorm'),
