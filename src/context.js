@@ -9,7 +9,7 @@ const viewport = document.getElementById('viewport');
 const aside = document.getElementById('aside');
 
 const cargo = document.location.host.includes('cargo') ||
-document.location.host.includes('ben-forest.com');
+document.location.host.includes('ben-forest.com') || query.cargo;
 
 if ( cargo ) console.log('cargo site detected!');
 

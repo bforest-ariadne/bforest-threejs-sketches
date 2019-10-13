@@ -137,6 +137,21 @@ class BoidShredder extends SketchScene {
 
     let boidMat;
     boidMat = this.glbToMaterial( 'plastic' );
+
+    const textures = [];
+    for ( let [ key, value ] of Object.entries( boidMat ) ) {
+      if ( value instanceof THREE.Texture ) {
+        if ( !textures.includes(value) && !value.name.includes('cube') ) textures.push(value);
+      }
+    }
+    for ( let i in textures ) {
+      textures[i].anisotropy = 1;
+      textures[i].encoding = THREE.LinearEncoding;
+      // textures[i].wrapS = THREE.RepeatWrapping;
+      // textures[i].wrapT = THREE.RepeatWrapping;
+      // textures[i].repeat = new THREE.Vector2( 0.5, 0.5 );
+    }
+
     // boidMat = createMaterial(env.target.texture);
     this.iceMaterial = new IceMaterial({
       roughnessMap: boidMat.roughnessMap,

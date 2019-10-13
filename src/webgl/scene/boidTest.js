@@ -37,10 +37,12 @@ const queueAssets = () => {
     hdr: true,
     pbr: true
   });
-  // assets.queue({
-  //   url: 'assets/materials/gold1.glb',
-  //   key: 'gold'
-  // });
+  assets.queue({
+    url: 'assets/materials/Plastic01_512.glb',
+    cargoUrl: `${cargoPath}Plastic01_512.glb`,
+    key: 'plastic'
+  });
+
 
   for ( let i in materialAssets ) {
     assets.queue( materialAssets[i] );
@@ -146,14 +148,34 @@ class BoidTest extends SketchScene {
     let boidMat;
     // boidMat = this.glbToMaterial( 'gold' );
     // boidMat = createMaterial(env.target.texture);
+    boidMat = this.glbToMaterial( 'plastic' );
+
+    const textures = [];
+    for ( let [ key, value ] of Object.entries( boidMat ) ) {
+      if ( value instanceof THREE.Texture ) {
+        if ( !textures.includes(value) && !value.name.includes('cube') ) textures.push(value);
+      }
+    }
+  
+    for ( let i in textures ) {
+      textures[i].anisotropy = 1;
+      textures[i].encoding = THREE.LinearEncoding;
+      // textures[i].wrapS = THREE.RepeatWrapping;
+      // textures[i].wrapT = THREE.RepeatWrapping;
+      // textures[i].repeat = new THREE.Vector2( 0.5, 0.5 );
+    }
+    if ( webgl.dev ) window.boidMat = boidMat;
     this.iceMaterial = new IceMaterial({
-      // roughnessMap: assets.get('lava'),
-      // thicknessMap: assets.get('h'),
-      roughnessMap: assets.get('aorm'),
-      metalnessMap: assets.get('aorm'),
-      normalMap: assets.get('n'),
-      aoMap: assets.get('aorm'),
-      map: assets.get('c'),
+      // roughnessMap: assets.get('aorm'),
+      // metalnessMap: assets.get('aorm'),
+      // normalMap: assets.get('n'),
+      // aoMap: assets.get('aorm'),
+      // map: assets.get('c'),
+      roughnessMap: boidMat.roughnessMap,
+      metalnessMap: boidMat.metalnessMap,
+      normalMap: boidMat.normalMap,
+      aoMap: boidMat.aoMap,
+      map: boidMat.map,
       roughness: 1,
       metalness: 1,
       envMap: env.target.texture
