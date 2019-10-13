@@ -90,7 +90,7 @@ module.exports = class BoidSim {
       geometry = geometry === null ? createBirdInstanceGeometry( BIRDS ) : geometry;
 
       if ( !defined( geometry.isInstancedBufferGeometry, false ) ) {
-        const referencesAttribute = createReferencesAttribute( BIRDS );
+        const referencesAttribute = createReferencesAttribute( BIRDS, geometry );
 
         let instanceGeo = new THREE.InstancedBufferGeometry();
         if ( geometry.index) instanceGeo.index = geometry.index;

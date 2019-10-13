@@ -1,4 +1,22 @@
 // Custom Geometry - using 3 triangles each. No UVs, no normals currently.
+// function createReferencesAttribute( birds, geometry ) {
+//   let WIDTH = Math.sqrt( birds );
+//   // var triangles = birds * 3;
+//   // var points = triangles * 3;
+//   var points = geometry.attributes.position.count;
+//   var references = new THREE.Float32BufferAttribute( new Float32Array( points * 2 ), 2 );
+
+//   for ( let v = 0; v < points; v++ ) {
+//     var i = ~~( v / 3 );
+//     var x = ( i % WIDTH ) / WIDTH;
+//     var y = ~~( i / WIDTH ) / WIDTH;
+//     references.array[ v * 2 ] = x;
+//     references.array[ v * 2 + 1 ] = y;
+//   }
+
+//   return new THREE.InstancedBufferAttribute( references, 2 );
+// }
+
 function createReferencesAttribute( birds ) {
   let referenceBirdGeo = new BirdGeometry( birds );
 

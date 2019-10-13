@@ -2,6 +2,7 @@ const { gui, webgl, assets } = require('../../context');
 const createOrbitControls = require('orbit-controls');
 const defined = require('defined');
 const { toneMappingOptions } = require('../../util/constants');
+if ( webgl.dev ) window.defined = defined;
 
 let name = 'sketchScene';
 const title = 'No Title';
@@ -48,8 +49,8 @@ class SketchScene extends THREE.Object3D {
   }
 
   update (dt = 0, time = 0, frame = 0) {
-    if ( defined( this.controls ) ) this.controlsUpdate();
-    if ( defined( this.mesh ) ) this.mesh.rotation.x += dt * 0.1;
+    if ( defined( this.controls, this.orbitControls, false ) ) this.controlsUpdate();
+    // if ( defined( this.mesh ) ) this.mesh.rotation.x += dt * 0.1;
     this.debugLive();
     // This function gets propagated down from the WebGL app to all children
   }
@@ -64,14 +65,22 @@ class SketchScene extends THREE.Object3D {
     });
   }
 
-  controlsUpdate() {
-    this.controls.update();
+  orbitControlsInit() {
+    this.orbitControls = new THREE.OrbitControls( webgl.camera, webgl.viewport  );
+  }
 
-    // reposition to orbit controls
-    webgl.camera.up.fromArray(this.controls.up);
-    webgl.camera.position.fromArray(this.controls.position);
-    tmpTarget.fromArray(this.controls.target);
-    webgl.camera.lookAt(tmpTarget);
+  controlsUpdate() {
+    if ( defined( this.controls, false ) ) {
+      this.controls.update();
+
+      // reposition to orbit controls
+      webgl.camera.up.fromArray(this.controls.up); 
+      webgl.camera.position.fromArray(this.controls.position);
+      tmpTarget.fromArray(this.controls.target);
+      webgl.camera.lookAt(tmpTarget);
+    } else if ( defined( this.orbitControls, false ) ) {
+      this.orbitControls.update();
+    }
   }
 
   glbToMaterial( key ) {

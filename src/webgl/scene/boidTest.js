@@ -109,9 +109,12 @@ class BoidTest extends SketchScene {
   }
   init() {
     super.init();
-    this.controlsInit();
-    this.controls.distance = 350;
-    this.controls.position = [ 0, 0, 350 ];
+    this.orbitControlsInit();
+    this.orbitControls.enablePan = !webgl.mobile;
+    webgl.camera.position.z = 350;
+    // this.controlsInit();
+    // this.controls.distance = 350;
+    // this.controls.position = [ 0, 0, 350 ];
     let env = assets.get('env');
 
     // webgl.scene.fog = new THREE.Fog( 0x000000, 1, 1000 );
