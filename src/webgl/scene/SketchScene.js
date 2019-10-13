@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 const { gui, webgl, assets } = require('../../context');
 const createOrbitControls = require('orbit-controls');
 const defined = require('defined');
@@ -6,6 +7,7 @@ if ( webgl.dev ) window.defined = defined;
 
 let name = 'sketchScene';
 const title = 'No Title';
+// eslint-disable-next-line no-unused-vars
 let sketchCounter = 0;
 
 const tmpTarget = new THREE.Vector3();
@@ -66,7 +68,7 @@ class SketchScene extends THREE.Object3D {
   }
 
   orbitControlsInit() {
-    this.orbitControls = new THREE.OrbitControls( webgl.camera, webgl.viewport  );
+    this.orbitControls = new THREE.OrbitControls( webgl.camera, webgl.viewport );
   }
 
   controlsUpdate() {
