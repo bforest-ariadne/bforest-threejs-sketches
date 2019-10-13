@@ -92,7 +92,8 @@ class BoidShredder extends SketchScene {
         predator: new THREE.Vector3( 0, 800, 800 ),
         center: new THREE.Vector3(),
         centerStrength: 11,
-        speedLimit: 9
+        speedLimit: 9,
+        bounds: 80
       },
       iceMat: {
         thicknessAmbient: 0,
@@ -245,8 +246,8 @@ class BoidShredder extends SketchScene {
 
   boidUniformUpdate() {
     for ( let [ key, value ] of Object.entries( this.pars.boids ) ) {
-      if ( key === 'width' || key === 'squashiness' ) continue;
-      if ( !defined( this.boidSim.velocityUniforms[key].type, false) ) continue;
+      if ( !this.boidSim.velocityUniforms.hasOwnProperty( key ) ) continue;
+      if ( !this.boidSim.velocityUniforms[key].hasOwnProperty( 'type' ) ) continue;
       if ( this.boidSim.velocityUniforms[ key ].type !== 'f' ) continue;
       this.boidSim.velocityUniforms[ key ].value = value;
     }
