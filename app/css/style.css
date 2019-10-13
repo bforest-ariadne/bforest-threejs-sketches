@@ -38,10 +38,14 @@ p {
 h3 {
   margin: 0px;
   margin-left: 1%;
+  white-space: nowrap;
+  margin-inline-end: 1em;
 }
 h4 {
   margin-top: 0em;
   margin-left: 1%;
+  white-space: nowrap;
+  margin-inline-end: 1em;
 }
 
 div[role="main"] {
