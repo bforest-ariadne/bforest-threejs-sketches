@@ -5,6 +5,8 @@ const query = require('../../util/query');
 const defined = require('defined');
 const { merge } = require('merge-anything');
 const BoidSim = require('../objects/BoidSim');
+const { KernelSize } = require('postprocessing');
+
 
 const name = 'goldenflock';
 
