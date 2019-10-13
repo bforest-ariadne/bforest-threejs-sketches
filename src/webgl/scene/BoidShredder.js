@@ -139,7 +139,7 @@ class BoidShredder extends SketchScene {
     boidMat = this.glbToMaterial( 'plastic' );
 
     const textures = [];
-    for ( let [ key, value ] of Object.entries( boidMat ) ) {
+    for ( let value of Object.values( boidMat ) ) {
       if ( value instanceof THREE.Texture ) {
         if ( !textures.includes(value) && !value.name.includes('cube') ) textures.push(value);
       }
@@ -147,9 +147,6 @@ class BoidShredder extends SketchScene {
     for ( let i in textures ) {
       textures[i].anisotropy = 1;
       textures[i].encoding = THREE.LinearEncoding;
-      // textures[i].wrapS = THREE.RepeatWrapping;
-      // textures[i].wrapT = THREE.RepeatWrapping;
-      // textures[i].repeat = new THREE.Vector2( 0.5, 0.5 );
     }
 
     // boidMat = createMaterial(env.target.texture);
