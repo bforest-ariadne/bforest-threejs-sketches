@@ -22,7 +22,7 @@ scenes.push(
   require('./webgl/scene/BoidShredder')
 );
 
-const DefaultScene = scenes[ scenes.length - 1 ];
+const DefaultScene = webgl.cargo ? scenes[0] : scenes[ scenes.length - 1 ];
 
 module.exports = function () {
   // Set background color
