@@ -55,10 +55,10 @@ const createMaterial = ( envMap ) => {
     // bumpMap: assets.get('h'),
     envMap: envMap,
     flatShading: true,
-    name: folder
+    name: folder.replace( '/', '_' )
   });
 
-  material.userData.thicknessMap
+  // material.userData.thicknessMap
 
   // const textures = [ material.roughnessMap, material.metalnessMap, material.normalMap, material.map, material.aoMap ];
   const textures = [];
