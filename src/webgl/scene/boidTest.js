@@ -93,7 +93,7 @@ class BoidTest extends SketchScene {
         center: new THREE.Vector3(),
         centerStrength: 11,
         speedLimit: 9,
-        bounds: 8
+        bounds: 80
       },
       iceMat: {
         thicknessAmbient: 0,
