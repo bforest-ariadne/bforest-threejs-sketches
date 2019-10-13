@@ -75,8 +75,8 @@ class AssetManager {
       return;
     }
 
-    if (process.env.NODE_ENV === 'development' && false) {
-      console.log(`[assets] Loading ${total} queued items`);
+    if (process.env.NODE_ENV === 'development') {
+      // console.log(`[assets] Loading ${total} queued items`);
     }
     mapLimit(queue, this._asyncLimit, (item, next) => {
       this.load(item, (err, result) => {
@@ -112,7 +112,7 @@ class AssetManager {
       return ret;
     } else {
       if (process.env.NODE_ENV === 'development') {
-        console.log(`[assets] Loading ${url}`);
+        // console.log(`[assets] Loading ${url}`);
       }
       const done = (err, data) => {
         if (err) {

@@ -8,7 +8,7 @@ const defined = require('defined');
 
 const name = 'bpose';/*  */
 
-if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
+if ( defined( query.scene ) && query.scene.toString().toLowerCase() === name ) {
   for ( let i in bPoseObjAssets ) {
     assets.queue( bPoseObjAssets[i] );
   }

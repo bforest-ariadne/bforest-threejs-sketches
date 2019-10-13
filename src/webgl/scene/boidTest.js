@@ -47,7 +47,7 @@ const queueAssets = () => {
   }
 };
 
-if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
+if ( defined( query.scene ) && query.scene.toString().toLowerCase() === name ) {
   queueAssets();
 }
 

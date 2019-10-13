@@ -12,7 +12,7 @@ const name = 'translucenttest';
 
 // const textureCompression = webgl.mobile ? 'PVRTC' : 'DXT1';
 
-if ( defined( query.scene ) && query.scene.toLowerCase() === name ) {
+if ( defined( query.scene ) && query.scene.toString().toLowerCase() === name ) {
   assets.queue({
     url: 'assets/textures/studio_small_02_1024/',
     key: 'env',
