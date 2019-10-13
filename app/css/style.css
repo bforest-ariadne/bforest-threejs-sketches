@@ -31,6 +31,8 @@ a:hover, a:active {
 p {
   margin: 0;
   margin-left: 1%;
+  margin-inline-end: 1em;
+  white-space: nowrap;
 }
 
 h3 {
@@ -60,7 +62,8 @@ div[role="complementary"] {
 	left: 5px;
 	position: fixed;
   bottom: 5px;
-  width: 47%;
+  /* width: 47%; */
+  /* max-width: 47%; */
   background-color: rgba(0, 0, 0, 0.32);
 }
 
