@@ -150,20 +150,6 @@ class BoidTest extends SketchScene {
     // boidMat = createMaterial(env.target.texture);
     boidMat = this.glbToMaterial( 'plastic' );
 
-    const textures = [];
-    for ( let [ key, value ] of Object.entries( boidMat ) ) {
-      if ( value instanceof THREE.Texture ) {
-        if ( !textures.includes(value) && !value.name.includes('cube') ) textures.push(value);
-      }
-    }
-  
-    for ( let i in textures ) {
-      textures[i].anisotropy = 1;
-      textures[i].encoding = THREE.LinearEncoding;
-      // textures[i].wrapS = THREE.RepeatWrapping;
-      // textures[i].wrapT = THREE.RepeatWrapping;
-      // textures[i].repeat = new THREE.Vector2( 0.5, 0.5 );
-    }
     if ( webgl.dev ) window.boidMat = boidMat;
     this.iceMaterial = new IceMaterial({
       // roughnessMap: assets.get('aorm'),
@@ -184,8 +170,14 @@ class BoidTest extends SketchScene {
     boidMat = this.iceMaterial;
 
     for ( let value of Object.values( boidMat ) ) {
-      if ( value instanceof THREE.Texture && value.name.includes('assets') ) {
-      // console.log(value)
+      if ( value instanceof THREE.Texture ) {
+        // dont modifiy env textures
+        if ( value.mapping === THREE.CubeReflectionMapping ||
+          value.mapping === THREE.CubeRefractionMapping ||
+          value.mapping === THREE.CubeUVReflectionMapping ||
+          value.mapping === THREE.CubeUVRefractionMapping ) continue;
+
+        value.encoding = THREE.LinearEncoding;
         value.minFilter = THREE.LinearMipMapLinearFilter;
         value.magFilter = THREE.LinearFilter;
         value.anisotrophy = 1;
