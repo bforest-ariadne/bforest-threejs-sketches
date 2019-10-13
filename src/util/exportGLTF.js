@@ -5,7 +5,9 @@ module.exports = function exportGLTF( input, options = {} ) {
   //   onlyVisible: true,
   //   binary: binary,
   //   forcePowerOfTwoTextures: true,
-  //   forceIndices: true
+  //   forceIndices: true,
+  //   material: false,
+  //   embedImages: false
   // };
 
   var name = 'scene';

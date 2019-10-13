@@ -37,13 +37,13 @@ const queueAssets = () => {
     hdr: true,
     pbr: true
   });
-  // assets.queue({
-  //   url: 'assets/materials/gold1.glb',
-  //   key: 'gold'
-  // });
+  assets.queue({
+    url: 'assets/materials/Plastic01_512.glb',
+    key: 'plastic'
+  });
 
   for ( let i in materialAssets ) {
-    assets.queue( materialAssets[i] );
+    // assets.queue( materialAssets[i] );
   }
 };
 
@@ -141,19 +141,20 @@ class BoidShredder extends SketchScene {
 
     // boidGeo = geometry: new THREE.BoxBufferGeometry( 10, 10, 20 )
     let boidMat;
-    // boidMat = this.glbToMaterial( 'gold' );
+    boidMat = this.glbToMaterial( 'plastic' );
     // boidMat = createMaterial(env.target.texture);
     this.iceMaterial = new IceMaterial({
       // roughnessMap: assets.get('lava'),
       // thicknessMap: assets.get('h'),
-      roughnessMap: assets.get('aorm'),
-      metalnessMap: assets.get('aorm'),
-      normalMap: assets.get('n'),
-      aoMap: assets.get('aorm'),
-      map: assets.get('c'),
+      roughnessMap: boidMat.roughnessMap,
+      metalnessMap: boidMat.metalnessMap,
+      normalMap: boidMat.normalMap,
+      aoMap: boidMat.aoMap,
+      map: boidMat.map,
       roughness: 1,
       metalness: 1,
-      envMap: env.target.texture
+      envMap: env.target.texture,
+      name: boidMat.name
     });
 
     boidMat = this.iceMaterial;

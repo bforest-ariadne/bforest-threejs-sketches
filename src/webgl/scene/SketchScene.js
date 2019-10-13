@@ -85,7 +85,7 @@ class SketchScene extends THREE.Object3D {
 
   glbToMaterial( key ) {
     let material;
-    assets.get('gold').scene.traverse(child => {
+    assets.get(key).scene.traverse(child => {
       if (child.isMesh && child.material) {
         material = child.material;
       }
