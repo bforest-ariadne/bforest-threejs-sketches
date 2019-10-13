@@ -23,20 +23,6 @@ if ( cargo ) console.log('cargo site detected!');
 // });
 let gui;
 
-if ( cargo ) {
-  // const background = viewport.parentNode.parentNode.parentNode.parentNode.parentNode.getElementsByClassName('page_background')[0];
-  // background.style.zIndex = '1';
-  // const webglContainer = document.getElementById('webgl');
-  // webglContainer.style.cssText = `
-  //   position: absolute;
-  //   height: 100%;
-  //   right: 0px;
-  //   `;
-  // webglContainer.classList.add('container_width');
-  // webglContainer.parentNode.parentNode.firstElementChild.style.visibility = 'hidden';
-  // background.appendChild( webglContainer );
-}
-
 if ( defined(query.dev) || document.location.hash.includes('dev') ) {
   gui = new Tweakpane({
     container: document.getElementById('aside'),
