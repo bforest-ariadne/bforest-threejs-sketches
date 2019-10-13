@@ -11,7 +11,8 @@ const entry = require.resolve('../');
 // You could add more transforms here if you like
 const transforms = [
   'babelify',
-  'glslify'
+  'glslify',
+  'loose-envify'
 ];
 
 var liveOpts = {

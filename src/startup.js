@@ -3,19 +3,24 @@ const defined = require('defined');
 const { TweenMax } = require( 'gsap/umd/TweenMax' );
 
 const { assets, webgl } = require('./context');
-const scenes = [
-  require('./webgl/scene/SketchScene'),
-  require('./webgl/scene/Honeycomb'),
-  require('./webgl/scene/SpinningBox'),
-  require('./webgl/scene/bpose'),
-  require('./webgl/scene/PhysicsTest'),
-  require('./webgl/scene/FeedbackTest'),
-  require('./webgl/scene/PbrTest'),
-  require('./webgl/scene/TranslucentTest'),
-  require('./webgl/scene/boidTest'),
+const scenes = [];
+if (process.env.NODE_ENV === 'development' ) {
+  scenes.push(
+    require('./webgl/scene/SketchScene'),
+    require('./webgl/scene/Honeycomb'),
+    require('./webgl/scene/SpinningBox'),
+    require('./webgl/scene/bpose'),
+    require('./webgl/scene/PhysicsTest'),
+    require('./webgl/scene/FeedbackTest'),
+    require('./webgl/scene/PbrTest'),
+    require('./webgl/scene/TranslucentTest'),
+    require('./webgl/scene/boidTest')
+  );
+}
+scenes.push(
   require('./webgl/scene/GoldenFlock'),
   require('./webgl/scene/BoidShredder')
-];
+);
 
 const DefaultScene = scenes[0];
 

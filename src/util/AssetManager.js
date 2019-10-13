@@ -75,7 +75,7 @@ class AssetManager {
       return;
     }
 
-    if (process.env.NODE_ENV === 'development' || webgl.dev) {
+    if (process.env.NODE_ENV === 'development' && false) {
       console.log(`[assets] Loading ${total} queued items`);
     }
     mapLimit(queue, this._asyncLimit, (item, next) => {
