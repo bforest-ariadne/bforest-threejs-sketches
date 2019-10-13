@@ -158,12 +158,12 @@ class BoidTest extends SketchScene {
       // aoMap: assets.get('aorm'),
       // map: assets.get('c'),
       roughnessMap: boidMat.roughnessMap,
-      metalnessMap: boidMat.metalnessMap,
+      // metalnessMap: boidMat.metalnessMap,
       normalMap: boidMat.normalMap,
-      aoMap: boidMat.aoMap,
+      // aoMap: boidMat.aoMap,
       map: boidMat.map,
       roughness: 1,
-      metalness: 1,
+      metalness: 0,
       envMap: env.target.texture
     });
 
@@ -185,7 +185,8 @@ class BoidTest extends SketchScene {
       }
     }
     boidMat.flatShading = false;
-    boidMat.metalness = boidMat.roughness = 1;
+    // boidMat.metalness = boidMat.roughness = 1;
+    boidMat.roughness = 1;
     boidMat.envMap = env.target.texture;
 
     let boidGeo;
@@ -194,14 +195,15 @@ class BoidTest extends SketchScene {
     // boidGeo = new THREE.SphereBufferGeometry( 10, 16, 8 );
     boidGeo = new THREE.BoxBufferGeometry( 20, 15, 2, 1, 1, 1 );
     // const normalMat = new THREE.MeshNormalMaterial();
-
+ 
     this.boidSim = new BoidSim( webgl.renderer, {
       width: this.pars.boids.width,
       bounds: this.pars.boids.bounds,
       centerStrength: this.pars.boids.centerStrength,
       // geometry: createBirdInstanceGeometry( this.pars.boids.width * this.pars.boids.width ),
       geometry: boidGeo,
-      material: boidMat
+      material: boidMat,
+      useCustomDistance: true
     });
     this.boidSim.birdMesh.castShadow = true;
     this.boidSim.birdMesh.receiveShadow = true;
@@ -212,7 +214,7 @@ class BoidTest extends SketchScene {
     this.pointLight = new PointLight({
       intensity: 3000,
       meshSize: 100,
-      castShadow: false,
+      castShadow: true,
       shadowMapSize: 256,
       shadowCameraFar: 1000,
       shadowCameraNear: 50
