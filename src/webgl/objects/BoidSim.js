@@ -1,4 +1,4 @@
-const { BirdGeometry, createBirdInstanceGeometry, createReferencesAttribute } = require( '../geos/Bird.js' );
+const { BirdGeometry, createBirdInstanceGeometry } = require( '../geos/Bird.js' );
 const glslify = require('glslify');
 const path = require('path');
 const defined = require('defined');
@@ -220,6 +220,20 @@ module.exports = class BoidSim {
         theArray[ k + 2 ] = z * 10;
         theArray[ k + 3 ] = 1;
       }
+    }
+
+    function createReferencesAttribute( birds ) {
+      let WIDTH = Math.sqrt( birds );
+      var references = new Float32Array( birds * 2 );
+    
+      for ( let i = 0; i < birds; i++ ) {
+        var x = ( i % WIDTH ) / WIDTH;
+        var y = ~~( i / WIDTH ) / WIDTH;
+        references[ i * 2 ] = x;
+        references[ i * 2 + 1 ] = y;
+      }
+    
+      return new THREE.InstancedBufferAttribute( references, 2 );
     }
 
     initComputeRenderer();
