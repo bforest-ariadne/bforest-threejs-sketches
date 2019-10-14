@@ -58,13 +58,13 @@ class BoidTest extends SketchScene {
     this.animate = true;
     const pars = {
       scene: {
-        testShadow: false,
-        envMapIntensity: 0.02
+        envMapIntensity: 1
       },
       renderer: {
-        exposure: 9.46,
-        whitePoint: 1,
-        toneMapping: toneMappingOptions.Uncharted2
+        exposure: 1,
+        whitePoint: 5,
+        toneMapping: toneMappingOptions.Uncharted2,
+        gammaInput: false
       },
       'bloomEffect': {
         'dithering': true,
@@ -120,8 +120,8 @@ class BoidTest extends SketchScene {
     let env = assets.get('env');
 
     // webgl.scene.fog = new THREE.Fog( 0x000000, 1, 1000 );
-    webgl.scene.background = new THREE.Color( 0x000000 );
-    // webgl.scene.background = env.cubeMap;
+    // webgl.scene.background = new THREE.Color( 0x000000 );
+    webgl.scene.background = env.cubeMap;
 
     webgl.renderer.setClearColor( 0x000000, 1);
 
@@ -133,10 +133,19 @@ class BoidTest extends SketchScene {
 
     this.setupCubeCamera();
 
+    const invisibleMat = new THREE.MeshBasicMaterial({
+      transparent: true,
+      opacity: 0,
+      side: THREE.BackSide
+    });
+
+    const roomMat = createMaterial( env.target.texture );
+
     this.room = new THREE.Mesh(
       new THREE.BoxBufferGeometry( 600, 600, 600 ),
       // createMaterial(env.target.texture)
-      createMaterial()
+      // createMaterial()
+      [ roomMat, invisibleMat, invisibleMat, roomMat, invisibleMat, roomMat ]
       // new THREE.MeshStandardMaterial({
       //   side: THREE.BackSide,
       //   metalness: 0.4,
@@ -144,7 +153,8 @@ class BoidTest extends SketchScene {
       //   color: 0x222222
       // })
     );
-    this.room.material.side = THREE.BackSide;
+    // this.room.material.side = THREE.BackSide;
+    roomMat.side = THREE.BackSide;
     this.room.receiveShadow = true;
     this.add( this.room );
 
@@ -159,6 +169,7 @@ class BoidTest extends SketchScene {
     this.add( this.pointLight );
 
     this.renderEnv();
+    roomMat.envMap = this.env.texture;
 
     this.testSphere = new THREE.Mesh(
       new THREE.SphereBufferGeometry( 50, 8, 8 ),
@@ -169,7 +180,7 @@ class BoidTest extends SketchScene {
       })
     );
     this.testSphere.position.x = 100;
-    this.add( this.testSphere );
+    // this.add( this.testSphere );
 
     // boidGeo = geometry: new THREE.BoxBufferGeometry( 10, 10, 20 )
     let boidMat;
@@ -239,7 +250,6 @@ class BoidTest extends SketchScene {
     if ( webgl.dev ) window.birdMesh = this.boidSim.birdMesh;
     this.boidUniformUpdate();
 
-    
     this.adjustEnvIntensity();
     this.iceMatUniformsUpdate();
     if ( webgl.gui ) this.setupGui();
@@ -249,7 +259,7 @@ class BoidTest extends SketchScene {
     super.update();
     if ( defined( this.boidSim ) ) {
       if ( !this.animate ) return;
-      
+
       // this.boidSim.predatorPosition.copy( this.pars.boids.predatorPosition );
 
       this.boidSim.update( delta, now, frame );
@@ -431,10 +441,24 @@ class BoidTest extends SketchScene {
   adjustEnvIntensity( value ) {
     if ( defined( value, false ) ) this.pars.scene.envMapIntensity = value;
     this.traverse( child => {
-      if ( defined( child.material, false) && defined( child.material.envMap, false ) ) {
-        child.material.envMapIntensity = this.pars.scene.envMapIntensity;
+      const setEnvIntensity = ( material ) => {
+        if ( defined( material.envMap, false ) ) {
+          material.envMapIntensity = this.pars.scene.envMapIntensity;
+        }
+      };
+      if ( !defined( child.material, false ) ) return;
+      if ( child.material instanceof THREE.Material ) {
+        setEnvIntensity( child.material );
+      } else if ( child.material instanceof Array ) {
+        child.material.forEach( setEnvIntensity );
       }
     });
+  }
+
+  onPageVisible( visible ) {
+    this.log('page visible', visible );
+    setTimeout( () => { this.animate = !visible; }, 100 );
+    // this.animate = visible;
   }
 
   onKeydown(ev) {
