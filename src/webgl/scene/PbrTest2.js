@@ -3,6 +3,7 @@ const { webgl, assets, gui } = require('../../context');
 const postProcessSetup = require('../postProcessing/basicSSAO');
 const query = require('../../util/query');
 const defined = require('defined');
+const { merge } = require('merge-anything');
 const { createMaterial, materialAssets } = require('../materials/createPbrMaterial');
 const ParallaxOclusionMaterialModifier = require('../materialModifiers/ParallaxOclusionMaterialModifier');
 const IceMaterial = require('../materials/IceMaterial');
@@ -54,17 +55,21 @@ class PbrTest2 extends SketchScene {
   constructor () {
     super(name);
     this.animate = true;
-  }
-  init() {
-    this.pars = {
+    const pars = {
       envMapIntensity: 0.12,
       spotlightIntensity: 100
       // parallaxMode: 'USE_OCLUSION_PARALLAX'
       // envMapIntensity: 0.2
     };
-    this.controlsInit();
-    this.controls.distance = 10;
-    this.controls.position = [ 8, 2, -7.4 ];
+    this.pars = merge( this.pars, pars );
+  }
+  init() {
+    // this.controlsInit();
+    this.orbitControlsInit();
+    this.orbitControls.enablePan = !webgl.mobile;
+    webgl.camera.position.z = 13;
+
+
     let env = assets.get('env');
 
     this.useBufferGeo = true;
@@ -192,7 +197,6 @@ class PbrTest2 extends SketchScene {
     testBox.name = 'testBox';
     global.box = testBox;
     this.add( testBox );
-
 
     // parallaxOclusionModifier.addGui( mesh, gui );
 
