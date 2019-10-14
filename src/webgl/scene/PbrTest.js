@@ -8,13 +8,11 @@ const ParallaxOclusionMaterialModifier = require('../materialModifiers/ParallaxO
 const IceMaterial = require('../materials/IceMaterial');
 const { SpotLight, PointLight } = require('../objects/lights');
 
-const name = 'pbrtest';
-
-// const textureCompression = webgl.mobile ? 'PVRTC' : 'DXT1';
-
-if ( defined( query.scene ) && query.scene.toString().toLowerCase() === name ) {
+const title = 'PBR Test';
+const name = title.replace(/\s/g, '').toLowerCase();
+const queueAssets = () => {
   assets.queue({
-    url: 'assets/textures/studio_small_02_1024/',
+    url: 'assets/textures/blueLagoonNight_256/',
     key: 'env',
     envMap: true,
     hdr: true,
@@ -46,6 +44,10 @@ if ( defined( query.scene ) && query.scene.toString().toLowerCase() === name ) {
   for ( let i in materialAssets ) {
     assets.queue( materialAssets[i] );
   }
+};
+
+if ( defined( query.scene ) && query.scene.toString().toLowerCase() === name ) {
+  queueAssets();
 }
 
 class PbrTest extends SketchScene {
@@ -468,6 +470,10 @@ class PbrTest extends SketchScene {
   }
 }
 
+PbrTest.queueAssets = queueAssets;
+
+PbrTest.title = title;
+PbrTest.publish = false;
 PbrTest.sceneName = name;
 
 module.exports = PbrTest;

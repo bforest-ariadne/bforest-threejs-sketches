@@ -14,7 +14,8 @@ if (process.env.NODE_ENV === 'development' ) {
     require('./webgl/scene/FeedbackTest'),
     require('./webgl/scene/PbrTest'),
     require('./webgl/scene/TranslucentTest'),
-    require('./webgl/scene/boidTest')
+    require('./webgl/scene/boidTest'),
+    require('./webgl/scene/PbrTest2')
   );
 }
 scenes.push(
