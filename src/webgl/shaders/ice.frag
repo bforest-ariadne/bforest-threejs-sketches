@@ -1,4 +1,5 @@
 #define USE_TRANSLUCENCY
+// #define USE_THICKNES_MAP
 
 #ifdef USE_TRANSLUCENCY
   uniform sampler2D thicknessMap;
@@ -101,7 +102,7 @@ void main() {
   #ifdef USE_TRANSLUCENCY
     // vec3 thicknessColor = vec3(1.0, 1.0, 1.0);
     vec3 thickness = thicknessColor;
-    #ifdef USE_THICKNES_MAP
+    #ifdef USE_THICKNESS_MAP
       thickness *= texture2D(thicknessMap, vUv * thicknessRepeat).r;
     #endif
     vec3 N = geometry.normal;
@@ -166,6 +167,10 @@ void main() {
 		diffuseColor.a *= saturate( 1. - transparency + linearToRelativeLuminance( reflectedLight.directSpecular + reflectedLight.indirectSpecular ) );
 	#endif
 	gl_FragColor = vec4( outgoingLight, diffuseColor.a );
+  #ifdef USE_THICKNES_MAP
+    // thickness = texture2D(thicknessMap, vUv * thicknessRepeat).rgb;
+    gl_FragColor = vec4( thickness, diffuseColor.a );
+  #endif
 	#include <tonemapping_fragment>
 	#include <encodings_fragment>
 	#include <fog_fragment>
