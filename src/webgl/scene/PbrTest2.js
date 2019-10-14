@@ -69,7 +69,6 @@ class PbrTest2 extends SketchScene {
     this.orbitControls.enablePan = !webgl.mobile;
     webgl.camera.position.z = 13;
 
-
     let env = assets.get('env');
 
     this.useBufferGeo = true;
@@ -138,36 +137,21 @@ class PbrTest2 extends SketchScene {
     this.add( plane );
     this.plane = plane;
 
-    // spotlight
-    const spotlight = new SpotLight( 0xffffff, 100, 0, Math.PI / 5, 0.3 );
-    spotlight.position.set( 5, 12, 5 );
-    spotlight.target.position.set( 0, 0, 0 );
-    spotlight.castShadow = true;
-    spotlight.shadow.mapSize.width = 2048;
-    spotlight.shadow.mapSize.height = 2048;
-    spotlight.shadow.camera.near = 1;
-    spotlight.shadow.camera.far = 30;
-    spotlight.distance = 30;
-    spotlight.name = 'spotlight';
-    this.add( spotlight );
-    this.spotlight = spotlight;
-
-    // this.lightHelper = new THREE.SpotLightHelper( spotlight );
-    // this.add( this.lightHelper );
-
-    // let testBoxMat = instanceMaterial.clone();
-
-    let testPoint = new PointLight( 0xff0000, 1, 100 );
-    testPoint.position.set( -1, 1, -3);
+    let testPoint = new PointLight({
+      color: 0xff0000,
+      decay: 1,
+      distance: 100
+    });
+    // testPoint.position.set( -1, 1, -3);
     global.testPoint = testPoint;
     this.add( testPoint );
 
-    let pointLight = new PointLight();
-    pointLight.castShadow = true;
-    pointLight.position.set( 2, 2, -0.5 );
+    // let pointLight = new PointLight();
+    // pointLight.castShadow = true;
+    // pointLight.position.set( 2, 0, -0.5 );
 
-    this.add( pointLight );
-    global.pointLight = pointLight;
+    // this.add( pointLight );
+    // global.pointLight = pointLight;
 
     let iceMaterial = new IceMaterial({
       // roughnessMap: assets.get('lava'),
@@ -176,7 +160,7 @@ class PbrTest2 extends SketchScene {
       metalnessMap: assets.get('aorm'),
       normalMap: assets.get('n'),
       aoMap: assets.get('aorm'),
-      map: assets.get('c'),
+      // map: assets.get('c'),
       roughness: 1,
       metalness: 1,
       envMap: env.target.texture
@@ -184,25 +168,47 @@ class PbrTest2 extends SketchScene {
     global.iceMat = iceMaterial;
     this.iceMaterial = iceMaterial;
 
-    const testBox = new THREE.Mesh(
-      new THREE.BoxBufferGeometry( 2, 2, 2),
+    // for ( let value of Object.values( iceMaterial ) ) {
+    //   if ( value instanceof THREE.Texture ) {
+    //     // dont modifiy env textures
+    //     if ( value.mapping === THREE.CubeReflectionMapping ||
+    //       value.mapping === THREE.CubeRefractionMapping ||
+    //       value.mapping === THREE.CubeUVReflectionMapping ||
+    //       value.mapping === THREE.CubeUVRefractionMapping ) continue;
+
+    //     value.encoding = THREE.LinearEncoding;
+    //     value.minFilter = THREE.LinearMipMapLinearFilter;
+    //     value.magFilter = THREE.LinearFilter;
+    //     value.wrapS = value.wrapT = THREE.RepeatWrapping;
+    //     value.repeat.set( 3, 3 );
+    //     value.anisotrophy = 1;
+    //     value.needsUpdate = true;
+    //   }
+    // }
+
+    let subjectGeo = new THREE.TorusBufferGeometry( 2, 0.5, 16, 100 );
+
+    const subject = new THREE.Mesh(
+      subjectGeo,
       iceMaterial
       // instanceMaterial
     );
-    testBox.geometry.addAttribute( 'uv2', testBox.geometry.attributes.uv.clone() );
-    testBox.material.flatShading = false;
-    // testBox.position.set( 3.0, 2.0, -2.0 );
-    testBox.receiveShadow = true;
-    testBox.castShadow = true;
-    testBox.name = 'testBox';
-    global.box = testBox;
-    this.add( testBox );
+    subject.rotation.x = Math.PI / 2;
+    subject.geometry.addAttribute( 'uv2', subject.geometry.attributes.uv.clone() );
+    subject.material.flatShading = false;
+    // subject.position.set( 3.0, 2.0, -2.0 );
+    subject.receiveShadow = true;
+    subject.castShadow = true;
+    subject.name = 'subject';
+    global.box = subject;
+    this.add( subject );
+    if ( webgl.dev ) window.subject = subject;
 
     // parallaxOclusionModifier.addGui( mesh, gui );
 
-    // if ( defined( testBoxMat, false ) ) {
-    //   parallaxOclusionModifier.modifyMeshMaterial( testBox );
-    //   parallaxOclusionModifier.addGui( testBox, gui );
+    // if ( defined( subjectMat, false ) ) {
+    //   parallaxOclusionModifier.modifyMeshMaterial( subject );
+    //   parallaxOclusionModifier.addGui( subject, gui );
     // }
     this.setupGui();
 
