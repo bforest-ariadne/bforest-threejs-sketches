@@ -180,7 +180,7 @@ module.exports = class WebGLApp extends EventEmitter {
 
     this.scene.traverse(obj => {
       if (typeof obj.update === 'function') {
-        obj.update(delta, now, frame);
+        if ( !( obj instanceof THREE.CubeCamera ) ) obj.update(delta, now, frame);
       }
     });
 

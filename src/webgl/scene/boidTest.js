@@ -43,7 +43,6 @@ const queueAssets = () => {
     key: 'plastic'
   });
 
-
   for ( let i in materialAssets ) {
     assets.queue( materialAssets[i] );
   }
@@ -60,7 +59,7 @@ class BoidTest extends SketchScene {
     const pars = {
       scene: {
         testShadow: false,
-        envMapIntensity: 0.22
+        envMapIntensity: 0.02
       },
       renderer: {
         exposure: 9.46,
@@ -132,24 +131,52 @@ class BoidTest extends SketchScene {
 
     postProcessSetup( true );
 
+    this.setupCubeCamera();
+
     this.room = new THREE.Mesh(
       new THREE.BoxBufferGeometry( 600, 600, 600 ),
-      new THREE.MeshStandardMaterial({
-        side: THREE.BackSide,
-        metalness: 0.4,
-        roughness: 0.54,
-        color: 0x222222
-      })
+      // createMaterial(env.target.texture)
+      createMaterial()
+      // new THREE.MeshStandardMaterial({
+      //   side: THREE.BackSide,
+      //   metalness: 0.4,
+      //   roughness: 0.54,
+      //   color: 0x222222
+      // })
     );
+    this.room.material.side = THREE.BackSide;
     this.room.receiveShadow = true;
     this.add( this.room );
+
+    this.pointLight = new PointLight({
+      intensity: 10000,
+      meshSize: 100,
+      castShadow: true,
+      shadowMapSize: 256,
+      shadowCameraFar: 1000,
+      shadowCameraNear: 50
+    });
+    this.add( this.pointLight );
+
+    this.renderEnv();
+
+    this.testSphere = new THREE.Mesh(
+      new THREE.SphereBufferGeometry( 50, 8, 8 ),
+      new THREE.MeshStandardMaterial({
+        roughness: 0,
+        metalness: 1,
+        envMap: this.env.texture
+      })
+    );
+    this.testSphere.position.x = 100;
+    this.add( this.testSphere );
 
     // boidGeo = geometry: new THREE.BoxBufferGeometry( 10, 10, 20 )
     let boidMat;
     // boidMat = this.glbToMaterial( 'gold' );
     // boidMat = createMaterial(env.target.texture);
     boidMat = this.glbToMaterial( 'plastic' );
- 
+
     if ( webgl.dev ) window.boidMat = boidMat;
     this.iceMaterial = new IceMaterial({
       // roughnessMap: assets.get('aorm'),
@@ -164,7 +191,8 @@ class BoidTest extends SketchScene {
       map: boidMat.map,
       roughness: 1,
       metalness: 0,
-      envMap: env.target.texture
+      // envMap: env.target.texture
+      envMap: this.env.texture
     });
 
     boidMat = this.iceMaterial;
@@ -187,15 +215,15 @@ class BoidTest extends SketchScene {
     boidMat.flatShading = false;
     // boidMat.metalness = boidMat.roughness = 1;
     boidMat.roughness = 1;
-    boidMat.envMap = env.target.texture;
+    // boidMat.envMap = env.target.texture;
 
     let boidGeo;
-    // boidGeo = new THREE.CylinderBufferGeometry( 7, 7.0, 20, 32, 1 );
-    // boidGeo.rotateZ(Math.PI / 2);
+    boidGeo = new THREE.CylinderBufferGeometry( 5, 5.0, 20, 32, 1 );
+    boidGeo.rotateZ(Math.PI / 2);
     // boidGeo = new THREE.SphereBufferGeometry( 10, 16, 8 );
-    boidGeo = new THREE.BoxBufferGeometry( 20, 15, 2, 1, 1, 1 );
+    // boidGeo = new THREE.BoxBufferGeometry( 20, 15, 2, 1, 1, 1 );
     // const normalMat = new THREE.MeshNormalMaterial();
- 
+
     this.boidSim = new BoidSim( webgl.renderer, {
       width: this.pars.boids.width,
       bounds: this.pars.boids.bounds,
@@ -211,43 +239,7 @@ class BoidTest extends SketchScene {
     if ( webgl.dev ) window.birdMesh = this.boidSim.birdMesh;
     this.boidUniformUpdate();
 
-    this.pointLight = new PointLight({
-      intensity: 3000,
-      meshSize: 100,
-      castShadow: true,
-      shadowMapSize: 256,
-      shadowCameraFar: 1000,
-      shadowCameraNear: 50
-    });
-    this.add( this.pointLight );
-
-    if ( this.pars.scene.testShadow ) {
-      this.spotLight = new SpotLight({
-        intensity: 50,
-        distance: 500,
-        angle: 1,
-        shadowCameraFar: 200,
-        meshSize: 20,
-        position: new THREE.Vector3( 0, 100, 0 )
-      });
-      this.add( this.spotLight );
-
-      this.ground = new Ground({
-        size: 500,
-        height: -50
-      });
-
-      this.add( this.ground );
-
-      const testSphere = new THREE.Mesh(
-        new THREE.SphereBufferGeometry( 20 ),
-        new THREE.MeshNormalMaterial()
-      );
-      testSphere.name = 'testSphere';
-      testSphere.castShadow = true;
-      this.add( testSphere );
-      window.testSphere = testSphere;
-    }
+    
     this.adjustEnvIntensity();
     this.iceMatUniformsUpdate();
     if ( webgl.gui ) this.setupGui();
@@ -257,6 +249,7 @@ class BoidTest extends SketchScene {
     super.update();
     if ( defined( this.boidSim ) ) {
       if ( !this.animate ) return;
+      
       // this.boidSim.predatorPosition.copy( this.pars.boids.predatorPosition );
 
       this.boidSim.update( delta, now, frame );
@@ -280,6 +273,41 @@ class BoidTest extends SketchScene {
       if ( this.iceMaterial.uniforms[ key ].type !== 'f' ) continue;
       this.iceMaterial.uniforms[ key ].value = value;
     }
+  }
+
+  setupCubeCamera = () => {
+    this.cubeCamera = new THREE.CubeCamera(1, 10000, 128 );
+    this.cubeCamera.name = 'cubeCamera';
+    // this.cubeCamera.position.y = 0.6;
+    this.add( this.cubeCamera );
+    this.env = this.cubeCamera.renderTarget.texture;
+    this.pmremGenerator = new THREE.PMREMGenerator(
+      this.cubeCamera.renderTarget.texture
+    );
+    this.pmremCubeUVPacker = new THREE.PMREMCubeUVPacker(
+      this.pmremGenerator.cubeLods
+    );
+
+    this.env.mapping = THREE.CubeReflectionMapping;
+  }
+
+  renderEnv() {
+    // const sphereVisible = this.envSphere.visible;
+    // this.envSphere.visible = true;
+    const rendererClear = webgl.renderer.autoClear = true;
+    webgl.renderer.autoClear = true;
+    this.cubeCamera.update( webgl.renderer, webgl.scene );
+    if ( defined( this.pmremGenerator ) ) {
+      this.pmremGenerator.update(webgl.renderer);
+    }
+    if ( defined( this.pmremCubeUVPacker ) ) {
+      this.pmremCubeUVPacker.update(webgl.renderer);
+    }
+
+    this.env = this.pmremCubeUVPacker.CubeUVRenderTarget;
+
+    webgl.renderer.autoClear = rendererClear;
+    // this.envSphere.visible = sphereVisible;
   }
 
   setupGui() {
