@@ -8,7 +8,7 @@ const { assets } = require('../../context');
 //   assets.queue( materialAssets[i] );
 // }
 
-const folder = 'MarbleTiles02/1024';
+const folder = 'StylizedWater01/1024';
 
 const materialAssets = [
   {
@@ -31,11 +31,11 @@ const materialAssets = [
   //   key: 'mask',
   //   texture: true
   // }
-  // {
-  //   url: `assets/textures/${folder}/height.jpg`,
-  //   key: 'h',
-  //   texture: true
-  // }
+  {
+    url: `assets/textures/${folder}/height.jpg`,
+    key: 'h',
+    texture: true
+  }
 ];
 
 const createMaterial = ( envMap ) => {

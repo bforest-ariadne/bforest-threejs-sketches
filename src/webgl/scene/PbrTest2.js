@@ -56,7 +56,7 @@ class PbrTest2 extends SketchScene {
     super(name);
     this.animate = true;
     const pars = {
-      envMapIntensity: 0.12,
+      envMapIntensity: 0.02,
       spotlightIntensity: 100
       // parallaxMode: 'USE_OCLUSION_PARALLAX'
       // envMapIntensity: 0.2
@@ -155,36 +155,37 @@ class PbrTest2 extends SketchScene {
 
     let iceMaterial = new IceMaterial({
       // roughnessMap: assets.get('lava'),
-      thicknessMap: assets.get('cracked'),
+      thicknessMap: assets.get('h'),
       roughnessMap: assets.get('aorm'),
       metalnessMap: assets.get('aorm'),
       normalMap: assets.get('n'),
       aoMap: assets.get('aorm'),
       // map: assets.get('c'),
-      roughness: 1,
+      roughness: 0.5,
       metalness: 1,
+      color: 0x3137ff,
       envMap: env.target.texture
     });
     global.iceMat = iceMaterial;
     this.iceMaterial = iceMaterial;
 
-    // for ( let value of Object.values( iceMaterial ) ) {
-    //   if ( value instanceof THREE.Texture ) {
-    //     // dont modifiy env textures
-    //     if ( value.mapping === THREE.CubeReflectionMapping ||
-    //       value.mapping === THREE.CubeRefractionMapping ||
-    //       value.mapping === THREE.CubeUVReflectionMapping ||
-    //       value.mapping === THREE.CubeUVRefractionMapping ) continue;
+    for ( let value of Object.values( iceMaterial ) ) {
+      if ( value instanceof THREE.Texture ) {
+        // dont modifiy env textures
+        if ( value.mapping === THREE.CubeReflectionMapping ||
+          value.mapping === THREE.CubeRefractionMapping ||
+          value.mapping === THREE.CubeUVReflectionMapping ||
+          value.mapping === THREE.CubeUVRefractionMapping ) continue;
 
-    //     value.encoding = THREE.LinearEncoding;
-    //     value.minFilter = THREE.LinearMipMapLinearFilter;
-    //     value.magFilter = THREE.LinearFilter;
-    //     value.wrapS = value.wrapT = THREE.RepeatWrapping;
-    //     value.repeat.set( 3, 3 );
-    //     value.anisotrophy = 1;
-    //     value.needsUpdate = true;
-    //   }
-    // }
+        value.encoding = THREE.LinearEncoding;
+        value.minFilter = THREE.LinearMipMapLinearFilter;
+        value.magFilter = THREE.LinearFilter;
+        value.wrapS = value.wrapT = THREE.RepeatWrapping;
+        value.repeat.set( 1, 1 );
+        value.anisotrophy = 1;
+        value.needsUpdate = true;
+      }
+    }
 
     let subjectGeo = new THREE.TorusBufferGeometry( 2, 0.5, 16, 100 );
 
@@ -202,6 +203,7 @@ class PbrTest2 extends SketchScene {
     subject.name = 'subject';
     global.box = subject;
     this.add( subject );
+    this.subject = subject;
     if ( webgl.dev ) window.subject = subject;
 
     // parallaxOclusionModifier.addGui( mesh, gui );
@@ -224,8 +226,9 @@ class PbrTest2 extends SketchScene {
 
     // this.iceMaterial.uniforms.time.value = now;
 
-    this.object.rotation.x += delta * 0.2;
-    this.object.rotation.y += delta * 0.3;
+    this.subject.rotation.x += delta * 0.9;
+    this.subject.rotation.y += delta * 0.8;
+    this.subject.scale.z = Math.sin( now / 2 ) + 2;
 
     if ( defined( this.shaderUniforms ) ) this.shaderUniforms.time.value = now * 8;
   }

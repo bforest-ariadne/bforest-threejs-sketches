@@ -125,6 +125,9 @@ void main() {
         vec3 LTLight = normalize(L + (N * thicknessDistortion));
         float LTDot = pow(saturate(dot(V, -LTLight)), thicknessPower) * thicknessScale;
         vec3 LT = lightAtten * (LTDot + thicknessAmbient) * thickness;
+        #if defined( USE_SHADOWMAP )
+          // pointLight.color *= getPointShadow( pointShadowMap[ i ], pointLight.shadowMapSize, pointLight.shadowBias, pointLight.shadowRadius, vPointShadowCoord[ i ], pointLight.shadowCameraNear, pointLight.shadowCameraFar );
+        #endif
         reflectedLight.directDiffuse += material.diffuseColor * pointLight.color * LT * thicknessAttenuation;
 
       }
@@ -167,10 +170,6 @@ void main() {
 		diffuseColor.a *= saturate( 1. - transparency + linearToRelativeLuminance( reflectedLight.directSpecular + reflectedLight.indirectSpecular ) );
 	#endif
 	gl_FragColor = vec4( outgoingLight, diffuseColor.a );
-  #ifdef USE_THICKNES_MAP
-    // thickness = texture2D(thicknessMap, vUv * thicknessRepeat).rgb;
-    gl_FragColor = vec4( thickness, diffuseColor.a );
-  #endif
 	#include <tonemapping_fragment>
 	#include <encodings_fragment>
 	#include <fog_fragment>
