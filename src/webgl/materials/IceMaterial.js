@@ -60,6 +60,54 @@ class IceMaterial extends THREE.MeshStandardMaterial {
     this.uniforms.thicknessMap.value = value;
     this.needsUpdate = true;
   }
+
+  get thicknessRepeat() {
+    return this.uniforms.thicknessRepeat.value;
+  }
+
+  set thicknessRepeat( value ) {
+    this.uniforms.thicknessColor.value = value;
+  }
+
+  get thicknessPower() {
+    return this.uniforms.thicknessPower.value;
+  }
+
+  set thicknessPower( value ) {
+    this.uniforms.thicknessPower.value = value;
+  }
+
+  get thicknessScale() {
+    return this.uniforms.thicknessScale.value;
+  }
+
+  set thicknessScale( value ) {
+    this.uniforms.thicknessScale.value = value;
+  }
+
+  get thicknessDistortion() {
+    return this.uniforms.thicknessDistortion.value;
+  }
+
+  set thicknessDistortion( value ) {
+    this.uniforms.thicknessDistortion.value = value;
+  }
+
+  get thicknessAmbient() {
+    return this.uniforms.thicknessAmbient.value;
+  }
+
+  set thicknessAmbient( value ) {
+    this.uniforms.thicknessAmbient.value = value;
+  }
+
+  get thicknessAttenuation() {
+    return this.uniforms.thicknessAttenuation.value;
+  }
+
+  set thicknessAttenuation( value ) {
+    this.uniforms.thicknessAttenuation.value = value;
+  }
 }
 
 function setFlags (material) {
