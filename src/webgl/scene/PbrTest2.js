@@ -1,6 +1,6 @@
 const SketchScene = require('./SketchScene');
 const { webgl, assets, gui } = require('../../context');
-const postProcessSetup = require('../postProcessing/basicSSAO');
+const postProcessSetup = require('../postProcessing/basicBloom');
 const query = require('../../util/query');
 const defined = require('defined');
 const { merge } = require('merge-anything');
@@ -8,6 +8,10 @@ const { createMaterial, materialAssets } = require('../materials/createPbrMateri
 const ParallaxOclusionMaterialModifier = require('../materialModifiers/ParallaxOclusionMaterialModifier');
 const IceMaterial = require('../materials/IceMaterial');
 const { SpotLight, PointLight } = require('../objects/lights');
+const { BPoseObj, bPoseObjAssets } = require('../objects/bposeObj');
+const { KernelSize } = require('postprocessing');
+
+
 
 const title = 'PBR Test2';
 const name = title.replace(/\s/g, '').toLowerCase();
@@ -45,6 +49,10 @@ const queueAssets = () => {
   for ( let i in materialAssets ) {
     assets.queue( materialAssets[i] );
   }
+
+  for ( let i in bPoseObjAssets ) {
+    assets.queue( bPoseObjAssets[i] );
+  }
 };
 
 if ( defined( query.scene ) && query.scene.toString().toLowerCase() === name ) {
@@ -56,18 +64,34 @@ class PbrTest2 extends SketchScene {
     super(name);
     this.animate = true;
     const pars = {
-      envMapIntensity: 0.02,
-      spotlightIntensity: 100
+      envMapIntensity: 0.01,
+      spotlightIntensity: 100,
+      renderer: {
+        exposure: 2
+      },
+      bloomEffect: {
+        'dithering': true,
+        'resolution': 360,
+        'kernelSize': KernelSize.HUGE,
+        'scale': 1,
+        'opacity': 3.11,
+        'luminance': {
+          'filter': true,
+          'threshold': 0.043,
+          'smoothing': 0.272
+        }
+      }
       // parallaxMode: 'USE_OCLUSION_PARALLAX'
       // envMapIntensity: 0.2
     };
     this.pars = merge( this.pars, pars );
   }
   init() {
+    super.init();
     // this.controlsInit();
     this.orbitControlsInit();
     this.orbitControls.enablePan = !webgl.mobile;
-    webgl.camera.position.z = 13;
+    webgl.camera.position.set( 10, 9, 13 );
 
     let env = assets.get('env');
 
@@ -88,7 +112,7 @@ class PbrTest2 extends SketchScene {
     webgl.renderer.autoClear = false;
     webgl.renderer.physicallyCorrectLights = true;
 
-    postProcessSetup( false );
+    postProcessSetup( true );
 
     let instanceMaterial;
 
@@ -140,8 +164,10 @@ class PbrTest2 extends SketchScene {
     let testPoint = new PointLight({
       color: 0xff0000,
       decay: 1,
-      distance: 100
+      distance: 100,
+      meshSize: 5
     });
+    this.pointLight = testPoint;
     // testPoint.position.set( -1, 1, -3);
     global.testPoint = testPoint;
     this.add( testPoint );
@@ -155,16 +181,19 @@ class PbrTest2 extends SketchScene {
 
     let iceMaterial = new IceMaterial({
       // roughnessMap: assets.get('lava'),
-      thicknessMap: assets.get('h'),
-      roughnessMap: assets.get('aorm'),
-      metalnessMap: assets.get('aorm'),
-      normalMap: assets.get('n'),
-      aoMap: assets.get('aorm'),
+      thicknessMap: assets.get('bpose_thick'),
+      roughnessMap: assets.get('bpose_c'),
+      // metalnessMap: assets.get('aorm'),
+      normalMap: assets.get('bpose_n'),
+      // aoMap: assets.get('bpose_c'),
       // map: assets.get('c'),
-      roughness: 0.5,
-      metalness: 1,
-      color: 0x3137ff,
-      envMap: env.target.texture
+      roughness: 0.3,
+      metalness: 0,
+      color: 0x454545,
+      envMap: env.target.texture,
+      thicknessScale: 10,
+      thicknessAttenuation: 1,
+      thicknessPower: 5
     });
     global.iceMat = iceMaterial;
     this.iceMaterial = iceMaterial;
@@ -187,24 +216,36 @@ class PbrTest2 extends SketchScene {
       }
     }
 
-    let subjectGeo = new THREE.TorusBufferGeometry( 2, 0.5, 16, 100 );
+    this.bpose = new BPoseObj();
 
-    const subject = new THREE.Mesh(
-      subjectGeo,
-      iceMaterial
-      // instanceMaterial
-    );
-    subject.rotation.x = Math.PI / 2;
-    subject.geometry.addAttribute( 'uv2', subject.geometry.attributes.uv.clone() );
-    subject.material.flatShading = false;
-    // subject.position.set( 3.0, 2.0, -2.0 );
-    subject.receiveShadow = true;
-    subject.castShadow = true;
-    subject.name = 'subject';
-    global.box = subject;
-    this.add( subject );
-    this.subject = subject;
-    if ( webgl.dev ) window.subject = subject;
+    this.bpose.material = iceMaterial;
+    this.bpose.material.envMap = env.target.texture;
+    this.bpose.rotation.z = Math.PI;
+    this.bpose.position.set( 0, 2, 0 );
+
+    this.orbitControls.target.set( 0, 3, 0);
+
+    this.add( this.bpose );
+
+    // let subjectGeo = new THREE.TorusBufferGeometry( 2, 0.5, 16, 100 );
+
+    // const subject = new THREE.Mesh(
+    //   subjectGeo,
+    //   iceMaterial
+    //   // instanceMaterial
+    // );
+
+    // subject.rotation.x = Math.PI / 2;
+    // subject.geometry.addAttribute( 'uv2', subject.geometry.attributes.uv.clone() );
+    // subject.material.flatShading = false;
+    // // subject.position.set( 3.0, 2.0, -2.0 );
+    // subject.receiveShadow = true;
+    // subject.castShadow = true;
+    // subject.name = 'subject';
+    // global.box = subject;
+    // this.add( subject );
+    // this.subject = subject;
+    // if ( webgl.dev ) window.subject = subject;
 
     // parallaxOclusionModifier.addGui( mesh, gui );
 
@@ -226,9 +267,13 @@ class PbrTest2 extends SketchScene {
 
     // this.iceMaterial.uniforms.time.value = now;
 
-    this.subject.rotation.x += delta * 0.9;
-    this.subject.rotation.y += delta * 0.8;
-    this.subject.scale.z = Math.sin( now / 2 ) + 2;
+    this.pointLight.position.y = ( Math.sin( now * 0.5 ) * 7 ) + 3;
+    this.pointLight.position.z = ( Math.sin( now * 0.8 ) * 3 );
+    this.pointLight.position.z = ( Math.sin( now * 0.6 ) * 3 );
+
+    // this.subject.rotation.x += delta * 0.9;
+    this.bpose.rotation.y += delta * 0.8;
+    // this.subject.scale.z = Math.sin( now / 2 ) + 2;
 
     if ( defined( this.shaderUniforms ) ) this.shaderUniforms.time.value = now * 8;
   }
@@ -243,15 +288,9 @@ class PbrTest2 extends SketchScene {
   }
 
   setupGui() {
-    let f = gui.addFolder({title: `Scene: ${this.name}`});
-
-    f.addInput( this.pars, 'spotlightIntensity', {
-      min: 0.0,
-      max: 200,
-      step: 1,
-      label: 'spotlight level'
-    }).on( 'change', () => {
-      this.spotlight.intensity = this.pars.spotlightIntensity;
+    let f = gui.addFolder({
+      title: `Scene: ${this.name}`,
+      expanded: false
     });
 
     f.addInput( this.pars, 'envMapIntensity', {
