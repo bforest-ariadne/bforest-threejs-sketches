@@ -131,6 +131,9 @@ class AssetManager {
       if (isGLTF(ext)) {
         // console.log('loading gltf');
         const loader = new THREE.GLTFLoader();
+        const dracoLoader = new THREE.DRACOLoader();
+        dracoLoader.setDecoderPath( 'assets/js/draco/gltf/' );
+        loader.setDRACOLoader( dracoLoader );
         return loader.load(url, (data) => {
           // get out of Promise land from GLTFLoader
           process.nextTick(() => done(null, data));
