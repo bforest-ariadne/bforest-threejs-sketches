@@ -5,13 +5,11 @@ const query = require('../../util/query');
 const defined = require('defined');
 const { merge } = require('merge-anything');
 const { createMaterial, materialAssets } = require('../materials/createPbrMaterial');
-const ParallaxOclusionMaterialModifier = require('../materialModifiers/ParallaxOclusionMaterialModifier');
+// const ParallaxOclusionMaterialModifier = require('../materialModifiers/ParallaxOclusionMaterialModifier');
 const IceMaterial = require('../materials/IceMaterial');
 const { SpotLight, PointLight } = require('../objects/lights');
-const { BPoseObj, bPoseObjAssets } = require('../objects/bposeObj');
+// const { BPoseObj, bPoseObjAssets } = require('../objects/bposeObj');
 const { KernelSize } = require('postprocessing');
-
-
 
 const title = 'PBR Test2';
 const name = title.replace(/\s/g, '').toLowerCase();
@@ -46,13 +44,18 @@ const queueAssets = () => {
     texture: true
   });
 
+  assets.queue({
+    url: 'assets/models/bpose1_draco.glb',
+    key: 'bpose'
+  });
+
   for ( let i in materialAssets ) {
     assets.queue( materialAssets[i] );
   }
 
-  for ( let i in bPoseObjAssets ) {
-    assets.queue( bPoseObjAssets[i] );
-  }
+  // for ( let i in bPoseObjAssets ) {
+  //   assets.queue( bPoseObjAssets[i] );
+  // }
 };
 
 if ( defined( query.scene ) && query.scene.toString().toLowerCase() === name ) {
@@ -95,11 +98,18 @@ class PbrTest2 extends SketchScene {
 
     let env = assets.get('env');
 
+    let gltf = assets.get('bpose');
+    const bpose = gltf.scene.children[0];
+    this.bpose = bpose;
+    const bposeNormal = bpose.material.normalMap;
+    const bposeAO = bpose.material.aoMap;
+    const bposeThick = bpose.material.emissiveMap;
+
     this.useBufferGeo = true;
     this.N = 100;
-    const smooth = true;
+    // const smooth = true;
 
-    const parallaxOclusionModifier = new ParallaxOclusionMaterialModifier();
+    // const parallaxOclusionModifier = new ParallaxOclusionMaterialModifier();
 
     webgl.scene.fog = new THREE.FogExp2(0x000000, 0.00025);
     // webgl.scene.background = env.cubeMap;
@@ -126,7 +136,7 @@ class PbrTest2 extends SketchScene {
 
     const object = new THREE.Object3D();
     this.object = object;
-    let mesh;
+    // let mesh;
 
     instanceMaterial.envMap = env.target.texture;
     instanceMaterial.needsUpdate = true;
@@ -181,10 +191,10 @@ class PbrTest2 extends SketchScene {
 
     let iceMaterial = new IceMaterial({
       // roughnessMap: assets.get('lava'),
-      thicknessMap: assets.get('bpose_thick'),
-      roughnessMap: assets.get('bpose_c'),
+      thicknessMap: bposeThick,
+      roughnessMap: bposeAO,
       // metalnessMap: assets.get('aorm'),
-      normalMap: assets.get('bpose_n'),
+      normalMap: bposeNormal,
       // aoMap: assets.get('bpose_c'),
       // map: assets.get('c'),
       roughness: 0.3,
@@ -216,11 +226,11 @@ class PbrTest2 extends SketchScene {
       }
     }
 
-    this.bpose = new BPoseObj();
+    // this.bpose = new BPoseObj();
 
     this.bpose.material = iceMaterial;
     this.bpose.material.envMap = env.target.texture;
-    this.bpose.rotation.z = Math.PI;
+    // this.bpose.rotation.z = Math.PI;
     this.bpose.position.set( 0, 2, 0 );
 
     this.orbitControls.target.set( 0, 3, 0);
@@ -302,7 +312,10 @@ class PbrTest2 extends SketchScene {
       this.adjustEnvIntensity();
     });
 
-    f = gui.addFolder({title: `iceMat`});
+    f = gui.addFolder({
+      title: `iceMat`,
+      expanded: false
+    });
 
     f.addInput( this.iceMaterial.uniforms.thicknessAmbient, 'value', {
       min: 0.0,
