@@ -201,7 +201,7 @@ module.exports = class WebGLApp extends EventEmitter {
   animate = nowMsec => {
     if (!this.running) return;
     this.stats.begin();
-    window.requestAnimationFrame(this.animate);
+   
 
     // measure time
     this.lastTimeMsec = this.lastTimeMsec || nowMsec - 1000 / 60;
@@ -217,6 +217,7 @@ module.exports = class WebGLApp extends EventEmitter {
     if ( this.frameCount === 2 ) this.emit('frame2');
     this.renderer.info.reset();
     this.stats.end();
+    window.requestAnimationFrame(this.animate);
   }
 
   _checkReady() {

@@ -45,7 +45,7 @@ const queueAssets = () => {
   });
 
   assets.queue({
-    url: 'assets/models/bpose1_draco.glb',
+    url: 'assets/models/bpose1_lp_512.glb',
     key: 'bpose'
   });
 
@@ -97,18 +97,19 @@ class PbrTest2 extends SketchScene {
     webgl.camera.position.set( 10, 9, 13 );
 
     let env = assets.get('env');
+    this.env = env;
 
     let gltf = assets.get('bpose');
     const bpose = gltf.scene.children[0];
     this.bpose = bpose;
     const bposeNormal = bpose.material.normalMap;
-    const bposeAO = bpose.material.aoMap;
+    const bposeAO = bpose.material.map;
     const bposeThick = bpose.material.emissiveMap;
 
     this.useBufferGeo = true;
     this.N = 100;
     // const smooth = true;
-
+    this.blackColor = new THREE.Color('black');
     // const parallaxOclusionModifier = new ParallaxOclusionMaterialModifier();
 
     webgl.scene.fog = new THREE.FogExp2(0x000000, 0.00025);
@@ -123,6 +124,10 @@ class PbrTest2 extends SketchScene {
     webgl.renderer.physicallyCorrectLights = true;
 
     postProcessSetup( true );
+
+    this.cubeCamera = new THREE.CubeCamera( 0.001, 100, 512 );
+    this.add( this.cubeCamera );
+    this.cubeCamera.renderTarget.texture.mapping = THREE.CubeRefractionMapping;
 
     let instanceMaterial;
 
@@ -192,18 +197,19 @@ class PbrTest2 extends SketchScene {
     let iceMaterial = new IceMaterial({
       // roughnessMap: assets.get('lava'),
       thicknessMap: bposeThick,
-      roughnessMap: bposeAO,
+      // roughnessMap: bposeAO,
       // metalnessMap: assets.get('aorm'),
       normalMap: bposeNormal,
       // aoMap: assets.get('bpose_c'),
       // map: assets.get('c'),
-      roughness: 0.3,
-      metalness: 0,
+      roughness: 0.0,
+      metalness: 1,
       color: 0x454545,
-      envMap: env.target.texture,
+      envMap: this.cubeCamera.renderTarget.texture,
       thicknessScale: 10,
       thicknessAttenuation: 1,
-      thicknessPower: 5
+      thicknessPower: 5,
+      refractionRatio: 1
     });
     global.iceMat = iceMaterial;
     this.iceMaterial = iceMaterial;
@@ -225,17 +231,24 @@ class PbrTest2 extends SketchScene {
         value.needsUpdate = true;
       }
     }
+    this.iceMaterial.envMap.mapping = THREE.CubeRefractionMapping;
 
     // this.bpose = new BPoseObj();
 
     this.bpose.material = iceMaterial;
-    this.bpose.material.envMap = env.target.texture;
+    this.bpose.material.envMap = this.cubeCamera.renderTarget.texture;
     // this.bpose.rotation.z = Math.PI;
     this.bpose.position.set( 0, 2, 0 );
+    this.add( this.bpose );
+
+    this.bpose.visible = false;
+    webgl.scene.background = env.cubeMap;
+    this.cubeCamera.position.copy( this.bpose.position );
+    this.cubeCamera.update( webgl.renderer, webgl.scene );
+    this.bpose.visible = true;
+    webgl.scene.background = null;
 
     this.orbitControls.target.set( 0, 3, 0);
-
-    this.add( this.bpose );
 
     // let subjectGeo = new THREE.TorusBufferGeometry( 2, 0.5, 16, 100 );
 
@@ -270,11 +283,13 @@ class PbrTest2 extends SketchScene {
 
   update (delta = 0, now = 0, frame = 0) {
     super.update();
+    this.renderEnv();
     if ( defined( this.lightHelper ) ) this.lightHelper.update();
     if ( defined( this.shadowCameraHelper ) ) this.shadowCameraHelper.update();
 
     if ( !this.animate ) return;
 
+    
     // this.iceMaterial.uniforms.time.value = now;
 
     this.pointLight.position.y = ( Math.sin( now * 0.5 ) * 7 ) + 3;
@@ -284,8 +299,20 @@ class PbrTest2 extends SketchScene {
     // this.subject.rotation.x += delta * 0.9;
     this.bpose.rotation.y += delta * 0.8;
     // this.subject.scale.z = Math.sin( now / 2 ) + 2;
+    
 
     if ( defined( this.shaderUniforms ) ) this.shaderUniforms.time.value = now * 8;
+  }
+
+  renderEnv() {
+    // console.log('frame', webgl.frameCount );
+    this.bpose.visible = false;
+    webgl.scene.background = this.env.cubeMap;
+    this.pointLight.mesh.material.depthTest = false;
+    this.cubeCamera.update( webgl.renderer, webgl.scene );
+    this.pointLight.mesh.material.depthTest = true;
+    this.bpose.visible = true;
+    webgl.scene.background = this.blackColor;
   }
 
   adjustEnvIntensity( value ) {

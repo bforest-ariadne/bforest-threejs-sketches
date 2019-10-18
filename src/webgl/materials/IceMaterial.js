@@ -12,13 +12,13 @@ const defined = require('defined');
 const fragmentShader = glslify(path.resolve(__dirname, '../shaders/ice.frag'));
 const vertexShader = glslify(path.resolve(__dirname, '../shaders/ice.vert'));
 
-class IceMaterial extends THREE.MeshStandardMaterial {
+class IceMaterial extends THREE.MeshPhysicalMaterial {
   constructor (parameters) {
     parameters = assign({}, parameters);
     super();
     if ( defined( parameters.thicknessMap, false) ) this.defines['USE_THICKNESS_MAP'] = '';
     this.uniforms = assign({},
-      THREE.ShaderLib.standard.uniforms,
+      THREE.ShaderLib.physical.uniforms,
       {
         // your custom uniforms or overrides to built-ins
         thicknessMap: { type: 't', value: parameters.thicknessMap || null },
