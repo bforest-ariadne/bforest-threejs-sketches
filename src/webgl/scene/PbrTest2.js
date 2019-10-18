@@ -329,7 +329,7 @@ class PbrTest2 extends SketchScene {
 
     const envPar = f.addInput( this.pars, 'envMapIntensity', {
       min: 0.0,
-      max: 1.0,
+      max: 2.0,
       step: 0.01,
       label: 'env level'
     }).on( 'change', () => {
@@ -342,7 +342,7 @@ class PbrTest2 extends SketchScene {
 
     const probePar = f.addInput( this.pars, 'lightProbeIntensity', {
       min: 0.0,
-      max: 1.0,
+      max: 2.0,
       step: 0.01,
       label: 'light probe'
     }).on( 'change', () => {
