@@ -8,6 +8,7 @@ const { createMaterial, materialAssets } = require('../materials/createPbrMateri
 // const ParallaxOclusionMaterialModifier = require('../materialModifiers/ParallaxOclusionMaterialModifier');
 const IceMaterial = require('../materials/IceMaterial');
 const { SpotLight, PointLight } = require('../objects/lights');
+const CubeMapDebugger = require('../objects/cubeMapDebugger');
 // const { BPoseObj, bPoseObjAssets } = require('../objects/bposeObj');
 const { KernelSize } = require('postprocessing');
 
@@ -67,8 +68,7 @@ class PbrTest2 extends SketchScene {
     super(name);
     this.animate = true;
     const pars = {
-      envMapIntensity: 0.01,
-      spotlightIntensity: 100,
+      envMapIntensity: 0.5,
       renderer: {
         exposure: 2
       },
@@ -80,7 +80,7 @@ class PbrTest2 extends SketchScene {
         'opacity': 3.11,
         'luminance': {
           'filter': true,
-          'threshold': 0.043,
+          'threshold': 1,
           'smoothing': 0.272
         }
       }
@@ -125,9 +125,24 @@ class PbrTest2 extends SketchScene {
 
     postProcessSetup( true );
 
-    this.cubeCamera = new THREE.CubeCamera( 0.001, 100, 512 );
+    this.cubeCamera = new THREE.CubeCamera( 0.001, 100, 256 );
     this.add( this.cubeCamera );
-    this.cubeCamera.renderTarget.texture.mapping = THREE.CubeRefractionMapping;
+    this.cubeCamera.renderTarget.texture.generateMipmaps = true;
+    this.cubeCamera.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
+    // this.cubeCamera.renderTarget.texture.mapping = THREE.CubeRefractionMapping;
+
+
+    // this.pmremGenerator = new THREE.PMREMGenerator(
+    //   this.cubeCamera.renderTarget.texture,
+    //   32,
+    //   128
+    // );
+    // this.pmremCubeUVPacker = new THREE.PMREMCubeUVPacker(
+    //   this.pmremGenerator.cubeLods
+    // );
+
+    // this.envUv = this.pmremCubeUVPacker.CubeUVRenderTarget.texture;
+    // this.envUv.mapping = THREE.CubeUVRefractionMapping;
 
     let instanceMaterial;
 
@@ -202,14 +217,16 @@ class PbrTest2 extends SketchScene {
       normalMap: bposeNormal,
       // aoMap: assets.get('bpose_c'),
       // map: assets.get('c'),
-      roughness: 0.0,
-      metalness: 1,
+      roughness: 0.1,
+      metalness: 0.5,
       color: 0x454545,
       envMap: this.cubeCamera.renderTarget.texture,
+      // envMap: env.target.texture,
+      // envMap: this.envUv,
       thicknessScale: 10,
       thicknessAttenuation: 1,
       thicknessPower: 5,
-      refractionRatio: 1
+      refractionRatio: 1.3
     });
     global.iceMat = iceMaterial;
     this.iceMaterial = iceMaterial;
@@ -231,51 +248,30 @@ class PbrTest2 extends SketchScene {
         value.needsUpdate = true;
       }
     }
-    this.iceMaterial.envMap.mapping = THREE.CubeRefractionMapping;
+    // this.iceMaterial.envMap.mapping = THREE.CubeRefractionMapping;
 
     // this.bpose = new BPoseObj();
 
     this.bpose.material = iceMaterial;
-    this.bpose.material.envMap = this.cubeCamera.renderTarget.texture;
-    // this.bpose.rotation.z = Math.PI;
     this.bpose.position.set( 0, 2, 0 );
     this.add( this.bpose );
 
-    this.bpose.visible = false;
-    webgl.scene.background = env.cubeMap;
-    this.cubeCamera.position.copy( this.bpose.position );
-    this.cubeCamera.update( webgl.renderer, webgl.scene );
-    this.bpose.visible = true;
-    webgl.scene.background = null;
-
+    this.renderEnv();
     this.orbitControls.target.set( 0, 3, 0);
 
-    // let subjectGeo = new THREE.TorusBufferGeometry( 2, 0.5, 16, 100 );
+    // this.cubeDebugger = new CubeMapDebugger( this.pmremCubeUVPacker.CubeUVRenderTarget.texture, this.env.target.texture );
+    // this.add( this.cubeDebugger );
 
-    // const subject = new THREE.Mesh(
-    //   subjectGeo,
-    //   iceMaterial
-    //   // instanceMaterial
-    // );
+    this.env.cubeMap.image.forEach( dataTex => {
+      dataTex.width = dataTex.image.width;
+      dataTex.height = dataTex.image.height;
+    });
 
-    // subject.rotation.x = Math.PI / 2;
-    // subject.geometry.addAttribute( 'uv2', subject.geometry.attributes.uv.clone() );
-    // subject.material.flatShading = false;
-    // // subject.position.set( 3.0, 2.0, -2.0 );
-    // subject.receiveShadow = true;
-    // subject.castShadow = true;
-    // subject.name = 'subject';
-    // global.box = subject;
-    // this.add( subject );
-    // this.subject = subject;
-    // if ( webgl.dev ) window.subject = subject;
+    this.lightProbe = new THREE.LightProbe();
+    this.lightProbe.copy( THREE.LightProbeGenerator.fromCubeTexture( this.env.cubeMap ) );
+    this.add( this.lightProbe );
 
-    // parallaxOclusionModifier.addGui( mesh, gui );
 
-    // if ( defined( subjectMat, false ) ) {
-    //   parallaxOclusionModifier.modifyMeshMaterial( subject );
-    //   parallaxOclusionModifier.addGui( subject, gui );
-    // }
     this.setupGui();
 
     this.adjustEnvIntensity();
@@ -289,7 +285,6 @@ class PbrTest2 extends SketchScene {
 
     if ( !this.animate ) return;
 
-    
     // this.iceMaterial.uniforms.time.value = now;
 
     this.pointLight.position.y = ( Math.sin( now * 0.5 ) * 7 ) + 3;
@@ -299,7 +294,7 @@ class PbrTest2 extends SketchScene {
     // this.subject.rotation.x += delta * 0.9;
     this.bpose.rotation.y += delta * 0.8;
     // this.subject.scale.z = Math.sin( now / 2 ) + 2;
-    
+
 
     if ( defined( this.shaderUniforms ) ) this.shaderUniforms.time.value = now * 8;
   }
@@ -309,7 +304,17 @@ class PbrTest2 extends SketchScene {
     this.bpose.visible = false;
     webgl.scene.background = this.env.cubeMap;
     this.pointLight.mesh.material.depthTest = false;
+    this.pointLight.mesh.material.visible = false;
     this.cubeCamera.update( webgl.renderer, webgl.scene );
+    // if ( defined( this.pmremGenerator ) ) {
+    //   this.pmremGenerator.update(webgl.renderer);
+    // }
+    // if ( defined( this.pmremCubeUVPacker ) ) {
+    //   this.pmremCubeUVPacker.update(webgl.renderer);
+    // }
+
+    // this.envUv = this.pmremCubeUVPacker.CubeUVRenderTarget;
+    this.pointLight.mesh.material.visible = true;
     this.pointLight.mesh.material.depthTest = true;
     this.bpose.visible = true;
     webgl.scene.background = this.blackColor;
