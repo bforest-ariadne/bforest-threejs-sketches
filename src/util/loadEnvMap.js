@@ -51,7 +51,7 @@ module.exports = function loadEnvMap (opt = {}, cb = noop) {
   }
 
   function onCubeMapLoaded (cubeMap) {
-    let hdrCubeRenderTarget = undefined;
+    let hdrCubeRenderTarget;
     if (opt.pbr || typeof opt.level === 'number') {
       // prefilter the environment map for irradiance
       const pmremGenerator = new THREE.PMREMGenerator(cubeMap);
