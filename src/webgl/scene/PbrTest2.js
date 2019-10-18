@@ -68,7 +68,9 @@ class PbrTest2 extends SketchScene {
     super(name);
     this.animate = true;
     const pars = {
-      envMapIntensity: 0.5,
+      envMapIntensity: 1,
+      lightProbeIntensity: 1,
+      ambientLinked: true,
       renderer: {
         exposure: 2
       },
@@ -172,7 +174,7 @@ class PbrTest2 extends SketchScene {
       }
     });
 
-    marble1Mat.envMap = env.target.texture;
+    marble1Mat.envMap = env.cubeMap;
     marble1Mat.side = THREE.DoubleSide;
     marble1Mat.needsUpdate = true;
 
@@ -217,8 +219,8 @@ class PbrTest2 extends SketchScene {
       normalMap: bposeNormal,
       // aoMap: assets.get('bpose_c'),
       // map: assets.get('c'),
-      roughness: 0.1,
-      metalness: 0.5,
+      roughness: 0.2,
+      metalness: 0.0,
       color: 0x454545,
       envMap: this.cubeCamera.renderTarget.texture,
       // envMap: env.target.texture,
@@ -263,15 +265,9 @@ class PbrTest2 extends SketchScene {
     this.cubeDebugger.visible = false;
     this.add( this.cubeDebugger );
 
-    // this.env.cubeMap.image.forEach( dataTex => {
-    //   dataTex.width = dataTex.image.width;
-    //   dataTex.height = dataTex.image.height;
-    // });
-
     this.lightProbe = new THREE.LightProbe();
     this.lightProbe.copy( THREE.LightProbeGenerator.fromCubeCamera( webgl.renderer, this.cubeCamera ) );
     this.add( this.lightProbe );
-
 
     this.setupGui();
 
@@ -286,16 +282,11 @@ class PbrTest2 extends SketchScene {
 
     if ( !this.animate ) return;
 
-    // this.iceMaterial.uniforms.time.value = now;
-
     this.pointLight.position.y = ( Math.sin( now * 0.5 ) * 7 ) + 3;
     this.pointLight.position.z = ( Math.sin( now * 0.8 ) * 3 );
     this.pointLight.position.z = ( Math.sin( now * 0.6 ) * 3 );
 
-    // this.subject.rotation.x += delta * 0.9;
     this.bpose.rotation.y += delta * 0.8;
-    // this.subject.scale.z = Math.sin( now / 2 ) + 2;
-
 
     if ( defined( this.shaderUniforms ) ) this.shaderUniforms.time.value = now * 8;
   }
@@ -336,13 +327,39 @@ class PbrTest2 extends SketchScene {
       expanded: false
     });
 
-    f.addInput( this.pars, 'envMapIntensity', {
+    const envPar = f.addInput( this.pars, 'envMapIntensity', {
       min: 0.0,
       max: 1.0,
       step: 0.01,
       label: 'env level'
     }).on( 'change', () => {
       this.adjustEnvIntensity();
+      if ( this.pars.ambientLinked ) {
+        this.pars.lightProbeIntensity = this.pars.envMapIntensity;
+        this.lightProbe.intensity = this.pars.lightProbeIntensity;
+      }
+    });
+
+    const probePar = f.addInput( this.pars, 'lightProbeIntensity', {
+      min: 0.0,
+      max: 1.0,
+      step: 0.01,
+      label: 'light probe'
+    }).on( 'change', () => {
+      this.lightProbe.intensity = this.pars.lightProbeIntensity;
+      if ( this.pars.ambientLinked ) {
+        this.pars.envMapIntensity = this.pars.lightProbeIntensity;
+        this.adjustEnvIntensity();
+      }
+    });
+
+    f.addInput( this.pars, 'ambientLinked');
+
+    f.on('change', () => {
+      if ( this.pars.ambientLinked ) {
+        envPar.refresh();
+        probePar.refresh();
+      }
     });
 
     f = gui.addFolder({
