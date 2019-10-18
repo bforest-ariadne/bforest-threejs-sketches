@@ -15,7 +15,7 @@ require('three/examples/js/utils/ShadowMapViewer.js');
 require('three/examples/js/exporters/GLTFExporter');
 require('three/examples/js/loaders/DRACOLoader');
 require('three/examples/js/controls/OrbitControls');
-require('three/examples/js/lights/LightProbeGenerator');
+require('./vendor/LightProbeGenerator');
 // require('three/examples/js/utils/BufferGeometryUtils');
 // require('three/examples/js/ShaderSkin.js');
 // require('three/examples/js/shaders/BleachBypassShader.js');

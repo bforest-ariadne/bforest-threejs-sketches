@@ -259,16 +259,17 @@ class PbrTest2 extends SketchScene {
     this.renderEnv();
     this.orbitControls.target.set( 0, 3, 0);
 
-    // this.cubeDebugger = new CubeMapDebugger( this.pmremCubeUVPacker.CubeUVRenderTarget.texture, this.env.target.texture );
-    // this.add( this.cubeDebugger );
+    this.cubeDebugger = new CubeMapDebugger( this.cubeCamera.renderTarget.texture, this.env.target.texture );
+    this.cubeDebugger.visible = false;
+    this.add( this.cubeDebugger );
 
-    this.env.cubeMap.image.forEach( dataTex => {
-      dataTex.width = dataTex.image.width;
-      dataTex.height = dataTex.image.height;
-    });
+    // this.env.cubeMap.image.forEach( dataTex => {
+    //   dataTex.width = dataTex.image.width;
+    //   dataTex.height = dataTex.image.height;
+    // });
 
     this.lightProbe = new THREE.LightProbe();
-    this.lightProbe.copy( THREE.LightProbeGenerator.fromCubeTexture( this.env.cubeMap ) );
+    this.lightProbe.copy( THREE.LightProbeGenerator.fromCubeCamera( webgl.renderer, this.cubeCamera ) );
     this.add( this.lightProbe );
 
 
