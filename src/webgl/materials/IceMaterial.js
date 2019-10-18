@@ -16,6 +16,8 @@ class IceMaterial extends THREE.MeshPhysicalMaterial {
   constructor (parameters) {
     parameters = assign({}, parameters);
     super();
+    this._useTranslucency = true;
+    this.defines['USE_TRANSLUCENCY'] = '';
     if ( defined( parameters.thicknessMap, false) ) this.defines['USE_THICKNESS_MAP'] = '';
     this.uniforms = assign({},
       THREE.ShaderLib.physical.uniforms,
@@ -107,6 +109,23 @@ class IceMaterial extends THREE.MeshPhysicalMaterial {
 
   set thicknessAttenuation( value ) {
     this.uniforms.thicknessAttenuation.value = value;
+  }
+
+  get useTranslucency () {
+    return this._useTranslucency;
+  }
+
+  set useTranslucency( value ) {
+    if ( value === false ) {
+      const defines = {};
+      for ( let [ key, value ] of Object.entries( this.defines ) ) {
+        if ( !key.includes( 'USE_TRANSLUCENCY' ) ) defines[ key ] = value;
+      }
+      this.defines = defines;
+    } else if ( value === true ) {
+      this.defines[ 'USE_TRANSLUCENCY' ] = '';
+    }
+    this.needsUpdate = true;
   }
 }
 
