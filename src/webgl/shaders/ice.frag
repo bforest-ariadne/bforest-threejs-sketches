@@ -1,4 +1,4 @@
-#define USE_TRANSLUCENCY
+// #define USE_TRANSLUCENCY
 // #define USE_THICKNES_MAP
 
 #ifdef USE_TRANSLUCENCY
