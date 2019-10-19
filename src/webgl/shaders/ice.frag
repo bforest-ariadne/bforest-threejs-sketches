@@ -12,6 +12,13 @@
   uniform vec2 thicknessRepeat;
   uniform float diffuseColorInfluence;
   uniform float thicknessIOR;
+  
+  // uniform float parallaxScale;
+#endif
+
+#ifdef USE_PARALLAX_LAYER_1
+  uniform float parallaxScale1;
+  uniform sampler2D parallaxLayer1;
 #endif
 
 #define PHYSICAL
@@ -76,6 +83,47 @@ varying vec3 vViewPosition;
 #include <clipping_planes_pars_fragment>
 
 #ifdef USE_TRANSLUCENCY
+  vec2 parallaxMap( in vec3 V, sampler2D parallaxLayer, float parallaxScale ) {
+
+    // float parallaxScale = parallaxScale1;
+    float initialHeight = texture2D( parallaxLayer, vUv ).r;
+
+    // No Offset Limitting: messy, floating output at grazing angles.
+    // vec2 texCoordOffset = parallaxScale * V.xy / V.z * initialHeight;
+
+    // Offset Limiting
+    vec2 texCoordOffset = parallaxScale * V.xy * initialHeight;
+    return vUv - texCoordOffset;
+
+  }
+
+  vec2 perturbUv( vec3 surfPosition, vec3 surfNormal, vec3 viewPosition, sampler2D parallaxLayer, float parallaxScale ) {
+
+    vec2 texDx = dFdx( vUv );
+    vec2 texDy = dFdy( vUv );
+
+    vec3 vSigmaX = dFdx( surfPosition );
+    vec3 vSigmaY = dFdy( surfPosition );
+    vec3 vR1 = cross( vSigmaY, surfNormal );
+    vec3 vR2 = cross( surfNormal, vSigmaX );
+    float fDet = dot( vSigmaX, vR1 );
+
+    vec2 vProjVscr = ( 1.0 / fDet ) * vec2( dot( vR1, viewPosition ), dot( vR2, viewPosition ) );
+    vec3 vProjVtex;
+    vProjVtex.xy = texDx * vProjVscr.x + texDy * vProjVscr.y;
+    vProjVtex.z = dot( surfNormal, viewPosition );
+
+    return parallaxMap( vProjVtex, parallaxLayer, parallaxScale );
+  }
+
+  vec4 getParallaxLayer( vec3 surfPosition, vec3 surfNormal, vec3 viewPosition, sampler2D parallaxLayer, float parallaxScale ) {
+    vec2 vUvParallax = perturbUv( -surfPosition, normalize( surfNormal ), normalize( viewPosition), parallaxLayer, parallaxScale );
+
+    vec4 parallaxColor = texture2D( parallaxLayer, vUvParallax );
+    return mapTexelToLinear( parallaxColor );
+
+  }
+
   vec3 getLightProbeBackIrradiance( const in vec3 lightProbe[ 9 ], const in GeometricContext geometry ) {
     vec3 worldNormal = inverseTransformDirection( geometry.normal, -viewMatrix );
     vec3 irradiance = shGetIrradianceAt( worldNormal, lightProbe );
@@ -137,6 +185,13 @@ void main() {
 
 	#include <logdepthbuf_fragment>
 	#include <map_fragment>
+  #ifdef USE_PARALLAX_LAYER_1
+    // vUvParallax = perturbUv( -vViewPosition, normalize( vNormal ), normalize( vViewPosition ) );
+    // vec4 texelColor = texture2D( parallaxLayer1, vUvParallax1 );
+    // texelColor = mapTexelToLinear( texelColor );
+    vec4 parallaxLayer1Map = getParallaxLayer( vViewPosition, vNormal, vViewPosition, parallaxLayer1, parallaxScale1 );
+    diffuseColor *= parallaxLayer1Map;
+  #endif
 	#include <color_fragment>
 	#include <alphamap_fragment>
 	#include <alphatest_fragment>

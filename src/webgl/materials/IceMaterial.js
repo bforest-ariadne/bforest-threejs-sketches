@@ -19,6 +19,7 @@ class IceMaterial extends THREE.MeshPhysicalMaterial {
     this._useTranslucency = true;
     this.defines['USE_TRANSLUCENCY'] = '';
     if ( defined( parameters.thicknessMap, false) ) this.defines['USE_THICKNESS_MAP'] = '';
+    if ( defined( parameters.parallaxLayer1, false) ) this.defines['USE_PARALLAX_LAYER_1'] = '';
     this.uniforms = assign({},
       THREE.ShaderLib.physical.uniforms,
       {
@@ -32,7 +33,9 @@ class IceMaterial extends THREE.MeshPhysicalMaterial {
         thicknessAttenuation: { type: 'f', value: parameters.thicknessAttenuation || 0.8, min: 0, max: 1 },
         diffuseColorInfluence: { type: 'f', value: parameters.diffuseColorInfluence || 1.0, min: 0, max: 1 },
         thicknessIOR: { type: 'f', value: parameters.thicknessIOR || 1.0, min: 0, max: 2 },
-        thicknessColor: { type: 'v3', value: parameters.thicknessColor || new THREE.Color('white') }
+        thicknessColor: { type: 'v3', value: parameters.thicknessColor || new THREE.Color('white') },
+        parallaxScale1: { type: 'f', value: parameters.parallaxScale1 || 1.0, min: 0, max: 10 },
+        parallaxLayer1: { type: 't', value: parameters.parallaxLayer1 || null }
       }
     );
     setFlags(this);
