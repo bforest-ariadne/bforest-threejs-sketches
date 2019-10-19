@@ -31,6 +31,7 @@ class IceMaterial extends THREE.MeshPhysicalMaterial {
         thicknessAmbient: { type: 'f', value: parameters.thicknessAmbient || 0.0, min: 0, max: 1 },
         thicknessAttenuation: { type: 'f', value: parameters.thicknessAttenuation || 0.8, min: 0, max: 1 },
         diffuseColorInfluence: { type: 'f', value: parameters.diffuseColorInfluence || 1.0, min: 0, max: 1 },
+        thicknessIOR: { type: 'f', value: parameters.thicknessIOR || 1.0, min: 0, max: 2 },
         thicknessColor: { type: 'v3', value: parameters.thicknessColor || new THREE.Color('white') }
       }
     );
@@ -118,6 +119,14 @@ class IceMaterial extends THREE.MeshPhysicalMaterial {
 
   set diffuseColorInfluence( value ) {
     this.uniforms.diffuseColorInfluence.value = value;
+  }
+
+  get thicknessIOR() {
+    return this.uniforms.thicknessIOR.value;
+  }
+
+  set thicknessIOR( value ) {
+    this.uniforms.thicknessIOR.value = value;
   }
 
   get useTranslucency () {

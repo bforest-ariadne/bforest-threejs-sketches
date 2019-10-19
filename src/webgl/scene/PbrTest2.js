@@ -345,7 +345,7 @@ class PbrTest2 extends SketchScene {
 
     const probePar = f.addInput( this.pars, 'lightProbeIntensity', {
       min: 0.0,
-      max: 2.0,
+      max: 10.0,
       step: 0.01,
       label: 'light probe'
     }).on( 'change', () => {
