@@ -29,7 +29,7 @@ module.exports = class CubeMapDebugger extends THREE.Group {
   }
 
   update() {
-    if ( !this.camTarget && this.planes.length === 0 ) return;
+    if ( !this.camTarget && this.planes.length === 0 && !this.visible ) return;
     // this.camTarget.getWorldPosition( this.targetWorldPosition );
     // this.position.copy( this.targetWorldPosition );
     this.camTarget.updateMatrixWorld();

@@ -236,6 +236,9 @@ void main() {
         backIrradiance *= mix( vec3(1.0, 1.0, 1.0), material.diffuseColor, diffuseColorInfluence );
         irradiance += backIrradiance;
       #endif
+    #if defined( USE_ENVMAP ) && defined( STANDARD ) && defined( ENVMAP_TYPE_CUBE_UV )
+      // iblIrradiance += getLightProbeIndirectIrradiance( geometry, maxMipLevel );
+    #endif
 
   #endif
 	#include <lights_fragment_end>
