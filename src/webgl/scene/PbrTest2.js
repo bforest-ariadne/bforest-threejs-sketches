@@ -69,8 +69,8 @@ class PbrTest2 extends SketchScene {
     this.animate = true;
     const pars = {
       envMapIntensity: 1,
-      lightProbeIntensity: 1,
-      ambientLinked: true,
+      lightProbeIntensity: 5,
+      ambientLinked: false,
       showBackground: true,
       renderer: {
         exposure: 2
@@ -98,6 +98,7 @@ class PbrTest2 extends SketchScene {
     this.orbitControlsInit();
     this.orbitControls.enablePan = !webgl.mobile;
     webgl.camera.position.set( 10, 9, 13 );
+    this.envTexture = null;
 
     let env = assets.get('env');
     this.env = env;
@@ -128,24 +129,7 @@ class PbrTest2 extends SketchScene {
 
     postProcessSetup( true );
 
-    this.cubeCamera = new THREE.CubeCamera( 0.001, 100, 256 );
-    this.add( this.cubeCamera );
-    this.cubeCamera.renderTarget.texture.generateMipmaps = true;
-    this.cubeCamera.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
-    // this.cubeCamera.renderTarget.texture.mapping = THREE.CubeRefractionMapping;
-
-
-    // this.pmremGenerator = new THREE.PMREMGenerator(
-    //   this.cubeCamera.renderTarget.texture,
-    //   32,
-    //   128
-    // );
-    // this.pmremCubeUVPacker = new THREE.PMREMCubeUVPacker(
-    //   this.pmremGenerator.cubeLods
-    // );
-
-    // this.envUv = this.pmremCubeUVPacker.CubeUVRenderTarget.texture;
-    // this.envUv.mapping = THREE.CubeUVRefractionMapping;
+    this.setupCubeCamera();
 
     let instanceMaterial;
 
@@ -220,10 +204,10 @@ class PbrTest2 extends SketchScene {
       normalMap: bposeNormal,
       // aoMap: assets.get('bpose_c'),
       // map: assets.get('c'),
-      roughness: 1.0,
+      roughness: 0.28,
       metalness: 0.0,
       color: 0xffffff,
-      envMap: this.cubeCamera.renderTarget.texture,
+      envMap: this.envTexture,
       // envMap: env.target.texture,
       // envMap: this.envUv,
       thicknessScale: 10,
@@ -263,12 +247,16 @@ class PbrTest2 extends SketchScene {
     this.renderEnv();
     this.orbitControls.target.set( 0, 3, 0);
 
-    this.cubeDebugger = new CubeMapDebugger( this.cubeCamera.renderTarget.texture, this.env.target.texture );
+    const debugCubeMaps = [this.env.target.texture];
+    if ( defined( this.envUv ) ) debugCubeMaps.push( this.envUv.texture );
+
+    this.cubeDebugger = new CubeMapDebugger( ...debugCubeMaps );
     this.cubeDebugger.visible = false;
     this.add( this.cubeDebugger );
 
     this.lightProbe = new THREE.LightProbe();
     this.lightProbe.copy( THREE.LightProbeGenerator.fromCubeCamera( webgl.renderer, this.cubeCamera ) );
+    this.lightProbe.intensity = this.pars.lightProbeIntensity;
     this.add( this.lightProbe );
 
     this.setupGui();
@@ -301,18 +289,37 @@ class PbrTest2 extends SketchScene {
     this.pointLight.mesh.material.depthTest = false;
     this.pointLight.mesh.material.visible = false;
     this.cubeCamera.update( webgl.renderer, webgl.scene );
-    // if ( defined( this.pmremGenerator ) ) {
-    //   this.pmremGenerator.update(webgl.renderer);
-    // }
-    // if ( defined( this.pmremCubeUVPacker ) ) {
-    //   this.pmremCubeUVPacker.update(webgl.renderer);
-    // }
+    if ( defined( this.pmremGenerator ) ) {
+      this.pmremGenerator.update(webgl.renderer);
+    }
+    if ( defined( this.pmremCubeUVPacker ) ) {
+      this.pmremCubeUVPacker.update(webgl.renderer);
+      this.envUv = this.pmremCubeUVPacker.CubeUVRenderTarget;
+    }
 
-    // this.envUv = this.pmremCubeUVPacker.CubeUVRenderTarget;
     this.pointLight.mesh.material.visible = true;
     this.pointLight.mesh.material.depthTest = true;
     this.bpose.visible = true;
     webgl.scene.background = sceneBg;
+  }
+
+  setupCubeCamera() {
+    this.cubeCamera = new THREE.CubeCamera( 0.001, 100, 256 );
+    this.add( this.cubeCamera );
+    this.cubeCamera.renderTarget.texture.generateMipmaps = true;
+    this.cubeCamera.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
+
+    this.envTexture = this.cubeCamera.renderTarget.texture;
+
+    // this.pmremGenerator = new THREE.PMREMGenerator(
+    //   this.cubeCamera.renderTarget.texture,
+    //   32,
+    //   128
+    // );
+    // this.pmremCubeUVPacker = new THREE.PMREMCubeUVPacker(
+    //   this.pmremGenerator.cubeLods
+    // );
+    // this.envUv = this.pmremCubeUVPacker.CubeUVRenderTarget.texture;
   }
 
   adjustEnvIntensity( value ) {
