@@ -157,6 +157,18 @@ void main() {
 
   // accumulation continue
   #include <lights_fragment_maps>
+
+  #ifdef USE_TRANSLUCENCY
+    // indirectDiffuse = max(irradianceSH(-v), 0.0) * Fd_Lambert();
+    vec3 tL = -V + N * thicknessDistortion;
+    float tD = pow(clamp(dot(V, -tL), 0.0, 1.0), thicknessPower) * thicknessScale;
+    vec3 tT = (tD + thicknessAmbient) * thickness;
+    // irradiance *= tT;
+    irradiance += material.diffuseColor * irradiance * tT * thicknessAttenuation;
+    // radiance += material.diffuseColor * radiance * tT * thicknessAttenuation;
+    // reflectedLight.directDiffuse += material.diffuseColor * irradiance * tT * thicknessAttenuation;
+
+  #endif
 	#include <lights_fragment_end>
 
   // modulation

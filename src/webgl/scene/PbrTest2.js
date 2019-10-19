@@ -16,7 +16,7 @@ const title = 'PBR Test2';
 const name = title.replace(/\s/g, '').toLowerCase();
 const queueAssets = () => {
   assets.queue({
-    url: 'assets/textures/blueLagoonNight_256/',
+    url: 'assets/textures/studio_small_02_512/',
     key: 'env',
     envMap: true,
     hdr: true,
@@ -71,6 +71,7 @@ class PbrTest2 extends SketchScene {
       envMapIntensity: 1,
       lightProbeIntensity: 1,
       ambientLinked: true,
+      showBackground: true,
       renderer: {
         exposure: 2
       },
@@ -115,7 +116,7 @@ class PbrTest2 extends SketchScene {
     // const parallaxOclusionModifier = new ParallaxOclusionMaterialModifier();
 
     webgl.scene.fog = new THREE.FogExp2(0x000000, 0.00025);
-    // webgl.scene.background = env.cubeMap;
+    webgl.scene.background = this.pars.showBackground ? this.env.cubeMap : this.blackColor;
     webgl.renderer.setClearColor( webgl.scene.fog.color, 1);
 
     webgl.renderer.gammaInput = true;
@@ -219,9 +220,9 @@ class PbrTest2 extends SketchScene {
       normalMap: bposeNormal,
       // aoMap: assets.get('bpose_c'),
       // map: assets.get('c'),
-      roughness: 0.2,
+      roughness: 1.0,
       metalness: 0.0,
-      color: 0x454545,
+      color: 0xffffff,
       envMap: this.cubeCamera.renderTarget.texture,
       // envMap: env.target.texture,
       // envMap: this.envUv,
@@ -294,6 +295,7 @@ class PbrTest2 extends SketchScene {
   renderEnv() {
     // console.log('frame', webgl.frameCount );
     this.bpose.visible = false;
+    const sceneBg = webgl.scene.background;
     webgl.scene.background = this.env.cubeMap;
     this.pointLight.mesh.material.depthTest = false;
     this.pointLight.mesh.material.visible = false;
@@ -309,7 +311,7 @@ class PbrTest2 extends SketchScene {
     this.pointLight.mesh.material.visible = true;
     this.pointLight.mesh.material.depthTest = true;
     this.bpose.visible = true;
-    webgl.scene.background = this.blackColor;
+    webgl.scene.background = sceneBg;
   }
 
   adjustEnvIntensity( value ) {
@@ -355,6 +357,10 @@ class PbrTest2 extends SketchScene {
 
     f.addInput( this.pars, 'ambientLinked');
 
+    f.addInput( this.pars, 'showBackground').on( 'change', () => {
+      webgl.scene.background = this.pars.showBackground ? this.env.cubeMap : this.blackColor;
+    })
+
     f.on('change', () => {
       if ( this.pars.ambientLinked ) {
         envPar.refresh();
@@ -366,6 +372,8 @@ class PbrTest2 extends SketchScene {
       title: `iceMat`,
       expanded: false
     });
+
+    f.addInput( this.iceMaterial, 'useTranslucency' );
 
     f.addInput( this.iceMaterial.uniforms.thicknessAmbient, 'value', {
       min: 0.0,

@@ -21,6 +21,13 @@ THREE.LightProbeGenerator = {
 
     for ( var faceIndex = 0; faceIndex < 6; faceIndex++ ) {
       var image = cubeTexture.image[ faceIndex ];
+      // debugger;
+      // if ( image instanceof THREE.DataTexture ) {
+      //   const array = image.image.data;
+      //   image = document.createElement('img');
+      //   const base64Data = window.btoa(String.fromCharCode.apply(null, array));
+      //   image.src = 'data:image/png;base64,' + base64Data;
+      // }
 
       var width = image.width;
       var height = image.height;
