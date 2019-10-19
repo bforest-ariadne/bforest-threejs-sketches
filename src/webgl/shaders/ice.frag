@@ -10,6 +10,7 @@
   uniform float thicknessAttenuation;
   uniform vec3 thicknessColor;
   uniform vec2 thicknessRepeat;
+  uniform float diffuseColorInfluence;
 #endif
 
 #define PHYSICAL
@@ -72,6 +73,55 @@ varying vec3 vViewPosition;
 #include <metalnessmap_pars_fragment>
 #include <logdepthbuf_pars_fragment>
 #include <clipping_planes_pars_fragment>
+vec3 getLightProbeBackIrradiance( const in vec3 lightProbe[ 9 ], const in GeometricContext geometry ) {
+	vec3 worldNormal = inverseTransformDirection( geometry.normal, -viewMatrix );
+	vec3 irradiance = shGetIrradianceAt( worldNormal, lightProbe );
+	return irradiance;
+}
+vec3 getLightProbeBackIndirectRadiance( const in vec3 viewDir, const in vec3 normal, const in float roughness, const in int maxMIPLevel ) {
+  // #ifdef ENVMAP_MODE_REFLECTION
+  //   vec3 reflectVec = reflect( -viewDir, normal );
+  //   reflectVec = normalize( mix( reflectVec, normal, roughness * roughness) );
+  // #else
+  //   vec3 reflectVec = refract( -viewDir, normal, refractionRatio );
+  // #endif
+  // vec3 reflectVec = reflect( -viewDir, -normal );
+  vec3 reflectVec = refract( -viewDir, normal, 1.0 );
+  reflectVec = normalize( mix( reflectVec, normal, roughness * roughness) );
+  reflectVec = inverseTransformDirection( reflectVec, viewMatrix );
+  float specularMIPLevel = getSpecularMIPLevel( roughness, maxMIPLevel );
+  #ifdef ENVMAP_TYPE_CUBE
+    vec3 queryReflectVec = vec3( flipEnvMap * reflectVec.x, reflectVec.yz );
+    #ifdef TEXTURE_LOD_EXT
+      vec4 envMapColor = textureCubeLodEXT( envMap, queryReflectVec, specularMIPLevel );
+    #else
+      vec4 envMapColor = textureCube( envMap, queryReflectVec, specularMIPLevel );
+    #endif
+    envMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;
+  #elif defined( ENVMAP_TYPE_CUBE_UV )
+    vec3 queryReflectVec = vec3( flipEnvMap * reflectVec.x, reflectVec.yz );
+    vec4 envMapColor = textureCubeUV( envMap, queryReflectVec, roughness );
+  #elif defined( ENVMAP_TYPE_EQUIREC )
+    vec2 sampleUV;
+    sampleUV.y = asin( clamp( reflectVec.y, - 1.0, 1.0 ) ) * RECIPROCAL_PI + 0.5;
+    sampleUV.x = atan( reflectVec.z, reflectVec.x ) * RECIPROCAL_PI2 + 0.5;
+    #ifdef TEXTURE_LOD_EXT
+      vec4 envMapColor = texture2DLodEXT( envMap, sampleUV, specularMIPLevel );
+    #else
+      vec4 envMapColor = texture2D( envMap, sampleUV, specularMIPLevel );
+    #endif
+    envMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;
+  #elif defined( ENVMAP_TYPE_SPHERE )
+    vec3 reflectView = normalize( ( viewMatrix * vec4( reflectVec, 0.0 ) ).xyz + vec3( 0.0,0.0,1.0 ) );
+    #ifdef TEXTURE_LOD_EXT
+      vec4 envMapColor = texture2DLodEXT( envMap, reflectView.xy * 0.5 + 0.5, specularMIPLevel );
+    #else
+      vec4 envMapColor = texture2D( envMap, reflectView.xy * 0.5 + 0.5, specularMIPLevel );
+    #endif
+    envMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;
+  #endif
+  return envMapColor.rgb * envMapIntensity;
+}
 
 void main() {
 
@@ -127,7 +177,10 @@ void main() {
         #if defined( USE_SHADOWMAP )
           // pointLight.color *= getPointShadow( pointShadowMap[ i ], pointLight.shadowMapSize, pointLight.shadowBias, pointLight.shadowRadius, vPointShadowCoord[ i ], pointLight.shadowCameraNear, pointLight.shadowCameraFar );
         #endif
-        reflectedLight.directDiffuse += material.diffuseColor * pointLight.color * LT * thicknessAttenuation;
+        vec3 pointLightThickness = pointLight.color * LT * thicknessAttenuation;
+        pointLightThickness *= mix( vec3(1.0, 1.0, 1.0), material.diffuseColor, diffuseColorInfluence );
+        // reflectedLight.directDiffuse += material.diffuseColor * pointLight.color * LT * thicknessAttenuation;
+        reflectedLight.directDiffuse += pointLightThickness;
 
       }
 
@@ -149,24 +202,36 @@ void main() {
         vec3 LTLight = normalize(L + (N * thicknessDistortion));
         float LTDot = pow(saturate(dot(V, -LTLight)), thicknessPower) * thicknessScale;
         vec3 LT = lightAtten * (LTDot + thicknessAmbient) * thickness;
-        reflectedLight.directDiffuse += material.diffuseColor * rectAreaLight.color * LT * thicknessAttenuation;
+        vec3 rectLightThickness = pointLight.color * LT * thicknessAttenuation;
+        rectLightThickness *= mix( vec3(1.0, 1.0, 1.0), material.diffuseColor, diffuseColorInfluence );
+        // reflectedLight.directDiffuse += material.diffuseColor * rectAreaLight.color * LT * thicknessAttenuation;
+        reflectedLight.directDiffuse += rectLightThickness;
+
       }
     #endif
 
   #endif
 
+  
+
   // accumulation continue
   #include <lights_fragment_maps>
 
   #ifdef USE_TRANSLUCENCY
-    // indirectDiffuse = max(irradianceSH(-v), 0.0) * Fd_Lambert();
+    vec3 backRadiance = getLightProbeBackIndirectRadiance( geometry.viewDir, geometry.normal, material.specularRoughness, maxMipLevel );
     vec3 tL = -V + N * thicknessDistortion;
     float tD = pow(clamp(dot(V, -tL), 0.0, 1.0), thicknessPower) * thicknessScale;
     vec3 tT = (tD + thicknessAmbient) * thickness;
-    // irradiance *= tT;
-    irradiance += material.diffuseColor * irradiance * tT * thicknessAttenuation;
-    // radiance += material.diffuseColor * radiance * tT * thicknessAttenuation;
-    // reflectedLight.directDiffuse += material.diffuseColor * irradiance * tT * thicknessAttenuation;
+
+    vec3 translucentRadiance = backRadiance * tT * thicknessAttenuation;
+    translucentRadiance *= mix( vec3(1.0, 1.0, 1.0), material.diffuseColor, diffuseColorInfluence );
+    radiance += translucentRadiance;
+      #if defined( RE_IndirectDiffuse )
+        vec3 backIrradiance = getLightProbeBackIrradiance( lightProbe, geometry );
+        backIrradiance = backIrradiance * tT * thicknessAttenuation;
+        backIrradiance *= mix( vec3(1.0, 1.0, 1.0), material.diffuseColor, diffuseColorInfluence );
+        irradiance += backIrradiance;
+      #endif
 
   #endif
 	#include <lights_fragment_end>
@@ -181,6 +246,7 @@ void main() {
 		diffuseColor.a *= saturate( 1. - transparency + linearToRelativeLuminance( reflectedLight.directSpecular + reflectedLight.indirectSpecular ) );
 	#endif
 	gl_FragColor = vec4( outgoingLight, diffuseColor.a );
+	// gl_FragColor = vec4( backIrradiance, diffuseColor.a );
 	#include <tonemapping_fragment>
 	#include <encodings_fragment>
 	#include <fog_fragment>

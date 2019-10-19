@@ -16,7 +16,7 @@ const title = 'PBR Test2';
 const name = title.replace(/\s/g, '').toLowerCase();
 const queueAssets = () => {
   assets.queue({
-    url: 'assets/textures/studio_small_02_512/',
+    url: 'assets/textures/studio_small_07_512/',
     key: 'env',
     envMap: true,
     hdr: true,
@@ -227,8 +227,9 @@ class PbrTest2 extends SketchScene {
       // envMap: env.target.texture,
       // envMap: this.envUv,
       thicknessScale: 10,
+      thicknessDistortion: 0.47,
       thicknessAttenuation: 1,
-      thicknessPower: 5,
+      thicknessPower: 29,
       refractionRatio: 1.3
     });
     global.iceMat = iceMaterial;
@@ -412,6 +413,13 @@ class PbrTest2 extends SketchScene {
       max: 1,
       step: 0.01,
       label: 'thicknessAttenuation'
+    });
+
+    f.addInput( this.iceMaterial.uniforms.diffuseColorInfluence, 'value', {
+      min: 0.0,
+      max: 1,
+      step: 0.01,
+      label: 'diffuseColorInfluence'
     });
 
     f.addInput( this.iceMaterial, 'thicknessColorStyle', {
