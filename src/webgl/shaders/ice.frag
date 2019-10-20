@@ -68,7 +68,7 @@ varying vec3 vViewPosition;
 #include <uv_pars_fragment>
 #include <uv2_pars_fragment>
 
-#ifdef USE_PARALLAX_LAYER
+#ifdef USE_PARALLAX_LAYERS
   #ifdef PARALLAX_UV3
     varying vec2 vUv3;
   #endif
@@ -198,7 +198,7 @@ void main() {
 
 	#include <logdepthbuf_fragment>
 	#include <map_fragment>
-  #if defined(USE_PARALLAX_LAYER) && defined(USE_TRANSLUCENCY)
+  #if defined(USE_PARALLAX_LAYERS) && defined(USE_TRANSLUCENCY)
     vec2 parallaxUv = vUv;
     vec4 parallaxLayersColor = vec4( 1.0, 1.0, 1.0, 1.0 );
 
@@ -219,7 +219,7 @@ void main() {
     #endif
     #ifdef USE_PARALLAX_LAYER_3
       vec4 parallaxLayer3Map = getParallaxLayer( vViewPosition, vNormal, vViewPosition, parallaxLayer3, parallaxScale3, parallaxUv );
-      parallaxLayersColor *= parallaxLayer3Map;
+      parallaxLayersColor += parallaxLayer3Map;
     #endif
 
     diffuseColor *= parallaxLayersColor;

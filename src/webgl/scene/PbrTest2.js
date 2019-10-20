@@ -34,8 +34,8 @@ const queueAssets = () => {
   });
 
   assets.queue({
-    url: 'assets/textures/lavatile.jpg',
-    key: 'lava',
+    url: 'assets/textures/Ice02/height.jpg',
+    key: 'iceHeight',
     texture: true
   });
 
@@ -188,7 +188,8 @@ class PbrTest2 extends SketchScene {
       color: 0xff0000,
       decay: 1,
       distance: 100,
-      meshSize: 5
+      meshSize: 5,
+      castShadow: false
     });
     this.pointLight = testPoint;
     // testPoint.position.set( -1, 1, -3);
@@ -205,14 +206,17 @@ class PbrTest2 extends SketchScene {
     let iceMaterial = new IceMaterial({
       // roughnessMap: assets.get('lava'),
       thicknessMap: bposeThick,
-      // roughnessMap: bposeAO,
+      roughnessMap: assets.get('iceHeight'),
       // metalnessMap: assets.get('aorm'),
       normalMap: bposeNormal,
+      // map: bposeAO,
       // aoMap: assets.get('bpose_c'),
       parallaxLayer1: assets.get('cracked'),
       parallaxLayer2: assets.get('droplets2'),
+      parallaxLayer3: assets.get('iceHeight'),
       parallaxScale1: 1.5,
       parallaxScale2: 1.1,
+      parallaxScale3: 0,
       roughness: 0.28,
       metalness: 0.0,
       color: 0xffffff,
@@ -223,8 +227,9 @@ class PbrTest2 extends SketchScene {
       thicknessDistortion: 0.47,
       thicknessAttenuation: 1,
       thicknessPower: 29,
-      refractionRatio: 1.3,
-      parallaxUv3: true
+      useParallaxLayers: true,
+      refractionRatio: 1.01
+      // parallaxUv3: true
     });
     global.iceMat = iceMaterial;
     this.iceMaterial = iceMaterial;
@@ -335,6 +340,11 @@ class PbrTest2 extends SketchScene {
     //   this.pmremGenerator.cubeLods
     // );
     // this.envUv = this.pmremCubeUVPacker.CubeUVRenderTarget.texture;
+  }
+
+  updateLightProbe() {
+    this.lightProbe.copy( THREE.LightProbeGenerator.fromCubeCamera( webgl.renderer, this.cubeCamera ) );
+    this.lightProbe.intensity = this.pars.lightProbeIntensity;
   }
 
   adjustEnvIntensity( value ) {
@@ -458,6 +468,14 @@ class PbrTest2 extends SketchScene {
       label: 'parallaxScale2'
     });
 
+    f.addInput( this.iceMaterial.uniforms.parallaxScale3, 'value', {
+      min: -2.0,
+      max: 10,
+      step: 0.01,
+      label: 'parallaxScale3'
+    });
+
+    f.addInput( this.iceMaterial, 'useParallaxLayers' );
     f.addInput( this.iceMaterial, 'parallaxUv3' );
 
     f.addInput( this.iceMaterial, 'thicknessColorStyle', {

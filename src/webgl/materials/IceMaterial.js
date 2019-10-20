@@ -18,6 +18,7 @@ class IceMaterial extends THREE.MeshPhysicalMaterial {
     super();
     this._useTranslucency = true;
     this._parallaxUv3 = false;
+    this._useParallaxLayers = false;
     this.defines['USE_TRANSLUCENCY'] = '';
     if ( parameters.parallaxUv3 ) {
       this.defines['PARALLAX_UV3'] = '';
@@ -36,7 +37,10 @@ class IceMaterial extends THREE.MeshPhysicalMaterial {
       this.defines['USE_PARALLAX_LAYER_3'] = '';
       setTextureWrapRepeat( parameters.parallaxLayer3 );
     }
-    if ( parameters.parallaxLayer1 || parameters.parallaxLayer2 || parameters.parallaxLayer3 ) this.defines['USE_PARALLAX_LAYER'] = '';
+    if ( parameters.useParallaxLayers ) {
+      this.defines['USE_PARALLAX_LAYERS'] = '';
+      this._useParallaxLayers = true;
+    }
 
     this.uniforms = assign({},
       THREE.ShaderLib.physical.uniforms,
@@ -230,6 +234,23 @@ class IceMaterial extends THREE.MeshPhysicalMaterial {
       this.defines = defines;
     } else if ( value === true ) {
       this.defines[ 'PARALLAX_UV3' ] = '';
+    }
+    this.needsUpdate = true;
+  }
+
+  get useParallaxLayers () {
+    return this._useParallaxLayers;
+  }
+
+  set useParallaxLayers( value ) {
+    if ( value === false ) {
+      const defines = {};
+      for ( let [ key, value ] of Object.entries( this.defines ) ) {
+        if ( !key.includes( 'USE_PARALLAX_LAYERS' ) ) defines[ key ] = value;
+      }
+      this.defines = defines;
+    } else if ( value === true ) {
+      this.defines[ 'USE_PARALLAX_LAYERS' ] = '';
     }
     this.needsUpdate = true;
   }
