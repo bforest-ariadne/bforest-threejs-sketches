@@ -40,13 +40,19 @@ const queueAssets = () => {
   });
 
   assets.queue({
+    url: 'assets/textures/masks/Water_droplets_02.jpg',
+    key: 'droplets2',
+    texture: true
+  });
+
+  assets.queue({
     url: 'assets/textures/cracked_z.png',
     key: 'cracked',
     texture: true
   });
 
   assets.queue({
-    url: 'assets/models/bpose1_lp_512.glb',
+    url: 'assets/models/bpose1_lp2_512.glb',
     key: 'bpose'
   });
 
@@ -204,7 +210,9 @@ class PbrTest2 extends SketchScene {
       normalMap: bposeNormal,
       // aoMap: assets.get('bpose_c'),
       parallaxLayer1: assets.get('cracked'),
+      parallaxLayer2: assets.get('droplets2'),
       parallaxScale1: 1.5,
+      parallaxScale2: 1.1,
       roughness: 0.28,
       metalness: 0.0,
       color: 0xffffff,
@@ -215,7 +223,8 @@ class PbrTest2 extends SketchScene {
       thicknessDistortion: 0.47,
       thicknessAttenuation: 1,
       thicknessPower: 29,
-      refractionRatio: 1.3
+      refractionRatio: 1.3,
+      parallaxUv3: true
     });
     global.iceMat = iceMaterial;
     this.iceMaterial = iceMaterial;
@@ -428,6 +437,20 @@ class PbrTest2 extends SketchScene {
       max: 1,
       step: 0.01,
       label: 'diffuseColorInfluence'
+    });
+
+    f.addInput( this.iceMaterial.uniforms.parallaxScale1, 'value', {
+      min: -2.0,
+      max: 10,
+      step: 0.01,
+      label: 'parallaxScale1'
+    });
+
+    f.addInput( this.iceMaterial.uniforms.parallaxScale2, 'value', {
+      min: -2.0,
+      max: 10,
+      step: 0.01,
+      label: 'parallaxScale2'
     });
 
     f.addInput( this.iceMaterial, 'thicknessColorStyle', {
