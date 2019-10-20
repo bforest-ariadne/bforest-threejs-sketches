@@ -453,6 +453,8 @@ class PbrTest2 extends SketchScene {
       label: 'parallaxScale2'
     });
 
+    f.addInput( this.iceMaterial, 'parallaxUv3' );
+
     f.addInput( this.iceMaterial, 'thicknessColorStyle', {
       label: 'thicknessColor'
     }).on( 'change', value => {

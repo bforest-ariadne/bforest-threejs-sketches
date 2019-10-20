@@ -17,22 +17,27 @@ class IceMaterial extends THREE.MeshPhysicalMaterial {
     parameters = assign({}, parameters);
     super();
     this._useTranslucency = true;
+    this._parallaxUv3 = false;
     this.defines['USE_TRANSLUCENCY'] = '';
+    if ( parameters.parallaxUv3 ) {
+      this.defines['PARALLAX_UV3'] = '';
+      this._parallaxUv3 = true;
+    }
     if ( defined( parameters.thicknessMap, false) ) this.defines['USE_THICKNESS_MAP'] = '';
     if ( parameters.parallaxLayer1 ) {
       this.defines['USE_PARALLAX_LAYER_1'] = '';
       setTextureWrapRepeat( parameters.parallaxLayer1 );
-      }
+    }
     if ( parameters.parallaxLayer2 ) {
       this.defines['USE_PARALLAX_LAYER_2'] = '';
       setTextureWrapRepeat( parameters.parallaxLayer2 );
-      }
+    }
     if ( parameters.parallaxLayer3 ) {
       this.defines['USE_PARALLAX_LAYER_3'] = '';
       setTextureWrapRepeat( parameters.parallaxLayer3 );
-      }
+    }
     if ( parameters.parallaxLayer1 || parameters.parallaxLayer2 || parameters.parallaxLayer3 ) this.defines['USE_PARALLAX_LAYER'] = '';
-    if ( parameters.parallaxUv3 ) this.defines['PARALLAX_UV3'] = '';
+
     this.uniforms = assign({},
       THREE.ShaderLib.physical.uniforms,
       {
@@ -88,7 +93,7 @@ class IceMaterial extends THREE.MeshPhysicalMaterial {
     this.uniforms.thicknessMap.value = value;
     this.needsUpdate = true;
   }
-  
+
   get parallaxLayer1() {
     return this.uniforms.parallaxLayer1.value;
   }
@@ -208,6 +213,23 @@ class IceMaterial extends THREE.MeshPhysicalMaterial {
       this.defines = defines;
     } else if ( value === true ) {
       this.defines[ 'USE_TRANSLUCENCY' ] = '';
+    }
+    this.needsUpdate = true;
+  }
+
+  get parallaxUv3 () {
+    return this._parallaxUv3;
+  }
+
+  set parallaxUv3( value ) {
+    if ( value === false ) {
+      const defines = {};
+      for ( let [ key, value ] of Object.entries( this.defines ) ) {
+        if ( !key.includes( 'PARALLAX_UV3' ) ) defines[ key ] = value;
+      }
+      this.defines = defines;
+    } else if ( value === true ) {
+      this.defines[ 'PARALLAX_UV3' ] = '';
     }
     this.needsUpdate = true;
   }
