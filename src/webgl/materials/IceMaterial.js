@@ -19,7 +19,20 @@ class IceMaterial extends THREE.MeshPhysicalMaterial {
     this._useTranslucency = true;
     this.defines['USE_TRANSLUCENCY'] = '';
     if ( defined( parameters.thicknessMap, false) ) this.defines['USE_THICKNESS_MAP'] = '';
-    if ( defined( parameters.parallaxLayer1, false) ) this.defines['USE_PARALLAX_LAYER_1'] = '';
+    if ( parameters.parallaxLayer1 ) {
+      this.defines['USE_PARALLAX_LAYER_1'] = '';
+      setTextureWrapRepeat( parameters.parallaxLayer1 );
+      }
+    if ( parameters.parallaxLayer2 ) {
+      this.defines['USE_PARALLAX_LAYER_2'] = '';
+      setTextureWrapRepeat( parameters.parallaxLayer2 );
+      }
+    if ( parameters.parallaxLayer3 ) {
+      this.defines['USE_PARALLAX_LAYER_3'] = '';
+      setTextureWrapRepeat( parameters.parallaxLayer3 );
+      }
+    if ( parameters.parallaxLayer1 || parameters.parallaxLayer2 || parameters.parallaxLayer3 ) this.defines['USE_PARALLAX_LAYER'] = '';
+    if ( parameters.parallaxUv3 ) this.defines['PARALLAX_UV3'] = '';
     this.uniforms = assign({},
       THREE.ShaderLib.physical.uniforms,
       {
@@ -35,12 +48,20 @@ class IceMaterial extends THREE.MeshPhysicalMaterial {
         thicknessIOR: { type: 'f', value: parameters.thicknessIOR || 1.0, min: 0, max: 2 },
         thicknessColor: { type: 'v3', value: parameters.thicknessColor || new THREE.Color('white') },
         parallaxScale1: { type: 'f', value: parameters.parallaxScale1 || 1.0, min: 0, max: 10 },
-        parallaxLayer1: { type: 't', value: parameters.parallaxLayer1 || null }
+        parallaxLayer1: { type: 't', value: parameters.parallaxLayer1 || null },
+        parallaxScale2: { type: 'f', value: parameters.parallaxScale2 || 1.0, min: 0, max: 10 },
+        parallaxLayer2: { type: 't', value: parameters.parallaxLayer2 || null },
+        parallaxScale3: { type: 'f', value: parameters.parallaxScale3 || 1.0, min: 0, max: 10 },
+        parallaxLayer3: { type: 't', value: parameters.parallaxLayer3 || null }
       }
     );
     setFlags(this);
     this.setValues(parameters);
     this.isMeshStandardMaterial = true;
+
+    function setTextureWrapRepeat( texture ) {
+      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+    }
   }
 
   copy( source ) {
@@ -65,6 +86,24 @@ class IceMaterial extends THREE.MeshPhysicalMaterial {
 
   set thicknessMap( value ) {
     this.uniforms.thicknessMap.value = value;
+    this.needsUpdate = true;
+  }
+  
+  get parallaxLayer1() {
+    return this.uniforms.parallaxLayer1.value;
+  }
+
+  set parallaxLayer1( value ) {
+    this.uniforms.parallaxLayer1.value = value;
+    this.needsUpdate = true;
+  }
+
+  get parallaxLayer2() {
+    return this.uniforms.parallaxLayer2.value;
+  }
+
+  set parallaxLayer2( value ) {
+    this.uniforms.parallaxLayer2.value = value;
     this.needsUpdate = true;
   }
 
@@ -130,6 +169,30 @@ class IceMaterial extends THREE.MeshPhysicalMaterial {
 
   set thicknessIOR( value ) {
     this.uniforms.thicknessIOR.value = value;
+  }
+
+  get parallaxScale1() {
+    return this.uniforms.parallaxScale1.value;
+  }
+
+  set parallaxScale1( value ) {
+    this.uniforms.parallaxScale1.value = value;
+  }
+
+  get parallaxScale2() {
+    return this.uniforms.parallaxScale2.value;
+  }
+
+  set parallaxScale2( value ) {
+    this.uniforms.parallaxScale2.value = value;
+  }
+
+  get parallaxScale3() {
+    return this.uniforms.parallaxScale3.value;
+  }
+
+  set parallaxScale3( value ) {
+    this.uniforms.parallaxScale3.value = value;
   }
 
   get useTranslucency () {

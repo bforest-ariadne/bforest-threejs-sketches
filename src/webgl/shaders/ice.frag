@@ -1,6 +1,3 @@
-// #define USE_TRANSLUCENCY
-// #define USE_THICKNES_MAP
-
 #ifdef USE_TRANSLUCENCY
   uniform sampler2D thicknessMap;
   uniform float thicknessPower;
@@ -12,13 +9,22 @@
   uniform vec2 thicknessRepeat;
   uniform float diffuseColorInfluence;
   uniform float thicknessIOR;
-  
-  // uniform float parallaxScale;
-#endif
 
-#ifdef USE_PARALLAX_LAYER_1
-  uniform float parallaxScale1;
-  uniform sampler2D parallaxLayer1;
+  #ifdef USE_PARALLAX_LAYER_1
+    uniform float parallaxScale1;
+    uniform sampler2D parallaxLayer1;
+  #endif
+
+  #ifdef USE_PARALLAX_LAYER_2
+    uniform float parallaxScale2;
+    uniform sampler2D parallaxLayer2;
+  #endif
+
+  #ifdef USE_PARALLAX_LAYER_3
+    uniform float parallaxScale3;
+    uniform sampler2D parallaxLayer3;
+  #endif
+
 #endif
 
 #define PHYSICAL
@@ -61,6 +67,13 @@ varying vec3 vViewPosition;
 #include <color_pars_fragment>
 #include <uv_pars_fragment>
 #include <uv2_pars_fragment>
+
+#ifdef USE_PARALLAX_LAYER
+  #ifdef PARALLAX_UV3
+    varying vec2 vUv3;
+  #endif
+#endif
+
 #include <map_pars_fragment>
 #include <alphamap_pars_fragment>
 #include <aomap_pars_fragment>
@@ -83,24 +96,24 @@ varying vec3 vViewPosition;
 #include <clipping_planes_pars_fragment>
 
 #ifdef USE_TRANSLUCENCY
-  vec2 parallaxMap( in vec3 V, sampler2D parallaxLayer, float parallaxScale ) {
+  vec2 parallaxMap( in vec3 V, sampler2D parallaxLayer, float parallaxScale, vec2 uv ) {
 
     // float parallaxScale = parallaxScale1;
-    float initialHeight = texture2D( parallaxLayer, vUv ).r;
+    float initialHeight = texture2D( parallaxLayer, uv ).r;
 
     // No Offset Limitting: messy, floating output at grazing angles.
     // vec2 texCoordOffset = parallaxScale * V.xy / V.z * initialHeight;
 
     // Offset Limiting
     vec2 texCoordOffset = parallaxScale * V.xy * initialHeight;
-    return vUv - texCoordOffset;
+    return uv - texCoordOffset;
 
   }
 
-  vec2 perturbUv( vec3 surfPosition, vec3 surfNormal, vec3 viewPosition, sampler2D parallaxLayer, float parallaxScale ) {
+  vec2 perturbUv( vec3 surfPosition, vec3 surfNormal, vec3 viewPosition, sampler2D parallaxLayer, float parallaxScale, vec2 uv ) {
 
-    vec2 texDx = dFdx( vUv );
-    vec2 texDy = dFdy( vUv );
+    vec2 texDx = dFdx( uv );
+    vec2 texDy = dFdy( uv );
 
     vec3 vSigmaX = dFdx( surfPosition );
     vec3 vSigmaY = dFdy( surfPosition );
@@ -113,11 +126,11 @@ varying vec3 vViewPosition;
     vProjVtex.xy = texDx * vProjVscr.x + texDy * vProjVscr.y;
     vProjVtex.z = dot( surfNormal, viewPosition );
 
-    return parallaxMap( vProjVtex, parallaxLayer, parallaxScale );
+    return parallaxMap( vProjVtex, parallaxLayer, parallaxScale, uv );
   }
 
-  vec4 getParallaxLayer( vec3 surfPosition, vec3 surfNormal, vec3 viewPosition, sampler2D parallaxLayer, float parallaxScale ) {
-    vec2 vUvParallax = perturbUv( -surfPosition, normalize( surfNormal ), normalize( viewPosition), parallaxLayer, parallaxScale );
+  vec4 getParallaxLayer( vec3 surfPosition, vec3 surfNormal, vec3 viewPosition, sampler2D parallaxLayer, float parallaxScale, vec2 uv ) {
+    vec2 vUvParallax = perturbUv( -surfPosition, normalize( surfNormal ), normalize( viewPosition), parallaxLayer, parallaxScale, uv);
 
     vec4 parallaxColor = texture2D( parallaxLayer, vUvParallax );
     return mapTexelToLinear( parallaxColor );
@@ -185,13 +198,35 @@ void main() {
 
 	#include <logdepthbuf_fragment>
 	#include <map_fragment>
-  #ifdef USE_PARALLAX_LAYER_1
-    // vUvParallax = perturbUv( -vViewPosition, normalize( vNormal ), normalize( vViewPosition ) );
-    // vec4 texelColor = texture2D( parallaxLayer1, vUvParallax1 );
-    // texelColor = mapTexelToLinear( texelColor );
-    vec4 parallaxLayer1Map = getParallaxLayer( vViewPosition, vNormal, vViewPosition, parallaxLayer1, parallaxScale1 );
-    diffuseColor *= parallaxLayer1Map;
+  #if defined(USE_PARALLAX_LAYER) && defined(USE_TRANSLUCENCY)
+    vec2 parallaxUv = vUv;
+    vec4 parallaxLayersColor = vec4( 1.0, 1.0, 1.0, 1.0 );
+
+    #ifdef PARALLAX_UV3
+      parallaxUv = vUv3;
+    #endif
+
+    #ifdef USE_PARALLAX_LAYER_1
+      // vUvParallax = perturbUv( -vViewPosition, normalize( vNormal ), normalize( vViewPosition ) );
+      // vec4 texelColor = texture2D( parallaxLayer1, vUvParallax1 );
+      // texelColor = mapTexelToLinear( texelColor );
+      vec4 parallaxLayer1Map = getParallaxLayer( vViewPosition, vNormal, vViewPosition, parallaxLayer1, parallaxScale1, parallaxUv );
+      parallaxLayersColor *= parallaxLayer1Map;
+    #endif
+    #ifdef USE_PARALLAX_LAYER_2
+      vec4 parallaxLayer2Map = getParallaxLayer( vViewPosition, vNormal, vViewPosition, parallaxLayer2, parallaxScale2, parallaxUv );
+      parallaxLayersColor *= parallaxLayer2Map;
+    #endif
+    #ifdef USE_PARALLAX_LAYER_3
+      vec4 parallaxLayer3Map = getParallaxLayer( vViewPosition, vNormal, vViewPosition, parallaxLayer3, parallaxScale3, parallaxUv );
+      parallaxLayersColor *= parallaxLayer3Map;
+    #endif
+
+    diffuseColor *= parallaxLayersColor;
+
   #endif
+
+
 	#include <color_fragment>
 	#include <alphamap_fragment>
 	#include <alphatest_fragment>

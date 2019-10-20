@@ -7,6 +7,10 @@ varying vec3 vViewPosition;
 		varying vec3 vBitangent;
 	#endif
 #endif
+#ifdef PARALLAX_UV3
+	attribute vec2 texcoord_2;
+	varying vec2 vUv3;
+#endif
 #include <common>
 #include <uv_pars_vertex>
 #include <uv2_pars_vertex>
@@ -21,6 +25,11 @@ varying vec3 vViewPosition;
 void main() {
 	#include <uv_vertex>
 	#include <uv2_vertex>
+
+	#ifdef PARALLAX_UV3
+		vUv3 = ( uvTransform * vec3( texcoord_2, 1 ) ).xy;
+	#endif
+
 	#include <color_vertex>
 	#include <beginnormal_vertex>
 	#include <morphnormal_vertex>
