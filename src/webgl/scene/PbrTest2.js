@@ -254,11 +254,14 @@ class PbrTest2 extends SketchScene {
     this.bpose.position.set( 0, 2, 0 );
     this.add( this.bpose );
 
+    this.pointLight.visible = false;
     this.renderEnv();
+    this.pointLight.visible = true;
     this.orbitControls.target.set( 0, 3, 0);
 
     const debugCubeMaps = [this.env.target.texture];
-    if ( defined( this.envUv ) ) debugCubeMaps.push( this.envUv.texture );
+    if ( defined( this.envUv ) ) debugCubeMaps.push( this.envUv.texture);
+    // if ( defined( this.cubeCamera ) ) debugCubeMaps.push( this.cubeCamera.renderTarget );
 
     this.cubeDebugger = new CubeMapDebugger( ...debugCubeMaps );
     this.cubeDebugger.visible = false;
@@ -314,10 +317,12 @@ class PbrTest2 extends SketchScene {
   }
 
   setupCubeCamera() {
-    this.cubeCamera = new THREE.CubeCamera( 0.001, 100, 256 );
+    this.cubeCamera = new THREE.CubeCamera( 0.001, 100, 256, {
+      format: THREE.RGBAFormat,
+      minFilter: THREE.LinearMipMapLinearFilter
+    } );
     this.add( this.cubeCamera );
     this.cubeCamera.renderTarget.texture.generateMipmaps = true;
-    this.cubeCamera.renderTarget.texture.minFilter = THREE.LinearMipMapLinearFilter;
 
     this.envTexture = this.cubeCamera.renderTarget.texture;
 
