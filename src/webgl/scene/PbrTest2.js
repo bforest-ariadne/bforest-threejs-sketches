@@ -196,13 +196,6 @@ class PbrTest2 extends SketchScene {
     global.testPoint = testPoint;
     this.add( testPoint );
 
-    // let pointLight = new PointLight();
-    // pointLight.castShadow = true;
-    // pointLight.position.set( 2, 0, -0.5 );
-
-    // this.add( pointLight );
-    // global.pointLight = pointLight;
-
     let iceMaterial = new IceMaterial({
       // roughnessMap: assets.get('lava'),
       thicknessMap: bposeThick,
