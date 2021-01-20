@@ -17,7 +17,7 @@
     "defined": "^1.0.0",
     "detect-gpu": "^1.1.2",
     "glslify-hex": "^2.1.1",
-    "gsap": "^2.0.1",
+    "gsap": "^3.6.0",
     "gyronorm": "^2.0.6",
     "load-img": "^1.0.0",
     "load-json-xhr": "^3.0.3",
